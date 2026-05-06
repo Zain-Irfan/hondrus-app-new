@@ -1,0 +1,19 @@
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "python3", "gcc"]
+
+[phases.install]
+cmds = [
+  "npx --yes pnpm@10.26.1 install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = [
+  "npx --yes pnpm@10.26.1 --filter @workspace/api-server run build",
+  "npx --yes pnpm@10.26.1 --filter @workspace/admin-panel run build",
+  "npx --yes pnpm@10.26.1 --filter @workspace/honduran-store run build"
+]
+
+[start]
+cmd = "node --enable-source-maps artifacts/api-server/dist/index.mjs"

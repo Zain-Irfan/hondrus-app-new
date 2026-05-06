@@ -1,0 +1,58 @@
+modules = ["nodejs-24", "postgresql-16", "python-3.11"]
+
+[[artifacts]]
+id = "artifacts/api-server"
+
+[[artifacts]]
+id = "artifacts/mockup-sandbox"
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+integrations = ["stripe:1.0.0"]
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+ADMIN_PASSWORD = "admin123"
+VITE_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA"
+EXPO_PUBLIC_DOMAIN = "honduras-market-hub.replit.app"
+GOOGLE_MAPS_API_KEY = "AIzaSyBYAkWkRy7EvjZgkJ56JRU-_hT_0EgCtDQ"
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 20130
+externalPort = 3000
+
+[[ports]]
+localPort = 21050
+externalPort = 80
+
+[[ports]]
+localPort = 26022
+externalPort = 3001

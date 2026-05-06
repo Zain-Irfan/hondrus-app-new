@@ -1,0 +1,271 @@
+uploads = []
+
+[[generated]]
+id = "a4prKBI4Wb-1xfplPezQH"
+uri = "file://artifacts/honduran-store/public/images/products/cafe-el-indio-molido.png"
+type = "image"
+title = "ground Honduran coffee el indio"
+
+[[generated]]
+id = "-iL74T6MfOuj3n0epguZz"
+uri = "file://artifacts/honduran-store/public/images/products/cafe-el-indio-grano.png"
+type = "image"
+title = "whole bean honduran coffee"
+
+[[generated]]
+id = "W5GP6Ep770rJM2Wb5vFLI"
+uri = "file://artifacts/honduran-store/public/images/products/cafe-copan-premium.png"
+type = "image"
+title = "premium copan coffee package"
+
+[[generated]]
+id = "LlEkMkCZF640eZVnONSUY"
+uri = "file://artifacts/honduran-store/public/images/products/cafe-de-marcala.png"
+type = "image"
+title = "marcala specialty coffee bag"
+
+[[generated]]
+id = "HkMczgyXa6UDETaFwxB13"
+uri = "file://artifacts/honduran-store/public/images/products/semitas-de-leche.png"
+type = "image"
+title = "semitas milk bread rolls"
+
+[[generated]]
+id = "ayGlLue__BQkrjNUDdgpq"
+uri = "file://artifacts/honduran-store/public/images/products/rosquillas-hondurenas.png"
+type = "image"
+title = "crispy corn rosquillas"
+
+[[generated]]
+id = "C34YangHLTDfaTusRql06"
+uri = "file://artifacts/honduran-store/public/images/products/pan-de-coco.png"
+type = "image"
+title = "traditional coconut bread"
+
+[[generated]]
+id = "EdUzPFokJS3kgNULoCD_q"
+uri = "file://artifacts/honduran-store/public/images/products/montuca.png"
+type = "image"
+title = "corn tamale montuca"
+
+[[generated]]
+id = "SwW2Ic0Yr-q5PqKMZ8fYo"
+uri = "file://artifacts/honduran-store/public/images/products/frijoles-refritos.png"
+type = "image"
+title = "refried beans in clay pot"
+
+[[generated]]
+id = "UWWqZ-Tf0lLXUczt2WXIa"
+uri = "file://artifacts/honduran-store/public/images/products/tortillas-baleadas.png"
+type = "image"
+title = "soft flour tortillas baleadas"
+
+[[generated]]
+id = "pdtZieHRZATL7227StD5U"
+uri = "file://artifacts/honduran-store/public/images/products/pan-de-maiz-olanchano.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ijsECCYCp7h3E2KgNIweg"
+uri = "file://artifacts/honduran-store/public/images/products/tamales-olanchanos.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-_Rdg-4qfXDJo1ayRnKAQ"
+uri = "file://artifacts/honduran-store/public/images/products/chicharron-olanchano.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "44GLzrmP4wvSQGweTUX3P"
+uri = "file://artifacts/honduran-store/public/images/products/tapa-de-dulce-olanchana.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "A9_s28h-8YtUPrI3CbvGw"
+uri = "file://artifacts/honduran-store/public/images/products/ayote-en-miel-olanchano.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "en7IUPpUXv5kU5eUH2uux"
+uri = "file://artifacts/honduran-store/public/images/products/carne-seca-olanchana.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "tSw4fPwTWTUeU8TlpUgko"
+uri = "file://artifacts/honduran-store/public/pwa-512x512.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SGKA8UmERiWZxHF5zyw3w"
+uri = "file://artifacts/honduran-store/public/pwa-192x192.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PQ7O7NHXEx5577ZeUJwnc"
+uri = "file://artifacts/sabores-mobile/assets/images/icon.png"
+type = "image"
+title = "generated_image"
+
+[[outputs]]
+id = "jH5Ur8_kiC3SHA5ooHYMW"
+uri = "file://artifacts/honduran-store/public/images/products/masa-harina.jpg"
+type = "image"
+title = "masa harina corn flour bag with scattered cornmeal"
+
+[[outputs]]
+id = "F5fRo0K7PTiP4tiWqIS-g"
+uri = "file://artifacts/honduran-store/public/images/products/arroz-grano-largo.jpg"
+type = "image"
+title = "long grain white rice in ceramic bowl"
+
+[[outputs]]
+id = "llHTgje_rmA6z0g-6wbIM"
+uri = "file://artifacts/honduran-store/public/images/products/crema-hondurena.jpg"
+type = "image"
+title = "thick sour cream crema in jar"
+
+[[outputs]]
+id = "OvhlU7m_tE4_On-_BDedm"
+uri = "file://artifacts/honduran-store/public/images/products/queso-seco.jpg"
+type = "image"
+title = "crumbled dry cheese in rustic bowl"
+
+[[outputs]]
+id = "GyQK27rwY09ko7t8Hk6Wd"
+uri = "file://artifacts/honduran-store/public/images/products/quesillo.jpg"
+type = "image"
+title = "soft string cheese pulled apart showing texture"
+
+[[outputs]]
+id = "ZZ5A4w52CzKsTrOsLAu32"
+uri = "file://artifacts/honduran-store/public/images/products/tajadas-platano.jpg"
+type = "image"
+title = "crispy green plantain chip tajadas"
+
+[[outputs]]
+id = "6ZHSVquIB-5m-Q-RGk0d2"
+uri = "file://artifacts/honduran-store/public/images/products/chips-yuca.jpg"
+type = "image"
+title = "thin golden yuca cassava chips in paper bag"
+
+[[outputs]]
+id = "G1MSopqxq-O7E6vgndjYX"
+uri = "file://artifacts/honduran-store/public/images/products/dulce-de-leche.jpg"
+type = "image"
+title = "open jar of thick golden dulce de leche caramel"
+
+[[outputs]]
+id = "xUsOhnhuOh9QJySHDoP-m"
+uri = "file://artifacts/honduran-store/public/images/products/cajeta-coco.jpg"
+type = "image"
+title = "traditional coconut candy pieces"
+
+[[outputs]]
+id = "N5IKIKVjcm1-nrFOE8k1R"
+uri = "file://artifacts/honduran-store/public/images/products/arroz-con-leche.jpg"
+type = "image"
+title = "creamy arroz con leche rice pudding with cinnamon"
+
+[[outputs]]
+id = "ejVNUaI0xgYLBDYW9Rg4v"
+uri = "file://artifacts/honduran-store/public/images/products/horchata.jpg"
+type = "image"
+title = "glass of horchata rice drink with cinnamon and ice"
+
+[[outputs]]
+id = "vTVO5-fUpPpZHQIpmPe6t"
+uri = "file://artifacts/honduran-store/public/images/products/pinol.jpg"
+type = "image"
+title = "toasted corn cacao mix with corn ears"
+
+[[outputs]]
+id = "_ng_Th8BsTIwAd77fQRRe"
+uri = "file://artifacts/honduran-store/public/images/products/atol-de-elote.jpg"
+type = "image"
+title = "hot mug of sweet corn drink, steaming"
+
+[[outputs]]
+id = "Bwe-FGMyONKqiD3Z6I9Dz"
+uri = "file://artifacts/honduran-store/public/images/products/chimol.jpg"
+type = "image"
+title = "fresh tomato salsa in clay bowl with cilantro"
+
+[[outputs]]
+id = "Z53X75sX7afdouI4JkaNg"
+uri = "file://artifacts/honduran-store/public/images/products/salsa-lizano.jpg"
+type = "image"
+title = "bottle of hot sauce on rustic surface"
+
+[[outputs]]
+id = "lCVV-fHdP6p6_T4BBw-Pb"
+uri = "file://artifacts/honduran-store/public/images/categories/cafe.jpg"
+type = "image"
+title = "overhead flat lay coffee beans in burlap sack"
+
+[[outputs]]
+id = "ko3vLxHCBNeUezrPfODQ6"
+uri = "file://artifacts/honduran-store/public/images/categories/panaderia-dulces.jpg"
+type = "image"
+title = "traditional baked goods on rustic board"
+
+[[outputs]]
+id = "RzxjedMlc6_U99qQrRXVU"
+uri = "file://artifacts/honduran-store/public/images/categories/despensa.jpg"
+type = "image"
+title = "pantry staples tortillas refried beans masa harina in clay bowls"
+
+[[outputs]]
+id = "-pSGl8OMlhwZzwnIty9M7"
+uri = "file://artifacts/honduran-store/public/images/categories/lacteos.jpg"
+type = "image"
+title = "selection of cheeses fresh cream on wooden board"
+
+[[outputs]]
+id = "gauiOe_tBYM9VwTQElPZg"
+uri = "file://artifacts/honduran-store/public/images/categories/bocadillos.jpg"
+type = "image"
+title = "crispy golden plantain chips in ceramic bowl"
+
+[[outputs]]
+id = "PwiwTb5wyr-NqBRutZlu4"
+uri = "file://artifacts/honduran-store/public/images/categories/dulces-postres.jpg"
+type = "image"
+title = "dulce de leche coconut candy on white surface"
+
+[[outputs]]
+id = "nfA4fPPqwJhH9ldzN5lEe"
+uri = "file://artifacts/honduran-store/public/images/categories/bebidas.jpg"
+type = "image"
+title = "glass of horchata drink with cinnamon, food photography"
+
+[[outputs]]
+id = "F6uzGsXDSmfV0AvHCT_6p"
+uri = "file://artifacts/honduran-store/public/images/categories/salsas-condimentos.jpg"
+type = "image"
+title = "selection of condiments sauces in small glass bowls"
+
+[[outputs]]
+id = "-tIiLH85k_WeGE339YqhT"
+uri = "file://attached_assets/screenshots/expo-qr.png"
+type = "image"
+title = "Sabores de Honduras — Mobile App QR Code"
+
+[[outputs]]
+id = "hoUKv4bejmXh9r_-y6wLM"
+uri = "file://attached_assets/qr/qr-website.png"
+type = "image"
+title = "Website QR — honduras-market-hub.replit.app (recommended for clients)"
+
+[[outputs]]
+id = "6bNaC4tOQGOYru0QRWsPn"
+uri = "file://attached_assets/qr/qr-expo-go.png"
+type = "image"
+title = "Expo Go QR — mobile app preview (requires Expo Go installed)"

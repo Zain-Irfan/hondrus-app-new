@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" width="280" height="64">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#002B7F"/>
+      <stop offset="100%" stop-color="#00429d"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="8" width="48" height="48" rx="12" fill="url(#g)"/>
+  <text x="24" y="40" font-family="Georgia, 'Playfair Display', serif" font-size="24" font-weight="bold" fill="#C9A84C" text-anchor="middle">SH</text>
+  <text x="60" y="32" font-family="Georgia, 'Playfair Display', serif" font-size="20" font-weight="bold" fill="#002B7F">Sabores</text>
+  <text x="60" y="52" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#C9A84C" letter-spacing="2">DE HONDURAS</text>
+</svg>

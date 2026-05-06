@@ -1,0 +1,82 @@
+Improve the current UI/UX of the mobile ecommerce app "Sabores de Honduras". The basic structure of the app is already implemented, so focus only on refining and improving the existing components without breaking current functionality.
+
+PRODUCT CARD IMPROVEMENTS
+
+* Improve the visual hierarchy of product cards.
+* Ensure product cards contain:
+
+  * product image
+  * product name (maximum 2 lines)
+  * rating display
+  * price (make price visually prominent)
+  * quick add-to-cart button
+* Increase spacing between elements to improve readability.
+* Ensure product cards are consistent in size and layout.
+
+CATEGORY CARD IMPROVEMENTS
+
+* Ensure all category images use a consistent aspect ratio (1:1).
+* Add rounded corners and subtle shadow for a modern look.
+* Ensure all category cards have consistent sizing and alignment.
+
+BEST SELLERS SECTION
+
+* Convert the product list in the Best Sellers section into a horizontal scrollable carousel.
+* Enable swipe gestures for browsing products.
+* Maintain smooth scrolling performance.
+
+SEARCH PAGE IMPROVEMENTS
+Enhance the search screen with the following features:
+
+* Add a "Recent Searches" section.
+* Add a "Popular Searches" section.
+* Maintain autocomplete functionality for product names.
+
+EMPTY STATE DESIGN
+Improve the "No results found" state in the search page:
+
+* Add a simple illustration or icon.
+* Display a clear message such as "No products found".
+* Provide a button to return to the home page.
+
+BOTTOM NAVIGATION IMPROVEMENTS
+
+* Improve the active tab indicator so users can clearly see the selected page.
+* Highlight the active icon and label with the primary brand color.
+* Ensure the cart tab displays the cart item count badge.
+
+CART FEEDBACK
+Improve user feedback when items are added to the cart:
+
+* Show a visual confirmation (for example: "Item added to cart").
+* Optionally animate the product being added to the cart icon.
+
+LOADING STATES
+Implement skeleton loading placeholders for product lists and category lists while data loads.
+
+LAYOUT SPACING
+Improve vertical spacing between major sections such as:
+
+* Categories
+* Best Sellers
+* New Arrivals
+
+Ensure consistent margins and padding throughout the app.
+
+PERFORMANCE OPTIMIZATION
+
+* Implement lazy loading for product images.
+* Avoid unnecessary API calls.
+* Ensure smooth scrolling and fast UI response.
+
+CODE STRUCTURE
+Ensure the UI is organized using reusable components such as:
+
+* ProductCard
+* CategoryCard
+* SectionHeader
+* SearchBar
+* CartBadge
+* SkeletonLoader
+
+Maintain a clean and modular component structure so the app can easily scale in the future.

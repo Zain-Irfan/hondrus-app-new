@@ -1,0 +1,114 @@
+Improve the UI/UX and component structure of the existing mobile ecommerce application "Sabores de Honduras". The goal is to make the interface cleaner, more modern, and aligned with best practices used by high-quality ecommerce apps.
+
+Focus on usability, performance, and scalable component architecture.
+
+GENERAL UI IMPROVEMENTS
+
+* Maintain a clean and modern layout with consistent spacing, padding, and typography.
+* Ensure all UI elements follow a consistent design system.
+* Optimize for mobile usability and responsive layout.
+* Use reusable UI components wherever possible.
+
+HEADER / NAVBAR
+
+* Convert the header into a sticky navigation bar that remains visible during scroll.
+* Replace the plain text title with a logo + brand name.
+* Add a cart icon with a dynamic item counter badge.
+* Remove the language selector from the header and place it inside the account/settings page.
+
+HERO SECTION
+
+* Improve the hero banner design and add a clear call-to-action button.
+* The button should say "Shop Now" and navigate users to the product browsing section.
+* Ensure the hero section supports dynamic promotional content for future marketing campaigns.
+
+FREE SHIPPING COMPONENT
+
+* Replace the static free shipping message with a dynamic component.
+* Show how much the user needs to spend to unlock free shipping based on the cart subtotal.
+  Example:
+  "You are $32 away from free shipping."
+
+SEARCH FUNCTIONALITY
+Improve the search bar to support:
+
+* product name search
+* autocomplete suggestions
+* category suggestions
+* search history
+  Implement debounced search requests to improve performance.
+
+CATEGORY NAVIGATION
+
+* Convert categories into horizontal scrollable cards.
+* Each category card should include an icon or image and a category label.
+* Tapping a category should open the category product listing page.
+
+PRODUCT CARD COMPONENT
+Standardize product cards across the app with the following elements:
+
+* product image
+* product name
+* product price
+* rating display
+* quick add-to-cart button
+
+Ensure product cards are reusable components and optimized for performance.
+
+QUICK ADD TO CART
+Allow users to add items to the cart directly from the product listing without opening the product page.
+Show immediate visual confirmation when an item is added.
+
+BOTTOM NAVIGATION
+Restructure the bottom navigation to include:
+Home
+Browse
+Cart
+Orders
+Account
+
+The cart icon should display the number of items currently in the cart.
+
+PRODUCT DISCOVERY SECTIONS
+Keep the homepage simple and organized with these sections:
+
+* Categories
+* Best Sellers
+* New Arrivals
+
+PERFORMANCE OPTIMIZATION
+Improve performance by:
+
+* lazy loading product images
+* using skeleton loaders while content loads
+* reducing unnecessary API requests
+* caching responses where appropriate
+
+PRODUCT DETAIL PAGE
+Ensure the product detail page includes:
+
+* large product image
+* product description
+* ingredients or details
+* quantity selector
+* add to cart button
+* related products
+
+ACCESSIBILITY
+Ensure accessibility best practices:
+
+* minimum 44px tap targets
+* good color contrast
+* proper labels for screen readers
+
+COMPONENT STRUCTURE
+Refactor the UI so it uses reusable components such as:
+
+* ProductCard
+* CategoryCard
+* PromoBanner
+* SectionHeader
+* CartBadge
+* SearchBar
+
+Ensure the codebase remains clean, modular, and easy to scale for future features such as promotions, recommendations, and loyalty programs.
