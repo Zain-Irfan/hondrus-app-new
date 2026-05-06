@@ -1,0 +1,44 @@
+modules = ["nodejs-20"]
+[agent]
+expertMode = true
+stack = "BEST_EFFORT_FALLBACK"
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 20130
+externalPort = 3000
+
+[[ports]]
+localPort = 21050
+externalPort = 3002
+
+[[ports]]
+localPort = 26022
+externalPort = 3001
+
+[userenv]
+
+[userenv.shared]
+VITE_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA"
+ADMIN_PASSWORD = "admin123"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["sh", "-c", "PORT=5000 node --enable-source-maps ./artifacts/api-server/dist/index.mjs"]
+build = ["sh", "-c", "pnpm install --frozen-lockfile && pnpm --filter @workspace/db run push && pnpm --filter @workspace/honduran-store run build && pnpm --filter @workspace/admin-panel run build && pnpm --filter @workspace/api-server run build"]
