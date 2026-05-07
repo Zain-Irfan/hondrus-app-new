@@ -75,13 +75,6 @@ A separate backstage cockpit for store management, accessible at `/admin-panel/`
 - FAQ, Shipping Policy, and Contact pages
 - Admin placeholders in product management
 
-## Replit Setup
-
-- Single workflow `Start application` runs the Express API server on port 5000 (built artifact at `artifacts/api-server/dist/index.mjs`). It also serves the built storefront and admin panel as static files.
-- Build pipeline (run before starting / on deploy): `pnpm install`, `pnpm --filter @workspace/db run push`, build storefront + admin-panel + api-server.
-- Required env vars: `DATABASE_URL` (auto-provisioned), `VITE_CLERK_PUBLISHABLE_KEY` (set, build-time), `ADMIN_PASSWORD` (set). For full Clerk auth flows the user must also add `CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` secrets — when missing, `clerkMiddleware()` is skipped (see `artifacts/api-server/src/app.ts`) so the app still boots.
-- Deployment target: `autoscale`.
-
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages

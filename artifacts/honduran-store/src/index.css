@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @layer theme, base, clerk, components, utilities;
 @import "tailwindcss";
 @import "@clerk/themes/shadcn.css";
@@ -52,7 +52,9 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Honduran Patriotic Palette — Bandera de Honduras */
+/* Sabores de Honduras — v2 Token System (Phase 2.5)
+   Refined royal blue + gold, better contrast on muted-foreground,
+   modern Fraunces serif for display moments. */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -60,45 +62,45 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* White background */
-  --background: 0 0% 99%;
-  --foreground: 220 60% 12%;
+  /* Pure white canvas */
+  --background: 0 0% 100%;
+  --foreground: 222 24% 12%;          /* was 220 60% 12% — softer */
 
-  /* Deep Royal Blue — from the Honduran flag */
+  /* Deep Royal Blue — Honduran flag, unchanged brand */
   --primary: 221 100% 25%;
   --primary-foreground: 0 0% 100%;
 
-  /* Gold accent — the five stars */
-  --secondary: 43 75% 47%;
-  --secondary-foreground: 0 0% 100%;
+  /* Gold accent — the five stars (slightly deeper for AA contrast) */
+  --secondary: 39 53% 54%;            /* #C9A84C */
+  --secondary-foreground: 221 100% 25%;
 
-  /* Sky blue — lighter flag blue */
-  --accent: 203 100% 40%;
-  --accent-foreground: 0 0% 100%;
+  /* Sky blue accent retained */
+  --accent: 38 56% 54%;
+  --accent-foreground: 221 100% 25%;
 
   --card: 0 0% 100%;
-  --card-foreground: 220 60% 12%;
-  --card-border: 210 20% 92%;
+  --card-foreground: 222 24% 12%;
+  --card-border: 224 22% 91%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 220 60% 12%;
-  --popover-border: 210 20% 92%;
+  --popover-foreground: 222 24% 12%;
+  --popover-border: 224 22% 91%;
 
-  --muted: 210 25% 95%;
-  --muted-foreground: 220 20% 45%;
+  --muted: 224 22% 95%;
+  --muted-foreground: 220 14% 38%;    /* was 220 20% 45% — better contrast vs WCAG AA */
 
-  --destructive: 0 65% 50%;
+  --destructive: 0 73% 41%;           /* #B91C1C — better contrast */
   --destructive-foreground: 0 0% 100%;
 
-  --border: 210 20% 90%;
-  --input: 210 20% 90%;
+  --border: 220 14% 90%;
+  --input: 220 14% 90%;
   --ring: 221 100% 25%;
 
-  --app-font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --app-font-serif: 'Playfair Display', Georgia, serif;
-  --app-font-mono: 'Space Mono', monospace;
+  --app-font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --app-font-serif: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --app-font-mono: 'Space Mono', ui-monospace, monospace;
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
   --sidebar-primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --sidebar-accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -116,35 +118,35 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 220 40% 8%;
-  --foreground: 0 0% 98%;
+  --background: 222 32% 5%;
+  --foreground: 220 14% 98%;
 
-  --primary: 210 100% 60%;
-  --primary-foreground: 220 40% 8%;
+  --primary: 220 78% 41%;
+  --primary-foreground: 222 32% 5%;
 
-  --secondary: 43 75% 55%;
-  --secondary-foreground: 220 40% 8%;
+  --secondary: 41 60% 60%;
+  --secondary-foreground: 222 32% 5%;
 
-  --accent: 203 100% 50%;
-  --accent-foreground: 220 40% 8%;
+  --accent: 41 60% 60%;
+  --accent-foreground: 222 32% 5%;
 
-  --card: 220 30% 12%;
-  --card-foreground: 0 0% 98%;
-  --card-border: 220 25% 22%;
+  --card: 222 22% 12%;
+  --card-foreground: 220 14% 98%;
+  --card-border: 222 22% 18%;
 
-  --popover: 220 30% 12%;
-  --popover-foreground: 0 0% 98%;
-  --popover-border: 220 25% 22%;
+  --popover: 222 22% 12%;
+  --popover-foreground: 220 14% 98%;
+  --popover-border: 222 22% 18%;
 
-  --muted: 220 25% 20%;
-  --muted-foreground: 210 15% 65%;
+  --muted: 222 24% 12%;
+  --muted-foreground: 220 14% 62%;
 
-  --destructive: 0 65% 60%;
+  --destructive: 0 73% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 220 25% 22%;
-  --input: 220 25% 22%;
-  --ring: 210 100% 60%;
+  --border: 222 22% 18%;
+  --input: 222 22% 18%;
+  --ring: 220 78% 60%;
 }
 
 @layer base {

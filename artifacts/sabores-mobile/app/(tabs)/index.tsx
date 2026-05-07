@@ -23,7 +23,9 @@ import { ProductCardSkeleton } from "@/components/LoadingSkeleton";
 import { FreeShippingProgress } from "@/components/FreeShippingProgress";
 import { SectionHeader } from "@/components/SectionHeader";
 import { CategoryCard, CategoryCardSkeleton } from "@/components/CategoryCard";
+import { ReorderStrip } from "@/components/ReorderStrip";
 import { useColors } from "@/hooks/useColors";
+import { useOrders } from "@/hooks/useOrders";
 
 const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
   ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
@@ -77,6 +79,17 @@ export default function HomeScreen() {
     queryFn: fetchCategories,
   });
 
+  // Reorder strip — show last order summary if available
+  const { data: ordersData } = useOrders();
+  const lastOrder = ordersData?.orders?.[0];
+  const reorderSummary = lastOrder
+    ? `${lastOrder.items?.[0]?.productName ?? "Tu último pedido"}${
+        lastOrder.items && lastOrder.items.length > 1
+          ? ` + ${lastOrder.items.length - 1} más`
+          : ""
+      }`
+    : undefined;
+
   const handleSearch = () => {
     if (search.trim()) {
       router.push(`/catalogo?search=${encodeURIComponent(search.trim())}`);
@@ -95,21 +108,40 @@ export default function HomeScreen() {
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.primary} />
       }
     >
-      {/* Hero Banner */}
+      {/* Hero Banner — redesigned: real coffee photo, no overlay-on-stock-photo, lighter bottom gradient */}
       <View style={styles.heroContainer}>
         <Image
-          source={{ uri: "https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?auto=format&fit=crop&q=80&w=800" }}
+          source={{ uri: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=900" }}
           style={StyleSheet.absoluteFillObject}
           resizeMode="cover"
         />
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.primary, opacity: 0.72 }]} />
+        <View
+          style={[
+            StyleSheet.absoluteFillObject,
+            { backgroundColor: "transparent" },
+          ]}
+        />
+        <View
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              backgroundColor: "rgba(0,21,63,0.45)",
+            },
+          ]}
+        />
         <View style={styles.heroContent}>
-          <Text style={[styles.heroSmall, { color: colors.gold }]}>{t.heroTagline}</Text>
-          <Text style={styles.heroTitle}>{t.heroTitle}</Text>
-          <Text style={styles.heroSub}>{t.heroSub}</Text>
+          <Text style={[styles.heroSmall, { color: colors.gold }]}>
+            {(t as any).heroTaglineV2 ?? "DIRECTO DE MARCALA"}
+          </Text>
+          <Text style={styles.heroTitle}>
+            {(t as any).heroTitleV2 ?? "Lo de casa,\nhasta tu puerta."}
+          </Text>
+          <Text style={styles.heroSub}>
+            {(t as any).heroSubV2 ?? t.heroSub}
+          </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={(t as any).shopNow ?? "Shop Now"}
+            accessibilityLabel={(t as any).shopNow ?? "Comprar ahora"}
             onPress={() => router.push("/catalogo")}
             style={({ pressed }) => [
               styles.heroCta,
@@ -117,7 +149,7 @@ export default function HomeScreen() {
             ]}
           >
             <Text style={[styles.heroCtaText, { color: colors.primary }]}>
-              {(t as any).shopNow ?? "Shop Now"}
+              {(t as any).shopNow ?? "Comprar ahora"}
             </Text>
             <Icon name="chevron-right" size={18} color={colors.primary} />
           </Pressable>
@@ -126,6 +158,14 @@ export default function HomeScreen() {
 
       {/* Free Shipping Progress (dynamic, based on cart subtotal) */}
       <FreeShippingProgress />
+
+      {/* Reorder strip — biggest LTV win for grocery */}
+      {lastOrder && (
+        <ReorderStrip
+          summary={reorderSummary}
+          onPress={() => router.push("/(tabs)/mis-pedidos")}
+        />
+      )}
 
       {/* Search Bar */}
       <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>

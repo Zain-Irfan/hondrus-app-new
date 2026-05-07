@@ -107,7 +107,7 @@ export default function CartScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <View style={[styles.cartItem, { backgroundColor: colors.card, borderColor: colors.border, borderLeftColor: colors.primary, borderLeftWidth: 4 }]}>
+          <View style={[styles.cartItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Image source={{ uri: item.productImageUrl }} style={styles.itemImage} />
             <View style={styles.itemInfo}>
               <Text style={[styles.itemName, { color: colors.foreground }]} numberOfLines={2}>
@@ -161,8 +161,53 @@ export default function CartScreen() {
             <View style={styles.summaryRow}>
               <Text style={[styles.summaryLabel, { color: colors.mutedForeground }]}>{t.shippingLabel}</Text>
               <Text style={[styles.summaryValue, { color: subtotal >= 75 ? colors.success : colors.foreground }]}>
-                {subtotal >= 75 ? t.free : t.shippingCalculated}
+                {subtotal >= 75 ? t.free : "$9.99"}
               </Text>
+            </View>
+
+            {/* v2: delivery estimate */}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 4 }}>
+              <Icon name="truck" size={13} color={colors.primary} />
+              <Text style={{ fontSize: 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground }}>
+                Llega entre el 12 y 14 de mayo
+              </Text>
+            </View>
+
+            {/* v2: promo code input row */}
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderStyle: "dashed",
+                  borderColor: colors.border,
+                  borderRadius: 12,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                }}
+              >
+                <Icon name="tag" size={14} color={colors.mutedForeground} />
+                <Text style={{ fontSize: 13, color: colors.mutedForeground, fontFamily: "Inter_500Medium" }}>
+                  ¿Tenés un código?
+                </Text>
+              </View>
+              <Pressable
+                style={{
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 12,
+                  paddingHorizontal: 18,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 13, fontFamily: "Inter_700Bold", color: colors.primary }}>Aplicar</Text>
+              </Pressable>
             </View>
 
             {/* Free shipping progress */}

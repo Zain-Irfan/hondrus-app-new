@@ -18,6 +18,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { CategoryPill } from "@/components/CategoryPill";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductCardSkeleton } from "@/components/LoadingSkeleton";
+import { FilterSheet, type FilterValue, DEFAULT_FILTERS } from "@/components/FilterSheet";
 import { useColors } from "@/hooks/useColors";
 
 const RECENT_SEARCHES_KEY = "sabores_recent_searches";
@@ -69,6 +70,14 @@ export default function CatalogoScreen() {
   const [searchText, setSearchText] = useState(params.search ?? "");
   const [appliedSearch, setAppliedSearch] = useState(params.search ?? "");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterValue>(DEFAULT_FILTERS);
+  const activeFilterCount =
+    (filters.region ? 1 : 0) +
+    filters.dietary.length +
+    (filters.inStockOnly ? 1 : 0) +
+    (filters.freeShipping ? 1 : 0) +
+    (filters.sort !== "recommended" ? 1 : 0);
 
   useEffect(() => {
     if (params.search) setAppliedSearch(params.search);
@@ -188,13 +197,45 @@ export default function CatalogoScreen() {
         </View>
       </View>
 
-      {/* Category pills */}
+      {/* Category pills + Filter button (v2 redesign) */}
       <View style={[styles.pillsContainer, { borderBottomColor: colors.border }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.pillsRow}
       >
+        {/* Filter button */}
+        <Pressable
+          onPress={() => setFilterOpen(true)}
+          accessibilityRole="button"
+          style={[
+            styles.filterBtn,
+            {
+              backgroundColor: colors.background,
+              borderColor: activeFilterCount > 0 ? colors.primary : colors.border,
+            },
+          ]}
+        >
+          <Icon
+            name="sliders"
+            size={14}
+            color={activeFilterCount > 0 ? colors.primary : colors.foreground}
+          />
+          <Text
+            style={[
+              styles.filterBtnText,
+              { color: activeFilterCount > 0 ? colors.primary : colors.foreground },
+            ]}
+          >
+            {(t as any).filtersTitle ?? "Filtros"}
+          </Text>
+          {activeFilterCount > 0 && (
+            <View style={[styles.filterBadge, { backgroundColor: colors.primary }]}>
+              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+            </View>
+          )}
+        </Pressable>
+
         <CategoryPill
           label={t.catAll}
           selected={selectedCategory === ""}
@@ -210,6 +251,41 @@ export default function CatalogoScreen() {
         ))}
       </ScrollView>
       </View>
+
+      {/* Result count + sort row */}
+      {!isLoading && products && products.length > 0 && (
+        <View style={styles.resultRow}>
+          <Text style={[styles.resultCount, { color: colors.mutedForeground }]}>
+            {(t as any).productsCount
+              ? (t as any).productsCount(products.length)
+              : `${products.length} productos`}
+          </Text>
+          <Pressable onPress={() => setFilterOpen(true)}>
+            <Text style={[styles.resultSort, { color: colors.primary }]}>
+              {filters.sort === "recommended"
+                ? "Recomendados ▾"
+                : filters.sort === "newest"
+                ? "Más recientes ▾"
+                : filters.sort === "price-asc"
+                ? "Precio: ↑ ▾"
+                : filters.sort === "price-desc"
+                ? "Precio: ↓ ▾"
+                : "Mejor calificados ▾"}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      <FilterSheet
+        visible={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        value={filters}
+        onApply={(next) => {
+          setFilters(next);
+          setFilterOpen(false);
+        }}
+        resultCount={products?.length ?? 0}
+      />
 
       {/* Product grid */}
       {isLoading ? (
@@ -482,5 +558,49 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
     maxWidth: 160,
+  },
+  filterBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+    minHeight: 32,
+  },
+  filterBtnText: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+  },
+  filterBadge: {
+    minWidth: 18,
+    height: 18,
+    borderRadius: 999,
+    paddingHorizontal: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 2,
+  },
+  filterBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontFamily: "Inter_700Bold",
+  },
+  resultRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  resultCount: {
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
+  },
+  resultSort: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
   },
 });

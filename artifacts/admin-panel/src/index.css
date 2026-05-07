@@ -43,7 +43,8 @@
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Fraunces', Georgia, serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -51,37 +52,36 @@
 }
 
 :root {
-  /* Honduran Royal Blue: #002B7F -> HSL 220 100% 25% */
-  /* Gold Accent: #C9A84C -> HSL 44 54% 54% */
+  /* Sabores admin v2 — matches storefront brand */
 
-  --background: 0 0% 98%;
-  --foreground: 220 50% 10%;
-  
+  --background: 0 0% 100%;
+  --foreground: 222 24% 12%;
+
   --card: 0 0% 100%;
-  --card-foreground: 220 50% 10%;
-  --card-border: 220 20% 90%;
-  
+  --card-foreground: 222 24% 12%;
+  --card-border: 224 22% 91%;
+
   --popover: 0 0% 100%;
-  --popover-foreground: 220 50% 10%;
-  --popover-border: 220 20% 90%;
-  
+  --popover-foreground: 222 24% 12%;
+  --popover-border: 224 22% 91%;
+
   --primary: 220 100% 25%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 44 54% 54%;
-  --secondary-foreground: 0 0% 100%;
-  
-  --muted: 220 20% 94%;
-  --muted-foreground: 220 20% 40%;
-  
-  --accent: 44 54% 54%;
-  --accent-foreground: 0 0% 100%;
-  
-  --destructive: 0 84% 60%;
+
+  --secondary: 39 53% 54%;
+  --secondary-foreground: 220 100% 25%;
+
+  --muted: 224 22% 95%;
+  --muted-foreground: 220 14% 38%;
+
+  --accent: 39 53% 54%;
+  --accent-foreground: 220 100% 25%;
+
+  --destructive: 0 73% 41%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 220 20% 90%;
-  --input: 220 20% 90%;
+  --border: 220 14% 90%;
+  --input: 220 14% 90%;
   --ring: 220 100% 25%;
 
   /* Dark Blue Sidebar */

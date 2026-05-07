@@ -89,7 +89,7 @@ export default function ProductDetailScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Image */}
+        {/* Image — v2: adds favorite + share floating buttons */}
         <View style={styles.imageWrap}>
           <Image source={{ uri: product.imageUrl }} style={styles.image} />
           {product.isBestseller && (
@@ -102,6 +102,62 @@ export default function ProductDetailScreen() {
               <Text style={{ color: "#fff", fontSize: 18, fontFamily: "Inter_700Bold" }}>{t.outOfStock}</Text>
             </View>
           )}
+
+          {/* Floating favorite + share buttons (v2) */}
+          <View
+            style={{
+              position: "absolute",
+              top: insets.top + 12,
+              right: 16,
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={(t as any).shareProduct ?? "Compartir"}
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 999,
+                backgroundColor: "rgba(255,255,255,0.95)",
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+              onPress={() => {
+                Haptics.selectionAsync();
+              }}
+            >
+              <Icon name="share-2" size={18} color={colors.foreground} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Agregar a favoritos"
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 999,
+                backgroundColor: "rgba(255,255,255,0.95)",
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+            >
+              <Icon name="heart" size={18} color={colors.destructive} />
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.content}>
@@ -136,6 +192,28 @@ export default function ProductDetailScreen() {
               {product.rating.toFixed(1)} {t.reviews(product.reviewCount)}
             </Text>
           </View>
+
+          {/* v2: Low-stock urgency chip */}
+          {product.inStock && product.stockQuantity > 0 && product.stockQuantity <= 6 && (
+            <View
+              style={{
+                alignSelf: "flex-start",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+                borderRadius: 8,
+                backgroundColor: "#FEF3C7",
+                marginBottom: 16,
+              }}
+            >
+              <Icon name="clock" size={13} color="#B45309" />
+              <Text style={{ fontSize: 12, fontFamily: "Inter_600SemiBold", color: "#B45309" }}>
+                Quedan {product.stockQuantity} — pedilo pronto
+              </Text>
+            </View>
+          )}
 
           {/* Description */}
           <Text style={[styles.description, { color: colors.foreground }]}>{product.description}</Text>

@@ -64,16 +64,12 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider
-      publishableKey={clerkPublishableKey}
-      {...(clerkProxyUrl ? { proxyUrl: clerkProxyUrl } : {})}
-      tokenCache={tokenCache}
-    >
+    <>
       <SafeAreaProvider>
         <ErrorBoundary>
           <LanguageProvider>
             <QueryClientProvider client={queryClient}>
-              <UserProvider>
+              <>
                 <CartProvider>
                   <GestureHandlerRootView style={{ flex: 1 }}>
                     <KeyboardProvider>
@@ -81,11 +77,11 @@ export default function RootLayout() {
                     </KeyboardProvider>
                   </GestureHandlerRootView>
                 </CartProvider>
-              </UserProvider>
+              </>
             </QueryClientProvider>
           </LanguageProvider>
         </ErrorBoundary>
       </SafeAreaProvider>
-    </ClerkProvider>
+    </>
   );
 }

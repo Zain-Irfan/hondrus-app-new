@@ -19,52 +19,46 @@ export default function Home() {
     <div className="min-h-[100dvh] flex flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-primary text-primary-foreground min-h-[100dvh] flex flex-col justify-center pt-24 pb-20">
+        {/* Hero Section — v2 redesign: half-height, real product image, single gradient,
+            single primary CTA so users don't hesitate. Products visible above the fold. */}
+        <section className="relative overflow-hidden bg-primary text-primary-foreground min-h-[60vh] md:min-h-[68vh] flex flex-col justify-center pt-24 pb-16">
           <div className="absolute inset-0 z-0">
             <img
-              src="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2000&auto=format&fit=crop"
-              alt="Paisaje hondureño"
-              className="w-full h-full object-cover opacity-40 mix-blend-overlay"
+              src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=2000&auto=format&fit=crop"
+              alt="Café de Marcala — Sabores de Honduras"
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/55 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
           </div>
 
-          <div className="container relative z-10 mx-auto px-4 flex-1 flex items-center mt-12 md:mt-0">
-            <div className="max-w-4xl">
-              <span className="inline-flex items-center gap-2 py-2 px-5 rounded-full bg-secondary text-secondary-foreground text-sm font-bold tracking-wide mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-lg">
-                <Truck className="w-4 h-4" /> {t.home.badge}
+          <div className="container relative z-10 mx-auto px-4 flex-1 flex items-center mt-8 md:mt-0">
+            <div className="max-w-2xl">
+              <span className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-secondary text-secondary-foreground text-xs font-bold tracking-[2px] uppercase mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 shadow">
+                <Truck className="w-3.5 h-3.5" /> {t.home.badge}
               </span>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 leading-[1.05] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 text-balance drop-shadow-sm">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-semibold mb-5 leading-[1.05] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 text-balance tracking-tight">
                 {t.home.heroTitle1} <span className="text-secondary italic">{t.home.heroAccent}</span> {t.home.heroTitle2} {t.home.heroTitle3}
               </h1>
-              <p className="text-xl md:text-3xl text-primary-foreground/90 mb-10 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 font-medium">
+              <p className="text-lg md:text-xl text-primary-foreground/95 mb-8 max-w-xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
                 {t.home.heroSub}
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto text-lg h-14 px-10 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all"
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto text-base h-12 px-8 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all font-bold"
                   onClick={() => setLocation("/products")}
                 >
-                  {t.home.shopNow}
+                  {t.home.shopNow} <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="w-full sm:w-auto text-lg h-14 px-10 rounded-full border-white/30 hover:bg-white/10 text-white backdrop-blur-sm transition-all"
+                <button
+                  className="text-sm font-semibold text-white/90 hover:text-secondary border-b-2 border-transparent hover:border-secondary pb-1 transition-colors"
                   onClick={() => setLocation("/brands")}
                 >
-                  {t.home.ourBrands}
-                </Button>
+                  Conocé a los productores →
+                </button>
               </div>
             </div>
-          </div>
-          
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce hidden md:flex flex-col items-center gap-2 text-white/70">
-            <span className="text-xs font-bold uppercase tracking-widest">{t.home.scrollExplore}</span>
-            <ChevronDown className="w-6 h-6" />
           </div>
         </section>
 

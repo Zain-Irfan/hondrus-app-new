@@ -13,6 +13,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/Icon";
 import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { OrderTimeline } from "@/components/OrderTimeline";
+import { ReferralCard } from "@/components/ReferralCard";
 
 export default function OrderSuccessScreen() {
   const colors = useColors();
@@ -40,43 +42,17 @@ export default function OrderSuccessScreen() {
         {t.orderReceived(orderNumber ?? "")}
       </Text>
 
-      {/* Info Card */}
-      <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.infoRow}>
-          <Icon name="mail" size={20} color={colors.primary} />
-          <View>
-            <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>{t.confirmationLabel}</Text>
-            <Text style={[styles.infoValue, { color: colors.foreground }]}>{t.confirmationValue}</Text>
-          </View>
-        </View>
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <View style={styles.infoRow}>
-          <Icon name="truck" size={20} color={colors.primary} />
-          <View>
-            <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>{t.shippingLabel}</Text>
-            <Text style={[styles.infoValue, { color: colors.foreground }]}>{t.shippingVia}</Text>
-          </View>
-        </View>
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <View style={styles.infoRow}>
-          <Icon name="search" size={20} color={colors.primary} />
-          <View>
-            <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>{t.trackingLabel}</Text>
-            <Text style={[styles.infoValue, { color: colors.foreground }]}>
-              {t.trackingValue(orderId ?? "")}
-            </Text>
-          </View>
-        </View>
+      {/* v2 redesign: 5-stop status timeline replaces three static info rows */}
+      <View style={{ width: "100%" }}>
+        <OrderTimeline
+          current="confirmed"
+          estimateRange="12 – 14 de mayo"
+          header={(t as any).timelineHeader ?? "Estado del pedido"}
+        />
       </View>
 
-      {/* Honduran Pride Banner */}
-      <View style={[styles.prideBanner, { backgroundColor: colors.primary }]}>
-        <Text style={styles.prideFlag}>🇭🇳</Text>
-        <View>
-          <Text style={styles.prideTitle}>{t.thanksTitle}</Text>
-          <Text style={styles.prideSub}>{t.thanksSub}</Text>
-        </View>
-      </View>
+      {/* Referral card — peak-happiness moment */}
+      <ReferralCard onPress={() => router.push("/(tabs)/cuenta")} />
 
       {/* Actions */}
       <View style={styles.actions}>
