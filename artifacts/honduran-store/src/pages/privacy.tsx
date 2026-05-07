@@ -8,111 +8,111 @@ export default function Privacy() {
       <main className="flex-1 pt-32 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-2">
-            Política de Privacidad
+            Privacy Policy
           </h1>
           <p className="text-sm text-muted-foreground mb-8">
-            Última actualización: 7 de mayo de 2026
+            Last updated: May 7, 2026
           </p>
 
           <div className="prose prose-sm md:prose-base max-w-none space-y-6 text-foreground">
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Introducción</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Introduction</h2>
               <p>
-                Sabores de Honduras ("nosotros", "la tienda") respeta tu privacidad. Esta política explica
-                qué información recopilamos, cómo la usamos y los derechos que tienes sobre tus datos cuando
-                usas nuestro sitio web y aplicación móvil.
+                Honduran Flavors ("we", "us", "the store") respects your privacy. This policy explains
+                what information we collect, how we use it, and the rights you have over your data when
+                you use our website and mobile app.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">2. Información que recopilamos</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">2. Information we collect</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Cuenta:</strong> nombre, correo electrónico y contraseña (gestionados por Clerk).</li>
-                <li><strong>Pedidos:</strong> dirección de envío, número de teléfono e historial de compras.</li>
-                <li><strong>Pagos:</strong> los datos de tu tarjeta los procesa Stripe directamente; nosotros no almacenamos números de tarjeta completos.</li>
-                <li><strong>Uso del sitio:</strong> páginas visitadas, productos vistos, dispositivo y dirección IP, mediante cookies y registros del servidor.</li>
-                <li><strong>Direcciones (autocompletar):</strong> consultas de dirección procesadas por la API de Google Places.</li>
+                <li><strong>Account:</strong> name, email address, and password (managed by Clerk).</li>
+                <li><strong>Orders:</strong> shipping address, phone number, and purchase history.</li>
+                <li><strong>Payments:</strong> card details are processed directly by Stripe; we do not store full card numbers.</li>
+                <li><strong>Site usage:</strong> pages visited, products viewed, device info, and IP address, via cookies and server logs.</li>
+                <li><strong>Address autocomplete:</strong> address queries processed by the Google Places API.</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">3. Cómo usamos tu información</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">3. How we use your information</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Procesar y enviar tus pedidos.</li>
-                <li>Comunicarnos contigo sobre tu cuenta, pedidos y soporte al cliente.</li>
-                <li>Mejorar nuestros productos, sitio web y aplicación.</li>
-                <li>Prevenir fraude y cumplir con la ley.</li>
+                <li>Process and ship your orders.</li>
+                <li>Communicate with you about your account, orders, and customer support.</li>
+                <li>Improve our products, website, and app.</li>
+                <li>Prevent fraud and comply with the law.</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">4. Terceros con los que compartimos datos</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">4. Third parties we share data with</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Clerk</strong> — autenticación y gestión de cuentas.</li>
-                <li><strong>Stripe</strong> — procesamiento de pagos.</li>
-                <li><strong>Google Maps / Places</strong> — autocompletado de direcciones.</li>
-                <li><strong>UPS / FedEx / USPS</strong> — envío y seguimiento de paquetes.</li>
-                <li><strong>Proveedores de hosting</strong> (Railway, Replit) — almacenamiento de la base de datos y operación del servidor.</li>
+                <li><strong>Clerk</strong> — authentication and account management.</li>
+                <li><strong>Stripe</strong> — payment processing.</li>
+                <li><strong>Google Maps / Places</strong> — address autocomplete.</li>
+                <li><strong>UPS / FedEx / USPS</strong> — shipping and package tracking.</li>
+                <li><strong>Hosting providers</strong> (Railway, Replit) — database storage and server operation.</li>
               </ul>
-              <p>No vendemos tus datos personales a terceros.</p>
+              <p>We do not sell your personal data to third parties.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">5. Cookies</h2>
               <p>
-                Usamos cookies esenciales para mantener tu sesión iniciada y conservar el contenido de tu carrito.
-                No usamos cookies de publicidad ni de seguimiento de terceros.
+                We use essential cookies to keep you signed in and to preserve the contents of your cart.
+                We do not use advertising cookies or third-party tracking cookies.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">6. Tus derechos</h2>
-              <p>Puedes solicitar en cualquier momento:</p>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">6. Your rights</h2>
+              <p>You may request at any time:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Acceso a la información que tenemos sobre ti.</li>
-                <li>Corrección o actualización de tus datos.</li>
-                <li>Eliminación de tu cuenta y datos asociados.</li>
+                <li>Access to the information we hold about you.</li>
+                <li>Correction or update of your data.</li>
+                <li>Deletion of your account and associated data.</li>
               </ul>
               <p>
-                Para ejercer estos derechos, contáctanos en{" "}
-                <a href="mailto:soporte@saboresdehonduras.com" className="text-primary underline">
-                  soporte@saboresdehonduras.com
+                To exercise these rights, contact us at{" "}
+                <a href="mailto:support@honduranflavors.com" className="text-primary underline">
+                  support@honduranflavors.com
                 </a>
                 .
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">7. Seguridad</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">7. Security</h2>
               <p>
-                Usamos cifrado HTTPS en todo el sitio y la app. Las contraseñas se almacenan con hash mediante
-                Clerk. Aun así, ningún sistema en internet es 100% seguro.
+                We use HTTPS encryption across the entire site and app. Passwords are stored hashed via
+                Clerk. Even so, no system on the internet is 100% secure.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">8. Menores de edad</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">8. Minors</h2>
               <p>
-                Nuestro servicio está dirigido a mayores de 18 años. No recopilamos a sabiendas información
-                de menores.
+                Our service is intended for users aged 18 and over. We do not knowingly collect
+                information from minors.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">9. Cambios a esta política</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">9. Changes to this policy</h2>
               <p>
-                Podemos actualizar esta política. Publicaremos la fecha de la última actualización en la
-                parte superior de esta página.
+                We may update this policy. We will post the date of the latest update at the top of this
+                page.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contacto</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contact</h2>
               <p>
-                Sabores de Honduras<br />
-                Correo:{" "}
-                <a href="mailto:soporte@saboresdehonduras.com" className="text-primary underline">
-                  soporte@saboresdehonduras.com
+                Honduran Flavors<br />
+                Email:{" "}
+                <a href="mailto:support@honduranflavors.com" className="text-primary underline">
+                  support@honduranflavors.com
                 </a>
               </p>
             </section>

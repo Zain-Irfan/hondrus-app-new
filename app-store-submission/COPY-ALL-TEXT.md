@@ -1,4 +1,4 @@
-# Sabores de Honduras — App Store & Play Store Submission Pack
+# Honduran Flavors — App Store & Play Store Submission Pack
 
 Copy each section into the matching field in App Store Connect or Google Play Console.
 
@@ -6,89 +6,42 @@ Copy each section into the matching field in App Store Connect or Google Play Co
 
 ## 1. App Name (30 chars max — both stores)
 
-**Spanish (primary):**
 ```
-Sabores de Honduras
-```
-
-**English (alternate):**
-```
-Sabores de Honduras
+Honduran Flavors
 ```
 
-> Tip: keep the same name in both languages for brand consistency.
+(16 characters — well under the 30-char limit.)
 
 ---
 
 ## 2. Subtitle (App Store only — 30 chars max)
 
-**Spanish:**
-```
-Tu pulpería en línea
-```
-
-**English:**
 ```
 Authentic Honduran market
 ```
+
+(25 characters.)
+
+Alternative: `Foods, coffee & more from HN` (28 chars).
 
 ---
 
 ## 3. Short Description (Google Play only — 80 chars max)
 
-**Spanish (79 chars):**
-```
-Productos auténticos de Honduras enviados a toda USA. Café, baleadas y más.
-```
-
-**English (78 chars):**
 ```
 Authentic Honduran products shipped across the USA. Coffee, baleadas & more.
 ```
+
+(78 characters.)
 
 ---
 
 ## 4. Full Description (4000 chars max — both stores)
 
-**Spanish:**
 ```
-Sabores de Honduras te trae los productos auténticos de tu tierra hasta la puerta de tu casa en Estados Unidos. Para los catrachos que extrañan el sabor de casa, encontrarás todo lo que necesitas para preparar las recetas de la abuela.
+Honduran Flavors brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
 
-🇭🇳 LO QUE OFRECEMOS
-
-✓ Café hondureño de altura — molido y en grano
-✓ Ingredientes para baleadas — harina, frijoles, mantequilla, cuajada
-✓ Rosquillas, semitas, quesadillas y dulces típicos
-✓ Quesos artesanales y crema fresca
-✓ Frijoles rojos, maíz, especias y más de 25 productos seleccionados
-✓ Marcas hondureñas reconocidas
-
-📦 ENVÍO A TODO ESTADOS UNIDOS
-
-Enviamos vía UPS y FedEx a los 50 estados. Tarifa única de $9.99, ENVÍO GRATIS en pedidos mayores a $75. Recibe tus productos en 3 a 5 días hábiles, frescos y bien empacados.
-
-🛒 COMPRA FÁCIL Y SEGURA
-
-• Navega por categorías o busca lo que necesitas
-• Agrega al carrito con un toque
-• Paga seguro con tarjeta de crédito o débito (Stripe)
-• Sigue tu pedido en tiempo real
-• Guarda tus direcciones y métodos de pago para compras futuras
-
-❤️ HECHO PARA LA DIÁSPORA HONDUREÑA
-
-Somos catrachos como tú. Sabemos lo que significa estar lejos de casa y querer ese sabor que solo Honduras tiene. Por eso seleccionamos cada producto con cuidado, trabajamos con productores y marcas auténticas, y nos aseguramos de que llegue fresco a tu mesa.
-
-Pide tu café, prepara las baleadas del fin de semana, sorprende a la familia con rosquillas recién llegadas. Honduras está más cerca de lo que crees.
-
-Descarga la app y comienza a comprar hoy. ¡Bienvenido a Sabores de Honduras!
-```
-
-**English:**
-```
-Sabores de Honduras brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
-
-🇭🇳 WHAT WE OFFER
+WHAT WE OFFER
 
 ✓ High-altitude Honduran coffee — ground and whole bean
 ✓ Baleada essentials — flour, beans, butter, cuajada cheese
@@ -97,51 +50,48 @@ Sabores de Honduras brings authentic Honduran products straight to your door any
 ✓ Red beans, corn, spices and 25+ hand-picked products
 ✓ Beloved Honduran brands
 
-📦 NATIONWIDE SHIPPING
+NATIONWIDE SHIPPING
 
 We ship via UPS and FedEx to all 50 states. Flat $9.99 shipping, FREE shipping on orders over $75. Receive your order in 3-5 business days, fresh and carefully packed.
 
-🛒 EASY AND SECURE CHECKOUT
+EASY AND SECURE CHECKOUT
 
-• Browse by category or search what you need
+• Browse by category or search for what you need
 • Add to cart with one tap
 • Pay securely with credit or debit card (Stripe)
 • Track your order in real time
 • Save addresses and payment methods for next time
 
-❤️ BUILT FOR THE HONDURAN DIASPORA
+BUILT FOR THE HONDURAN DIASPORA
 
 We're catrachos just like you. We know what it means to be far from home and crave that taste only Honduras can give. That's why we hand-pick every product, work with authentic producers and brands, and make sure it arrives fresh on your table.
 
 Order your coffee, make weekend baleadas, surprise the family with fresh rosquillas. Honduras is closer than you think.
 
-Download the app and start shopping today. Welcome to Sabores de Honduras!
+Download the app and start shopping today. Welcome to Honduran Flavors!
 ```
 
 ---
 
 ## 5. Promotional Text (App Store only — 170 chars max, can update without re-review)
 
-**Spanish (167 chars):**
-```
-¡Nuevo! Envío gratis en pedidos +$75. Café fresco, baleadas, rosquillas y más de 25 productos auténticos hondureños enviados a todo Estados Unidos en 3-5 días.
-```
-
-**English (165 chars):**
 ```
 NEW! Free shipping on orders $75+. Fresh Honduran coffee, baleadas, rosquillas and 25+ authentic products shipped anywhere in the USA in 3-5 days. Order now!
 ```
+
+(155 characters.)
 
 ---
 
 ## 6. Keywords (App Store only — 100 chars total, comma-separated, no spaces after commas)
 
-**Recommended (99 chars):**
 ```
-honduras,catracho,latino,hispano,comida,cafe,baleadas,rosquillas,pulperia,grocery,delivery,latin
+honduras,catracho,latino,hispano,coffee,baleadas,rosquillas,grocery,delivery,latin,foods,market
 ```
 
-> Tips: don't repeat words from your title (Apple already indexes those). Don't use spaces after commas — wastes characters.
+(95 characters.)
+
+> Tips: don't repeat words from your title (Apple already indexes those). Don't use spaces after commas — it wastes characters.
 
 ---
 
@@ -163,7 +113,7 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 
 ## 9. Support Information
 
-- **Support email:** soporte@saboresdehonduras.com (set this up — Gmail/Workspace works)
+- **Support email:** support@honduranflavors.com (set this up — Gmail or Google Workspace works)
 - **Support URL:** https://sabores-de-honduras-production.up.railway.app/contact
 - **Marketing URL (optional):** https://sabores-de-honduras-production.up.railway.app
 - **Privacy Policy URL:** https://sabores-de-honduras-production.up.railway.app/privacy
@@ -176,7 +126,7 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 In App Store Connect → App Information → "App Review Information", paste:
 
 ```
-Email: reviewer@saboresdehonduras.com
+Email: reviewer@honduranflavors.com
 Password: TestReview2026!
 
 Notes: This is an ecommerce app for Honduran food products. To test:
@@ -184,10 +134,12 @@ Notes: This is an ecommerce app for Honduran food products. To test:
 2. Tap any product to see details
 3. Add to cart
 4. Tap the cart icon and proceed to checkout (you can use guest checkout)
-5. Use the test address: 123 Main St, Miami, FL 33101
-6. For payment, use Stripe test card: 4242 4242 4242 4242, any future date, any CVC
+5. Use this test address: 123 Main St, Miami, FL 33101
+6. For payment, use the Stripe test card: 4242 4242 4242 4242, any future date, any CVC
 
 The backend is hosted at sabores-de-honduras-production.up.railway.app
+
+Note: the customer-facing storefront content is in Spanish (the app targets the Honduran community in the United States), but the user interface is straightforward and visual.
 ```
 
 > Create that reviewer account in your storefront BEFORE submitting. Apple will reject if they can't sign in.
@@ -198,12 +150,12 @@ The backend is hosted at sabores-de-honduras-production.up.railway.app
 
 Recommended:
 ```
-com.saboresdehonduras.app
+com.honduranflavors.app
 ```
 
 Or, if you prefer using your name:
 ```
-com.zainirfan.saboresdehonduras
+com.zainirfan.honduranflavors
 ```
 
 ---
@@ -227,7 +179,7 @@ Google asks what data you collect. Use these answers:
 - **App activity:** Yes — App interactions (for analytics)
 - **Device IDs:** No
 - **Data encrypted in transit:** Yes
-- **Users can request deletion:** Yes — they email soporte@saboresdehonduras.com
+- **Users can request deletion:** Yes — they email support@honduranflavors.com
 - **Data shared with third parties:** Clerk (auth), Stripe (payments), Google Maps (address autocomplete), shipping carriers (UPS/FedEx)
 
 ---
@@ -246,9 +198,11 @@ Same data as above. For each category Apple asks, mark:
 
 Both stores will ask which languages your app supports. Mark:
 
-- Spanish (primary)
-- English
+- English (primary)
+- Spanish
+
+(The store listing is English; the in-app content is Spanish — that's fine, both stores allow this.)
 
 ---
 
-That's everything. Copy each block into the matching field. If you change the Railway URL later, update the Privacy/Terms/Support URLs in both stores too.
+That's everything. Copy each block into the matching field. If you change the Railway URL later, update the Privacy / Terms / Support URLs in both stores too.

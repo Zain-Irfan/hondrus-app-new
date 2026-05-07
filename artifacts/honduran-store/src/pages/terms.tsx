@@ -8,93 +8,91 @@ export default function Terms() {
       <main className="flex-1 pt-32 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-2">
-            Términos y Condiciones
+            Terms and Conditions
           </h1>
           <p className="text-sm text-muted-foreground mb-8">
-            Última actualización: 7 de mayo de 2026
+            Last updated: May 7, 2026
           </p>
 
           <div className="prose prose-sm md:prose-base max-w-none space-y-6 text-foreground">
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Aceptación de los términos</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Acceptance of terms</h2>
               <p>
-                Al usar el sitio web o la aplicación móvil de Sabores de Honduras, aceptas estos términos y
-                condiciones. Si no estás de acuerdo, por favor no uses nuestros servicios.
+                By using the Honduran Flavors website or mobile app, you agree to these terms and
+                conditions. If you do not agree, please do not use our services.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">2. Productos y precios</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">2. Products and pricing</h2>
               <p>
-                Hacemos lo posible por mostrar precios e imágenes precisas. Los precios pueden cambiar sin
-                previo aviso. Nos reservamos el derecho de cancelar pedidos con errores de precio o de
-                disponibilidad.
+                We make every effort to display accurate prices and images. Prices may change without
+                notice. We reserve the right to cancel orders that contain pricing or availability errors.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">3. Pedidos y pagos</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">3. Orders and payment</h2>
               <p>
-                Aceptamos las principales tarjetas de crédito y débito vía Stripe. El cargo se realiza al
-                confirmar el pedido. Te enviaremos un correo de confirmación con el número de orden.
+                We accept major credit and debit cards via Stripe. Your card is charged when you confirm
+                the order. We will email you an order confirmation with your order number.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">4. Envíos</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">4. Shipping</h2>
               <p>
-                Enviamos a todo Estados Unidos vía UPS y FedEx. Los costos y tiempos de entrega se muestran
-                al momento de pagar. No nos hacemos responsables por retrasos del transportista.
+                We ship across the United States via UPS and FedEx. Shipping costs and delivery times are
+                shown at checkout. We are not responsible for carrier delays.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">5. Devoluciones</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">5. Returns</h2>
               <p>
-                Por tratarse de productos alimenticios y perecederos, no aceptamos devoluciones excepto en
-                casos de productos dañados o incorrectos. Contáctanos dentro de 48 horas tras recibir tu
-                pedido.
+                Because we sell perishable food products, we do not accept returns except for damaged or
+                incorrect items. Contact us within 48 hours of receiving your order.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">6. Cuentas de usuario</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">6. User accounts</h2>
               <p>
-                Eres responsable de mantener la confidencialidad de tu contraseña y de toda actividad en tu
-                cuenta. Notifícanos de inmediato sobre cualquier uso no autorizado.
+                You are responsible for keeping your password confidential and for all activity on your
+                account. Notify us immediately of any unauthorized use.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">7. Propiedad intelectual</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">7. Intellectual property</h2>
               <p>
-                Todo el contenido del sitio (texto, imágenes, logos, diseño) es propiedad de Sabores de
-                Honduras o de sus respectivos dueños y está protegido por las leyes de derechos de autor.
+                All site content (text, images, logos, design) is the property of Honduran Flavors or its
+                respective owners and is protected by copyright law.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">8. Limitación de responsabilidad</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">8. Limitation of liability</h2>
               <p>
-                Sabores de Honduras no será responsable por daños indirectos, incidentales o consecuentes
-                derivados del uso de nuestros servicios.
+                Honduran Flavors shall not be liable for indirect, incidental, or consequential damages
+                arising from the use of our services.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">9. Modificaciones</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">9. Changes</h2>
               <p>
-                Podemos actualizar estos términos en cualquier momento. La fecha de la última actualización
-                aparece en la parte superior de esta página.
+                We may update these terms at any time. The date of the most recent update appears at the
+                top of this page.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contacto</h2>
+              <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contact</h2>
               <p>
-                Para preguntas sobre estos términos, escríbenos a{" "}
-                <a href="mailto:soporte@saboresdehonduras.com" className="text-primary underline">
-                  soporte@saboresdehonduras.com
+                For questions about these terms, email us at{" "}
+                <a href="mailto:support@honduranflavors.com" className="text-primary underline">
+                  support@honduranflavors.com
                 </a>
                 .
               </p>
