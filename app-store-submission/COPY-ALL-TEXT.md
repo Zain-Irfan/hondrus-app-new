@@ -1,4 +1,4 @@
-# Honduras Grocers — App Store & Play Store Submission Pack
+# HN Grocers — App Store & Play Store Submission Pack
 
 Copy each section into the matching field in App Store Connect or Google Play Console.
 
@@ -7,10 +7,10 @@ Copy each section into the matching field in App Store Connect or Google Play Co
 ## 1. App Name (30 chars max — both stores)
 
 ```
-Honduras Grocers
+HN Grocers
 ```
 
-(16 characters — well under the 30-char limit.)
+(10 characters — well under the 30-char limit. Short, memorable, easy to find by typing.)
 
 ---
 
@@ -41,7 +41,7 @@ Authentic Honduran groceries shipped across the USA. Coffee, baleadas & more.
 ## 4. Full Description (4000 chars max — both stores)
 
 ```
-Honduras Grocers brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
+HN Grocers brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
 
 WHAT WE OFFER
 
@@ -70,7 +70,7 @@ We're catrachos just like you. We know what it means to be far from home and cra
 
 Order your coffee, make weekend baleadas, surprise the family with fresh rosquillas. Honduras is closer than you think.
 
-Download the app and start shopping today. Welcome to Honduras Grocers!
+Download the app and start shopping today. Welcome to HN Grocers!
 ```
 
 ---
@@ -115,13 +115,13 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 
 ## 9. Support Information
 
-- **Support email:** support@hondurasgrocers.com (set this up — Gmail or Google Workspace works)
+- **Support email:** support@hngrocers.com (set this up — Gmail or Google Workspace works)
 - **Support URL:** https://sabores-de-honduras-production.up.railway.app/contact
 - **Marketing URL (optional):** https://sabores-de-honduras-production.up.railway.app
 - **Privacy Policy URL:** https://sabores-de-honduras-production.up.railway.app/privacy
 - **Terms of Service URL:** https://sabores-de-honduras-production.up.railway.app/terms
 
-> If you later buy the domain hondurasgrocers.com and point it to Railway, swap these URLs to use that domain — it'll look more professional.
+> If you later buy the domain hngrocers.com and point it to Railway, swap these URLs to use that domain — it'll look more professional.
 
 ---
 
@@ -130,10 +130,10 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 In App Store Connect → App Information → "App Review Information", paste:
 
 ```
-Email: reviewer@hondurasgrocers.com
+Email: reviewer@hngrocers.com
 Password: TestReview2026!
 
-Notes: This is an ecommerce app for Honduran food products. To test:
+Notes: This is an ecommerce app for Honduran food products (HN = Honduras). To test:
 1. Browse the home screen and catalog
 2. Tap any product to see details
 3. Add to cart
@@ -154,12 +154,12 @@ Note: the customer-facing storefront content is in Spanish (the app targets the 
 
 Recommended:
 ```
-com.hondurasgrocers.app
+com.hngrocers.app
 ```
 
 Or, if you prefer using your name:
 ```
-com.zainirfan.hondurasgrocers
+com.zainirfan.hngrocers
 ```
 
 ---
@@ -183,7 +183,7 @@ Google asks what data you collect. Use these answers:
 - **App activity:** Yes — App interactions (for analytics)
 - **Device IDs:** No
 - **Data encrypted in transit:** Yes
-- **Users can request deletion:** Yes — they email support@hondurasgrocers.com
+- **Users can request deletion:** Yes — they email support@hngrocers.com
 - **Data shared with third parties:** Clerk (auth), Stripe (payments), Google Maps (address autocomplete), shipping carriers (UPS/FedEx)
 
 ---
@@ -225,4 +225,4 @@ Both stores will ask which languages your app supports. Mark:
 
 ---
 
-That's everything. Copy each block into the matching field. If you change the Railway URL or buy the hondurasgrocers.com domain later, update the Privacy / Terms / Support URLs in both stores too.
+That's everything. Copy each block into the matching field. If you change the Railway URL or buy the hngrocers.com domain later, update the Privacy / Terms / Support URLs in both stores too.

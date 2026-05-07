@@ -18,7 +18,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Introduction</h2>
               <p>
-                Honduras Grocers ("we", "us", "the store") respects your privacy. This policy explains
+                HN Grocers ("we", "us", "the store") respects your privacy. This policy explains
                 what information we collect, how we use it, and the rights you have over your data when
                 you use our website and mobile app.
               </p>
@@ -75,8 +75,8 @@ export default function Privacy() {
               </ul>
               <p>
                 To exercise these rights, contact us at{" "}
-                <a href="mailto:support@hondurasgrocers.com" className="text-primary underline">
-                  support@hondurasgrocers.com
+                <a href="mailto:support@hngrocers.com" className="text-primary underline">
+                  support@hngrocers.com
                 </a>
                 .
               </p>
@@ -109,10 +109,10 @@ export default function Privacy() {
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contact</h2>
               <p>
-                Honduras Grocers<br />
+                HN Grocers<br />
                 Email:{" "}
-                <a href="mailto:support@hondurasgrocers.com" className="text-primary underline">
-                  support@hondurasgrocers.com
+                <a href="mailto:support@hngrocers.com" className="text-primary underline">
+                  support@hngrocers.com
                 </a>
               </p>
             </section>

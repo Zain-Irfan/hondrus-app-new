@@ -130,13 +130,13 @@ title = "generated_image"
 id = "WFQaG4KJ7ee1Cr9KROh8L"
 uri = "file://artifacts/honduran-store/public/app-store/icon-1024.png"
 type = "image"
-title = "honduras grocers app icon"
+title = "hn grocers app icon"
 
 [[generated]]
 id = "6bcBlNan36DX9tehOpFkv"
 uri = "file://artifacts/honduran-store/public/app-store/feature-graphic-1024x500.png"
 type = "image"
-title = "honduras grocers feature graphic"
+title = "hn grocers feature graphic"
 
 [[outputs]]
 id = "jH5Ur8_kiC3SHA5ooHYMW"
@@ -298,7 +298,7 @@ title = "Expo Go QR — mobile app preview (requires Expo Go installed)"
 id = "oUi-RbX23FCTOaMEkU29O"
 uri = "file://artifacts/honduran-store/public/app-store/icon-1024.png"
 type = "image"
-title = "App Icon (1024x1024) - Honduras Grocers"
+title = "App Icon (1024x1024) - HN Grocers"
 
 [[outputs]]
 id = "SrSW6dooFfKEVqdmArssP"
