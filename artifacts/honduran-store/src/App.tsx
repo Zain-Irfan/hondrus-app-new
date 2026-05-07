@@ -24,6 +24,8 @@ import About from "@/pages/about";
 import FAQ from "@/pages/faq";
 import Shipping from "@/pages/shipping";
 import Contact from "@/pages/contact";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
 
 const queryClient = new QueryClient();
 
@@ -166,6 +168,8 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/shipping" component={Shipping} />
       <Route path="/contact" component={Contact} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route path="/sign-in/sso-callback" component={SignInSsoCallbackPage} />
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/sso-callback" component={SignUpSsoCallbackPage} />

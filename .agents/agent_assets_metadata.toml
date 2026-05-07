@@ -114,6 +114,18 @@ uri = "file://artifacts/sabores-mobile/assets/images/icon.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "0_NBrB9PrDIgLFTYBIR02"
+uri = "file://attached_assets/generated_images/generated_image_0.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "xOtNowrlDdEt008VrhQl_"
+uri = "file://attached_assets/generated_images/generated_image_1.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "jH5Ur8_kiC3SHA5ooHYMW"
 uri = "file://artifacts/honduran-store/public/images/products/masa-harina.jpg"
@@ -269,3 +281,21 @@ id = "6bNaC4tOQGOYru0QRWsPn"
 uri = "file://attached_assets/qr/qr-expo-go.png"
 type = "image"
 title = "Expo Go QR — mobile app preview (requires Expo Go installed)"
+
+[[outputs]]
+id = "oUi-RbX23FCTOaMEkU29O"
+uri = "file://artifacts/honduran-store/public/app-store/icon-1024.png"
+type = "image"
+title = "App Icon (1024x1024) - upload to both stores"
+
+[[outputs]]
+id = "SrSW6dooFfKEVqdmArssP"
+uri = "file://artifacts/honduran-store/public/app-store/feature-graphic-1024x500.png"
+type = "image"
+title = "Feature Graphic (1024x500) - Google Play only"
+
+[[outputs]]
+id = "mcM5aIAEaa-1w_DHpBqF2"
+uri = "file://app-store-submission/COPY-ALL-TEXT.md"
+type = "text"
+title = "All text content - copy & paste into store forms"
