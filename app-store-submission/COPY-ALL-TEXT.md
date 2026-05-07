@@ -1,4 +1,4 @@
-# Honduran Flavors — App Store & Play Store Submission Pack
+# Honduras Grocers — App Store & Play Store Submission Pack
 
 Copy each section into the matching field in App Store Connect or Google Play Console.
 
@@ -7,7 +7,7 @@ Copy each section into the matching field in App Store Connect or Google Play Co
 ## 1. App Name (30 chars max — both stores)
 
 ```
-Honduran Flavors
+Honduras Grocers
 ```
 
 (16 characters — well under the 30-char limit.)
@@ -22,14 +22,16 @@ Authentic Honduran market
 
 (25 characters.)
 
-Alternative: `Foods, coffee & more from HN` (28 chars).
+Alternatives:
+- `Honduran foods, shipped to USA` (30 chars)
+- `Coffee, baleadas & more from HN` (30 chars)
 
 ---
 
 ## 3. Short Description (Google Play only — 80 chars max)
 
 ```
-Authentic Honduran products shipped across the USA. Coffee, baleadas & more.
+Authentic Honduran groceries shipped across the USA. Coffee, baleadas & more.
 ```
 
 (78 characters.)
@@ -39,7 +41,7 @@ Authentic Honduran products shipped across the USA. Coffee, baleadas & more.
 ## 4. Full Description (4000 chars max — both stores)
 
 ```
-Honduran Flavors brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
+Honduras Grocers brings authentic Honduran products straight to your door anywhere in the United States. Made for the Honduran community in the US who miss the taste of home, you'll find everything you need to recreate grandma's recipes.
 
 WHAT WE OFFER
 
@@ -68,7 +70,7 @@ We're catrachos just like you. We know what it means to be far from home and cra
 
 Order your coffee, make weekend baleadas, surprise the family with fresh rosquillas. Honduras is closer than you think.
 
-Download the app and start shopping today. Welcome to Honduran Flavors!
+Download the app and start shopping today. Welcome to Honduras Grocers!
 ```
 
 ---
@@ -76,10 +78,10 @@ Download the app and start shopping today. Welcome to Honduran Flavors!
 ## 5. Promotional Text (App Store only — 170 chars max, can update without re-review)
 
 ```
-NEW! Free shipping on orders $75+. Fresh Honduran coffee, baleadas, rosquillas and 25+ authentic products shipped anywhere in the USA in 3-5 days. Order now!
+NEW! Free shipping on orders $75+. Fresh Honduran coffee, baleadas, rosquillas and 25+ authentic groceries shipped anywhere in the USA in 3-5 days. Order now!
 ```
 
-(155 characters.)
+(157 characters.)
 
 ---
 
@@ -113,11 +115,13 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 
 ## 9. Support Information
 
-- **Support email:** support@honduranflavors.com (set this up — Gmail or Google Workspace works)
+- **Support email:** support@hondurasgrocers.com (set this up — Gmail or Google Workspace works)
 - **Support URL:** https://sabores-de-honduras-production.up.railway.app/contact
 - **Marketing URL (optional):** https://sabores-de-honduras-production.up.railway.app
 - **Privacy Policy URL:** https://sabores-de-honduras-production.up.railway.app/privacy
 - **Terms of Service URL:** https://sabores-de-honduras-production.up.railway.app/terms
+
+> If you later buy the domain hondurasgrocers.com and point it to Railway, swap these URLs to use that domain — it'll look more professional.
 
 ---
 
@@ -126,7 +130,7 @@ When you fill out the questionnaires, answer "No" to everything (no violence, no
 In App Store Connect → App Information → "App Review Information", paste:
 
 ```
-Email: reviewer@honduranflavors.com
+Email: reviewer@hondurasgrocers.com
 Password: TestReview2026!
 
 Notes: This is an ecommerce app for Honduran food products. To test:
@@ -150,12 +154,12 @@ Note: the customer-facing storefront content is in Spanish (the app targets the 
 
 Recommended:
 ```
-com.honduranflavors.app
+com.hondurasgrocers.app
 ```
 
 Or, if you prefer using your name:
 ```
-com.zainirfan.honduranflavors
+com.zainirfan.hondurasgrocers
 ```
 
 ---
@@ -179,7 +183,7 @@ Google asks what data you collect. Use these answers:
 - **App activity:** Yes — App interactions (for analytics)
 - **Device IDs:** No
 - **Data encrypted in transit:** Yes
-- **Users can request deletion:** Yes — they email support@honduranflavors.com
+- **Users can request deletion:** Yes — they email support@hondurasgrocers.com
 - **Data shared with third parties:** Clerk (auth), Stripe (payments), Google Maps (address autocomplete), shipping carriers (UPS/FedEx)
 
 ---
@@ -205,4 +209,20 @@ Both stores will ask which languages your app supports. Mark:
 
 ---
 
-That's everything. Copy each block into the matching field. If you change the Railway URL later, update the Privacy / Terms / Support URLs in both stores too.
+## 16. Assets Provided in This Folder
+
+| File | Where to upload |
+|------|-----------------|
+| `icon-1024.png` (1024x1024) | App Store Connect → App Icon. Google Play → High-res icon (resize to 512x512 in the console). |
+| `feature-graphic-1024x500.png` (1024x500) | Google Play → Graphics → Feature graphic. (Apple does not use this.) |
+
+### Still to provide on your phone (10 minutes):
+
+- **5 screenshots** of the mobile app — Home, Catalog, Product Detail, Cart, Order Success.
+- iPhone 6.7" target size: 1290x2796.
+- Android phone target: 1080x1920 minimum.
+- Easiest tool to resize: https://appmockup.com (free).
+
+---
+
+That's everything. Copy each block into the matching field. If you change the Railway URL or buy the hondurasgrocers.com domain later, update the Privacy / Terms / Support URLs in both stores too.

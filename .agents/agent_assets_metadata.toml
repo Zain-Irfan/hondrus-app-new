@@ -126,6 +126,18 @@ uri = "file://attached_assets/generated_images/generated_image_1.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "WFQaG4KJ7ee1Cr9KROh8L"
+uri = "file://artifacts/honduran-store/public/app-store/icon-1024.png"
+type = "image"
+title = "honduras grocers app icon"
+
+[[generated]]
+id = "6bcBlNan36DX9tehOpFkv"
+uri = "file://artifacts/honduran-store/public/app-store/feature-graphic-1024x500.png"
+type = "image"
+title = "honduras grocers feature graphic"
+
 [[outputs]]
 id = "jH5Ur8_kiC3SHA5ooHYMW"
 uri = "file://artifacts/honduran-store/public/images/products/masa-harina.jpg"
@@ -286,16 +298,16 @@ title = "Expo Go QR — mobile app preview (requires Expo Go installed)"
 id = "oUi-RbX23FCTOaMEkU29O"
 uri = "file://artifacts/honduran-store/public/app-store/icon-1024.png"
 type = "image"
-title = "App Icon (1024x1024) - upload to both stores"
+title = "App Icon (1024x1024) - Honduras Grocers"
 
 [[outputs]]
 id = "SrSW6dooFfKEVqdmArssP"
 uri = "file://artifacts/honduran-store/public/app-store/feature-graphic-1024x500.png"
 type = "image"
-title = "Feature Graphic (1024x500) - Google Play only"
+title = "Feature Graphic (1024x500) - Google Play"
 
 [[outputs]]
 id = "mcM5aIAEaa-1w_DHpBqF2"
 uri = "file://app-store-submission/COPY-ALL-TEXT.md"
 type = "text"
-title = "All text content - copy & paste into store forms"
+title = "All submission text - copy & paste"

@@ -18,7 +18,7 @@ export default function Terms() {
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">1. Acceptance of terms</h2>
               <p>
-                By using the Honduran Flavors website or mobile app, you agree to these terms and
+                By using the Honduras Grocers website or mobile app, you agree to these terms and
                 conditions. If you do not agree, please do not use our services.
               </p>
             </section>
@@ -66,7 +66,7 @@ export default function Terms() {
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">7. Intellectual property</h2>
               <p>
-                All site content (text, images, logos, design) is the property of Honduran Flavors or its
+                All site content (text, images, logos, design) is the property of Honduras Grocers or its
                 respective owners and is protected by copyright law.
               </p>
             </section>
@@ -74,7 +74,7 @@ export default function Terms() {
             <section>
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">8. Limitation of liability</h2>
               <p>
-                Honduran Flavors shall not be liable for indirect, incidental, or consequential damages
+                Honduras Grocers shall not be liable for indirect, incidental, or consequential damages
                 arising from the use of our services.
               </p>
             </section>
@@ -91,8 +91,8 @@ export default function Terms() {
               <h2 className="text-xl font-bold text-primary mt-6 mb-2">10. Contact</h2>
               <p>
                 For questions about these terms, email us at{" "}
-                <a href="mailto:support@honduranflavors.com" className="text-primary underline">
-                  support@honduranflavors.com
+                <a href="mailto:support@hondurasgrocers.com" className="text-primary underline">
+                  support@hondurasgrocers.com
                 </a>
                 .
               </p>
