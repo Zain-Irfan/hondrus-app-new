@@ -57,31 +57,37 @@ export default function RootLayout() {
 
   if (!fontsLoaded && !fontError) return null;
 
+  const inner = (
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <LanguageProvider>
+          <QueryClientProvider client={queryClient}>
+            <UserProvider>
+              <CartProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <KeyboardProvider>
+                    <RootLayoutNav />
+                  </KeyboardProvider>
+                </GestureHandlerRootView>
+              </CartProvider>
+            </UserProvider>
+          </QueryClientProvider>
+        </LanguageProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
+  );
+
   if (!clerkPublishableKey) {
-    throw new Error(
-      "Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY. Set it in your environment to enable authentication.",
-    );
+    return inner;
   }
 
   return (
-    <>
-      <SafeAreaProvider>
-        <ErrorBoundary>
-          <LanguageProvider>
-            <QueryClientProvider client={queryClient}>
-              <>
-                <CartProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <KeyboardProvider>
-                      <RootLayoutNav />
-                    </KeyboardProvider>
-                  </GestureHandlerRootView>
-                </CartProvider>
-              </>
-            </QueryClientProvider>
-          </LanguageProvider>
-        </ErrorBoundary>
-      </SafeAreaProvider>
-    </>
+    <ClerkProvider
+      publishableKey={clerkPublishableKey}
+      {...(clerkProxyUrl ? { proxyUrl: clerkProxyUrl } : {})}
+      tokenCache={tokenCache}
+    >
+      {inner}
+    </ClerkProvider>
   );
 }
