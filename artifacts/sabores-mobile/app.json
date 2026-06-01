@@ -7,6 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "hn-grocers",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -41,6 +42,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5992cc6f-ace6-4b7a-b0b5-5b7519225d2c"
+      }
     }
   }
 }
