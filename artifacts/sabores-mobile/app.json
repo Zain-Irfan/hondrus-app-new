@@ -1,22 +1,32 @@
 {
   "expo": {
-    "name": "Sabores de Honduras — App Móvil",
-    "slug": "sabores-mobile",
+    "name": "HN Grocers",
+    "slug": "hn-grocers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sabores-mobile",
+    "scheme": "hn-grocers",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#002B7F"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.hngrocers.app",
+      "buildNumber": "1"
     },
-    "android": {},
+    "android": {
+      "package": "com.hngrocers.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#002B7F"
+      },
+      "permissions": []
+    },
     "web": {
       "favicon": "./assets/images/icon.png"
     },

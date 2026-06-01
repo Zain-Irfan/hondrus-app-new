@@ -138,6 +138,12 @@ uri = "file://artifacts/honduran-store/public/app-store/feature-graphic-1024x500
 type = "image"
 title = "hn grocers feature graphic"
 
+[[generated]]
+id = "C_L81ym6JP8Sg14f6aKS6"
+uri = "file://artifacts/sabores-mobile/assets/images/adaptive-icon.png"
+type = "image"
+title = "hn grocers adaptive icon"
+
 [[outputs]]
 id = "jH5Ur8_kiC3SHA5ooHYMW"
 uri = "file://artifacts/honduran-store/public/images/products/masa-harina.jpg"
@@ -311,3 +317,9 @@ id = "mcM5aIAEaa-1w_DHpBqF2"
 uri = "file://app-store-submission/COPY-ALL-TEXT.md"
 type = "text"
 title = "All submission text - copy & paste"
+
+[[outputs]]
+id = "EJACY4JYw-fHS9EVY1lgW"
+uri = "file://artifacts/sabores-mobile/assets/images/adaptive-icon.png"
+type = "image"
+title = "Android Adaptive Icon (foreground layer)"
