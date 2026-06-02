@@ -33,7 +33,9 @@ export interface OrderSummary {
 export function useOrders() {
   const { isSignedIn, email, getToken } = useUser();
   const guestId = useGuestId();
-  const enabled = isSignedIn || !!guestId;
+  // Always enable: signed-in users fetch by auth, guests fetch by guestToken
+  // (or get an empty list if guestId is still loading from AsyncStorage).
+  const enabled = true;
 
   return useQuery<OrderSummary[]>({
     queryKey: ["orders", isSignedIn ? `user:${email ?? ""}` : `guest:${guestId ?? ""}`],
@@ -47,5 +49,7 @@ export function useOrders() {
     enabled,
     staleTime: 30_000,
     refetchOnMount: "always",
+    retry: 1,
+    retryDelay: 500,
   });
 }
