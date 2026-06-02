@@ -51,6 +51,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const { user: clerkUser, isLoaded: userLoaded } = useClerkUser();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  // Safety net: if Clerk hasn't finished loading within 5 s (e.g. proxy
+  // unreachable in dev), treat it as "loaded but not signed in" so the
+  // account / orders screens never get stuck on a permanent spinner.
+  const [clerkTimedOut, setClerkTimedOut] = useState(false);
+  useEffect(() => {
+    if (authLoaded && userLoaded) return;
+    const t = setTimeout(() => setClerkTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [authLoaded, userLoaded]);
 
   // Keep latest getToken in a ref so callbacks remain stable across renders.
   // Clerk returns a new getToken function reference on every render — using
@@ -162,7 +171,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [signOut]);
 
-  const loading = !authLoaded || !userLoaded || profileLoading;
+  const loading = (!authLoaded || !userLoaded || profileLoading) && !clerkTimedOut;
 
   return (
     <UserContext.Provider
