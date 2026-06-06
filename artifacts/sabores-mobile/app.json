@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.hngrocers.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#002B7F"
