@@ -22,8 +22,7 @@
         "EXPO_NO_GIT_STATUS": "1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true",
         "EXPO_PUBLIC_DOMAIN": "hondrus-app-new.replit.app",
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA",
-        "EXPO_PUBLIC_CLERK_PROXY_URL": "https://hondrus-app-new.replit.app/api/__clerk"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA"
       }
     }
   },
