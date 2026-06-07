@@ -35,9 +35,9 @@ externalPort = 3001
 [userenv]
 
 [userenv.shared]
-VITE_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA"
 ADMIN_PASSWORD = "admin123"
-CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHVyYXMtbWFya2V0LWh1Yi5yZXBsaXQuYXBwJA"
+VITE_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHJ1cy1hcHAtbmV3LnJlcGxpdC5hcHAk"
+CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuaG9uZHJ1cy1hcHAtbmV3LnJlcGxpdC5hcHAk"
 
 [deployment]
 deploymentTarget = "autoscale"
