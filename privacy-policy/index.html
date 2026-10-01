@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Sabores de Honduras | HN Grocers</title>
+  <meta name="description" content="Privacy Policy for Sabores de Honduras / HN Grocers. Learn how we collect, use, and protect your personal information." />
+  <meta name="theme-color" content="#002B7F" />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --navy: #002B7F;
+      --navy-deep: #001F5C;
+      --gold: #C9A84C;
+      --gold-hover: #B8973F;
+      --text: #161B26;
+      --text-muted: #525B70;
+      --border: #E2E6EE;
+      --bg: #FFFFFF;
+      --bg-subtle: #F7F8FA;
+      --white: #FFFFFF;
+      --radius: 0.75rem;
+      --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+      --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+      --container: 1280px;
+      --content: 48rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: disc; }
+    button, input { font: inherit; }
+
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 48px);
+    }
+
+    /* —— Top bar —— */
+    .topbar {
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      padding: 0.55rem 1rem;
+      line-height: 1.4;
+    }
+
+    /* —— Header —— */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 4rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .brand {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .brand:hover { color: #003a9e; }
+
+    .nav-desktop {
+      display: none;
+      align-items: center;
+      gap: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .nav-desktop a {
+      color: var(--text);
+      padding: 0.5rem 0;
+      transition: color 0.15s ease;
+    }
+
+    .nav-desktop a:hover { color: var(--gold); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .lang-toggle {
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .lang-toggle .sep { color: var(--text-muted); font-weight: 500; }
+    .lang-toggle .dim { opacity: 0.4; }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--gold);
+    }
+
+    .icon-btn svg { width: 1.25rem; height: 1.25rem; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .menu-btn { display: inline-flex; }
+    .cart-label { display: none; font-size: 0.875rem; font-weight: 600; margin-right: 0.15rem; }
+
+    /* —— Mobile nav —— */
+    .mobile-nav {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      padding: 1rem clamp(16px, 4vw, 48px) 1.25rem;
+    }
+
+    .mobile-nav.open { display: block; }
+
+    .mobile-nav a {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      padding: 0.65rem 0;
+    }
+
+    .mobile-nav a:hover { color: var(--navy); }
+
+    /* —— Main —— */
+    main {
+      flex: 1;
+      padding: 3rem 0 4rem;
+    }
+
+    .policy {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 48px);
+    }
+
+    .policy h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.875rem, 4vw, 2.25rem);
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 0.35rem;
+    }
+
+    .policy .updated {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .policy section { margin-top: 1.75rem; }
+
+    .policy h2 {
+      font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .policy p {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      line-height: 1.7;
+    }
+
+    .policy ul {
+      margin: 0.5rem 0 0.85rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .policy li {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.65;
+      padding-left: 0.15rem;
+    }
+
+    .policy li strong { font-weight: 700; }
+
+    .policy a {
+      color: var(--navy);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .policy a:hover { color: var(--gold); }
+
+    /* —— Footer —— */
+    .site-footer {
+      background: var(--navy);
+      color: var(--white);
+      margin-top: auto;
+    }
+
+    .newsletter {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 31, 92, 0.35);
+    }
+
+    .newsletter-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 2.75rem 0;
+      text-align: center;
+    }
+
+    .newsletter h3 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.35rem, 3vw, 1.65rem);
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.35rem;
+    }
+
+    .newsletter p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+    }
+
+    .newsletter-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      width: 100%;
+      max-width: 26rem;
+    }
+
+    .newsletter-form input {
+      flex: 1;
+      height: 3rem;
+      padding: 0 1.25rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+      outline: none;
+    }
+
+    .newsletter-form input::placeholder { color: rgba(255, 255, 255, 0.5); }
+
+    .newsletter-form input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.25);
+    }
+
+    .newsletter-form button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      height: 3rem;
+      padding: 0 1.5rem;
+      border: none;
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .newsletter-form button:hover { background: var(--gold-hover); }
+
+    .newsletter-form button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .footer-main {
+      padding: 3.5rem 0 2.5rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand .brand-footer {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 3vw, 1.85rem);
+      font-weight: 700;
+      color: var(--white);
+      display: inline-block;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-brand .brand-footer:hover { color: var(--gold); }
+
+    .footer-brand .tagline {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.05rem;
+      font-weight: 500;
+      line-height: 1.65;
+      max-width: 22rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .socials {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .socials a {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .socials a:hover {
+      background: var(--gold);
+      color: var(--navy);
+    }
+
+    .socials svg {
+      width: 1.15rem;
+      height: 1.15rem;
+      fill: currentColor;
+    }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 1.15rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .footer-col a {
+      color: rgba(255, 255, 255, 0.8);
+      transition: color 0.15s ease, transform 0.15s ease;
+      display: inline-block;
+    }
+
+    .footer-col a:hover {
+      color: var(--white);
+      transform: translateX(3px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      text-align: center;
+    }
+
+    .footer-bottom .copy {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    .footer-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .pay-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .pay-badges span {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.3rem 0.55rem;
+      border-radius: 0.25rem;
+      font-weight: 500;
+    }
+
+    .shipping-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .shipping-badge svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .flag-stripe {
+      height: 4px;
+      background: linear-gradient(90deg, var(--navy) 0%, var(--gold) 50%, var(--white) 100%);
+    }
+
+    /* —— Breakpoints —— */
+    @media (min-width: 640px) {
+      .newsletter-form {
+        flex-direction: row;
+        max-width: 28rem;
+      }
+
+      .footer-cols {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .menu-btn { display: none; }
+      .nav-desktop { display: flex; }
+      .lang-toggle { display: flex; }
+      .cart-label { display: inline; }
+
+      .newsletter-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+        padding: 3rem 0;
+      }
+
+      .footer-grid {
+        grid-template-columns: 5fr 7fr;
+        gap: 3rem;
+      }
+
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+
+      .footer-meta {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+
+      main { padding: 4rem 0 5rem; }
+    }
+
+    @media (min-width: 1024px) {
+      .footer-grid {
+        gap: 4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <div class="topbar" role="note">
+    Free shipping on orders over $75.00
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" id="menu-toggle">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+        <a class="brand" href="https://sabores-de-honduras-production.up.railway.app/">Sabores de Honduras</a>
+      </div>
+
+      <nav class="nav-desktop" aria-label="Primary">
+        <a href="https://sabores-de-honduras-production.up.railway.app/products">Shop</a>
+        <a href="https://sabores-de-honduras-production.up.railway.app/brands">Our Brands</a>
+        <a href="https://sabores-de-honduras-production.up.railway.app/about">Our Story</a>
+        <a href="https://sabores-de-honduras-production.up.railway.app/faq">Help</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="lang-toggle" type="button" aria-label="Language: English" title="Language">
+          <span class="dim">ES</span>
+          <span class="sep">|</span>
+          <span>EN</span>
+        </button>
+        <a class="icon-btn" href="https://sabores-de-honduras-production.up.railway.app/products" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </a>
+        <a class="icon-btn" href="https://sabores-de-honduras-production.up.railway.app/sign-in" aria-label="Account">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a class="icon-btn" href="https://sabores-de-honduras-production.up.railway.app/cart" aria-label="My Cart" style="width:auto;padding:0 0.65rem;gap:0.35rem;">
+          <span class="cart-label">My Cart</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile">
+      <a href="https://sabores-de-honduras-production.up.railway.app/products">Shop</a>
+      <a href="https://sabores-de-honduras-production.up.railway.app/brands">Our Brands</a>
+      <a href="https://sabores-de-honduras-production.up.railway.app/about">Our Story</a>
+      <a href="https://sabores-de-honduras-production.up.railway.app/faq">Help</a>
+      <a href="https://sabores-de-honduras-production.up.railway.app/sign-in">Sign In</a>
+      <a href="https://sabores-de-honduras-production.up.railway.app/cart">My Cart</a>
+    </nav>
+  </header>
+
+  <!-- Policy content -->
+  <main>
+    <article class="policy">
+      <h1>Privacy Policy</h1>
+      <p class="updated">Last updated: May 7, 2026</p>
+
+      <section>
+        <h2>1. Introduction</h2>
+        <p>
+          HN Grocers ("we", "us", "the store") respects your privacy. This policy explains
+          what information we collect, how we use it, and the rights you have over your data when
+          you use our website and mobile app.
+        </p>
+      </section>
+
+      <section>
+        <h2>2. Information we collect</h2>
+        <ul>
+          <li><strong>Account:</strong> name, email address, and password (managed by Clerk).</li>
+          <li><strong>Orders:</strong> shipping address, phone number, and purchase history.</li>
+          <li><strong>Payments:</strong> card details are processed directly by Stripe; we do not store full card numbers.</li>
+          <li><strong>Site usage:</strong> pages visited, products viewed, device info, and IP address, via cookies and server logs.</li>
+          <li><strong>Address autocomplete:</strong> address queries processed by the Google Places API.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. How we use your information</h2>
+        <ul>
+          <li>Process and ship your orders.</li>
+          <li>Communicate with you about your account, orders, and customer support.</li>
+          <li>Improve our products, website, and app.</li>
+          <li>Prevent fraud and comply with the law.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. Third parties we share data with</h2>
+        <ul>
+          <li><strong>Clerk</strong> — authentication and account management.</li>
+          <li><strong>Stripe</strong> — payment processing.</li>
+          <li><strong>Google Maps / Places</strong> — address autocomplete.</li>
+          <li><strong>UPS / FedEx / USPS</strong> — shipping and package tracking.</li>
+          <li><strong>Hosting providers</strong> (Railway, Replit) — database storage and server operation.</li>
+        </ul>
+        <p>We do not sell your personal data to third parties.</p>
+      </section>
+
+      <section>
+        <h2>5. Cookies</h2>
+        <p>
+          We use essential cookies to keep you signed in and to preserve the contents of your cart.
+          We do not use advertising cookies or third-party tracking cookies.
+        </p>
+      </section>
+
+      <section>
+        <h2>6. Your rights</h2>
+        <p>You may request at any time:</p>
+        <ul>
+          <li>Access to the information we hold about you.</li>
+          <li>Correction or update of your data.</li>
+          <li>Deletion of your account and associated data.</li>
+        </ul>
+        <p>
+          To exercise these rights, contact us at
+          <a href="mailto:support@hngrocers.com">support@hngrocers.com</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Security</h2>
+        <p>
+          We use HTTPS encryption across the entire site and app. Passwords are stored hashed via
+          Clerk. Even so, no system on the internet is 100% secure.
+        </p>
+      </section>
+
+      <section>
+        <h2>8. Minors</h2>
+        <p>
+          Our service is intended for users aged 18 and over. We do not knowingly collect
+          information from minors.
+        </p>
+      </section>
+
+      <section>
+        <h2>9. Changes to this policy</h2>
+        <p>
+          We may update this policy. We will post the date of the latest update at the top of this
+          page.
+        </p>
+      </section>
+
+      <section>
+        <h2>10. Contact</h2>
+        <p>
+          HN Grocers<br />
+          Email: <a href="mailto:support@hngrocers.com">support@hngrocers.com</a>
+        </p>
+      </section>
+    </article>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="newsletter">
+      <div class="container newsletter-inner">
+        <div>
+          <h3>Subscribe</h3>
+          <p>News and exclusive discounts</p>
+        </div>
+        <form class="newsletter-form" action="#" method="get" onsubmit="return false;">
+          <label for="email" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Email</label>
+          <input id="email" type="email" name="email" placeholder="Your email address" required autocomplete="email" />
+          <button type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="container footer-main">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand-footer" href="https://sabores-de-honduras-production.up.railway.app/">Sabores de Honduras</a>
+          <p class="tagline">
+            Bringing the authentic flavor, warmth, and memories of Honduras to your table across the United States.
+          </p>
+          <div class="socials">
+            <a href="#" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter / X">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Shop</h4>
+            <ul>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/products">All Products</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/products?category=coffee">Premium Coffee</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/products?category=snacks">Traditional Snacks</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/products?category=pantry">Pantry</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Support</h4>
+            <ul>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/faq">FAQ</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/shipping">Shipping Policy</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/contact">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Our Family</h4>
+            <ul>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/brands">Our Brands</a></li>
+              <li><a href="https://sabores-de-honduras-production.up.railway.app/about">Our Story</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="copy">&copy; 2026 Sabores de Honduras. Made with pride for the diaspora.</p>
+        <div class="footer-meta">
+          <div class="pay-badges">
+            <span>Visa</span>
+            <span>Mastercard</span>
+            <span>Amex</span>
+            <span>PayPal</span>
+          </div>
+          <div class="shipping-badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Shipping via UPS &amp; FedEx</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flag-stripe" aria-hidden="true"></div>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.getElementById("menu-toggle");
+      var nav = document.getElementById("mobile-nav");
+      if (!toggle || !nav) return;
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      });
+    })();
+  </script>
+</body>
+</html>
