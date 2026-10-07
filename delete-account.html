@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Sabores de Honduras | HN Grocers</title>
-  <meta name="description" content="Privacy Policy for Sabores de Honduras / HN Grocers. Learn how we collect, use, and protect your personal information." />
+  <title>Delete Your Account — Sabores de Honduras | HN Grocers</title>
+  <meta name="description" content="Request deletion of your Sabores de Honduras / HN Grocers account and associated data." />
   <meta name="theme-color" content="#002B7F" />
   <meta name="robots" content="index, follow" />
 
@@ -49,6 +49,7 @@
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; display: block; }
     ul { list-style: disc; }
+    ol { list-style: decimal; }
     button, input { font: inherit; }
 
     .container {
@@ -58,7 +59,6 @@
       padding: 0 clamp(16px, 4vw, 48px);
     }
 
-    /* —— Top bar —— */
     .topbar {
       background: var(--navy);
       color: var(--white);
@@ -70,7 +70,6 @@
       line-height: 1.4;
     }
 
-    /* —— Header —— */
     .site-header {
       position: sticky;
       top: 0;
@@ -161,12 +160,19 @@
       color: var(--gold);
     }
 
-    .icon-btn svg { width: 1.25rem; height: 1.25rem; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-btn svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .menu-btn { display: inline-flex; }
     .cart-label { display: none; font-size: 0.875rem; font-weight: 600; margin-right: 0.15rem; }
 
-    /* —— Mobile nav —— */
     .mobile-nav {
       display: none;
       border-top: 1px solid var(--border);
@@ -187,7 +193,6 @@
 
     .mobile-nav a:hover { color: var(--navy); }
 
-    /* —— Main —— */
     main {
       flex: 1;
       padding: 3rem 0 4rem;
@@ -232,7 +237,8 @@
       line-height: 1.7;
     }
 
-    .policy ul {
+    .policy ul,
+    .policy ol {
       margin: 0.5rem 0 0.85rem 1.35rem;
       display: flex;
       flex-direction: column;
@@ -256,7 +262,46 @@
 
     .policy a:hover { color: var(--gold); }
 
-    /* —— Footer —— */
+    .cta-wrap {
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    .deletion-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.85rem 1.4rem;
+      border-radius: 999px;
+      background: var(--navy);
+      color: var(--white) !important;
+      text-decoration: none !important;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      transition: background 0.15s ease;
+    }
+
+    .deletion-cta:hover {
+      background: #003a9e;
+      color: var(--white) !important;
+    }
+
+    .deletion-cta svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .note {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
     .site-footer {
       background: var(--navy);
       color: var(--white);
@@ -499,7 +544,6 @@
       background: linear-gradient(90deg, var(--navy) 0%, var(--gold) 50%, var(--white) 100%);
     }
 
-    /* —— Breakpoints —— */
     @media (min-width: 640px) {
       .newsletter-form {
         flex-direction: row;
@@ -551,12 +595,10 @@
   </style>
 </head>
 <body>
-  <!-- Top bar -->
   <div class="topbar" role="note">
     Free shipping on orders over $75.00
   </div>
 
-  <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
       <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -602,113 +644,119 @@
     </nav>
   </header>
 
-  <!-- Policy content -->
   <main>
     <article class="policy">
-      <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: May 7, 2026</p>
+      <h1>Delete Your Account</h1>
+      <p class="updated">Last updated: October 7, 2026</p>
 
       <section>
-        <h2>1. Introduction</h2>
         <p>
-          HN Grocers ("we", "us", "the store") respects your privacy. This policy explains
-          what information we collect, how we use it, and the rights you have over your data when
-          you use our website and mobile app.
+          If you would like to delete your account and associated data from
+          <strong>Sabores de Honduras</strong> (also known as <strong>HN Grocers</strong>),
+          you can request account deletion using the instructions below.
+        </p>
+        <p class="note">
+          This page is for the Sabores de Honduras / HN Grocers website and mobile app.
+          For our full privacy practices, see the
+          <a href="privacy-policy/">Privacy Policy</a>.
         </p>
       </section>
 
       <section>
-        <h2>2. Information we collect</h2>
-        <ul>
-          <li><strong>Account:</strong> name, email address, and password (managed by Clerk).</li>
-          <li><strong>Orders:</strong> shipping address, phone number, and purchase history.</li>
-          <li><strong>Payments:</strong> card details are processed directly by Stripe; we do not store full card numbers.</li>
-          <li><strong>Site usage:</strong> pages visited, products viewed, device info, and IP address, via cookies and server logs.</li>
-          <li><strong>Address autocomplete:</strong> address queries processed by the Google Places API.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>3. How we use your information</h2>
-        <ul>
-          <li>Process and ship your orders.</li>
-          <li>Communicate with you about your account, orders, and customer support.</li>
-          <li>Improve our products, website, and app.</li>
-          <li>Prevent fraud and comply with the law.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>4. Third parties we share data with</h2>
-        <ul>
-          <li><strong>Clerk</strong> — authentication and account management.</li>
-          <li><strong>Stripe</strong> — payment processing.</li>
-          <li><strong>Google Maps / Places</strong> — address autocomplete.</li>
-          <li><strong>UPS / FedEx / USPS</strong> — shipping and package tracking.</li>
-          <li><strong>Hosting providers</strong> (Railway, Replit) — database storage and server operation.</li>
-        </ul>
-        <p>We do not sell your personal data to third parties.</p>
-      </section>
-
-      <section>
-        <h2>5. Cookies</h2>
+        <h2>How to Request Account Deletion</h2>
         <p>
-          We use essential cookies to keep you signed in and to preserve the contents of your cart.
-          We do not use advertising cookies or third-party tracking cookies.
-        </p>
-      </section>
-
-      <section>
-        <h2>6. Your rights</h2>
-        <p>You may request at any time:</p>
-        <ul>
-          <li>Access to the information we hold about you.</li>
-          <li>Correction or update of your data.</li>
-          <li>Deletion of your account and associated data.</li>
-        </ul>
-        <p>
-          To exercise these rights, contact us at
+          Send an account deletion request by email to
           <a href="mailto:support@hngrocers.com">support@hngrocers.com</a>.
-          To request account deletion, see our
-          <a href="../delete-account.html">Delete Account</a> page.
+        </p>
+        <p>Your request should include:</p>
+        <ul>
+          <li>The <strong>email address</strong> associated with your account</li>
+          <li>Your <strong>name</strong>, if applicable</li>
+          <li>A clear request to <strong>delete your account</strong></li>
+        </ul>
+        <div class="cta-wrap">
+          <a
+            class="deletion-cta"
+            href="mailto:support@hngrocers.com?subject=Account%20Deletion%20Request&amp;body=Please%20delete%20my%20Sabores%20de%20Honduras%20%2F%20HN%20Grocers%20account%20and%20associated%20data.%0A%0AAccount%20email%3A%20%0AName%20(optional)%3A%20"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Request Account Deletion
+          </a>
+        </div>
+      </section>
+
+      <section>
+        <h2>What Happens After Your Request</h2>
+        <ul>
+          <li>Your request will be <strong>reviewed and verified</strong> to confirm ownership of the account.</li>
+          <li>After verification, your <strong>account will be deleted</strong>.</li>
+          <li>Account deletion will be completed within <strong>30 days</strong> of verification.</li>
+          <li>We may contact you if additional information is required to verify ownership of the account.</li>
+          <li>You will receive a confirmation email when the deletion request has been completed.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Data That Will Be Deleted</h2>
+        <p>
+          Based on the information we collect (as described in our Privacy Policy), the following
+          account-related data will be deleted from our systems after a verified deletion request:
+        </p>
+        <ul>
+          <li><strong>User account information</strong> — name, email address, and authentication credentials managed via Clerk</li>
+          <li><strong>Profile information</strong> associated with your account</li>
+          <li><strong>Personal information associated with the account</strong> — shipping addresses and phone numbers saved to your account</li>
+          <li><strong>App-specific user data</strong> — cart contents and account preferences tied to your account</li>
+          <li><strong>Other data associated with your account</strong> — purchase history linked to your user account in our application systems (see retention note below for order/transaction records that may need to be kept)</li>
+        </ul>
+        <p>
+          We do not store full payment card numbers. Card details are processed by Stripe and are
+          not held in our systems as full card numbers.
         </p>
       </section>
 
       <section>
-        <h2>7. Security</h2>
+        <h2>Data That May Be Retained</h2>
         <p>
-          We use HTTPS encryption across the entire site and app. Passwords are stored hashed via
-          Clerk. Even so, no system on the internet is 100% secure.
+          Some data may need to be retained for legal, security, fraud prevention, financial, or
+          other legitimate requirements:
+        </p>
+        <ul>
+          <li>
+            <strong>Order and transaction records</strong> needed for tax, accounting, fraud
+            prevention, chargebacks, or legal compliance may be retained for up to
+            <strong>7 years</strong> (or longer if required by law), then deleted or anonymized.
+          </li>
+          <li>
+            <strong>Payment records</strong> processed by Stripe remain subject to Stripe’s own
+            retention policies.
+          </li>
+          <li>
+            <strong>Anonymized or aggregated site-usage information</strong> (for example, from
+            cookies or server logs) that cannot reasonably identify you may be retained.
+          </li>
+        </ul>
+        <p>
+          After deletion, you will no longer be able to sign in with that account. Creating a new
+          account later is treated as a new registration.
         </p>
       </section>
 
       <section>
-        <h2>8. Minors</h2>
+        <h2>Contact</h2>
         <p>
-          Our service is intended for users aged 18 and over. We do not knowingly collect
-          information from minors.
+          Sabores de Honduras / HN Grocers<br />
+          Email:
+          <a href="mailto:support@hngrocers.com">support@hngrocers.com</a>
         </p>
-      </section>
-
-      <section>
-        <h2>9. Changes to this policy</h2>
         <p>
-          We may update this policy. We will post the date of the latest update at the top of this
-          page.
-        </p>
-      </section>
-
-      <section>
-        <h2>10. Contact</h2>
-        <p>
-          HN Grocers<br />
-          Email: <a href="mailto:support@hngrocers.com">support@hngrocers.com</a>
+          Related:
+          <a href="privacy-policy/">Privacy Policy</a>
         </p>
       </section>
     </article>
   </main>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="newsletter">
       <div class="container newsletter-inner">
@@ -763,7 +811,8 @@
               <li><a href="https://sabores-de-honduras-production.up.railway.app/faq">FAQ</a></li>
               <li><a href="https://sabores-de-honduras-production.up.railway.app/shipping">Shipping Policy</a></li>
               <li><a href="https://sabores-de-honduras-production.up.railway.app/contact">Contact Us</a></li>
-              <li><a href="../delete-account.html">Delete Account</a></li>
+              <li><a href="privacy-policy/">Privacy Policy</a></li>
+              <li><a href="delete-account.html">Delete Account</a></li>
             </ul>
           </div>
           <div class="footer-col">
