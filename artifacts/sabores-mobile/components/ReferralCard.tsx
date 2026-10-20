@@ -1,13 +1,14 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { Icon } from "@/components/Icon";
+import { fonts } from "@/constants/fonts";
 import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 
 /**
  * ReferralCard — shown on order-success and account.
- * "Compartí Sabores · $10/$10" promo card. Designed in mockup #09.
+ * "Comparte HN Grocers · $10/$10" promo card.
  */
 
 interface Props {
@@ -23,25 +24,27 @@ export function ReferralCard({ onPress }: Props) {
       style={({ pressed }) => [
         styles.wrap,
         {
-          backgroundColor: colors.primary,
-          opacity: pressed ? 0.92 : 1,
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          opacity: pressed ? 0.9 : 1,
         },
       ]}
       accessibilityRole="button"
-      accessibilityLabel={(t as any).shareReferralCard ?? "Compartí Sabores"}
+      accessibilityLabel={(t as any).shareReferralCard ?? "Comparte HN Grocers"}
     >
-      <View style={[styles.iconWrap, { backgroundColor: colors.goldLight }]}>
-        <Icon name="gift" size={22} color={colors.primary} />
+      <View style={[styles.iconWrap, { backgroundColor: colors.v2.bg.accentSoft }]}>
+        <MaterialCommunityIcons name="gift-outline" size={22} color={colors.v2.text.accent} />
       </View>
       <View style={styles.info}>
-        <Text style={[styles.title, { color: colors.gold }]}>
-          {(t as any).shareReferralCard ?? "Compartí Sabores"}
+        <Text style={[styles.title, { color: colors.foreground }]}>
+          {(t as any).shareReferralCard ?? "Comparte HN Grocers"}
         </Text>
-        <Text style={styles.sub}>
+        <Text style={[styles.sub, { color: colors.mutedForeground }]}>
           {(t as any).shareReferralDesc ??
             "Tu amigo recibe $10 en su primer pedido. Vos recibís $10 cuando complete su compra."}
         </Text>
       </View>
+      <MaterialCommunityIcons name="share-variant-outline" size={20} color={colors.primary} />
     </Pressable>
   );
 }
@@ -51,8 +54,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
-    padding: 18,
-    borderRadius: 16,
+    padding: 16,
+    borderRadius: 18,
+    borderWidth: 1,
   },
   iconWrap: {
     width: 44,
@@ -63,14 +67,13 @@ const styles = StyleSheet.create({
   },
   info: { flex: 1, minWidth: 0 },
   title: {
-    fontSize: 14,
-    fontFamily: "Inter_700Bold",
+    fontSize: 15,
+    fontFamily: fonts.bold,
     marginBottom: 2,
   },
   sub: {
-    color: "rgba(255,255,255,0.92)",
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    lineHeight: 17,
+    fontSize: 13,
+    fontFamily: fonts.regular,
+    lineHeight: 18,
   },
 });

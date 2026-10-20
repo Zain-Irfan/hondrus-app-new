@@ -10,14 +10,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   ActivityIndicator,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/Icon";
 import { AddressAutocomplete, type ParsedAddress } from "@/components/AddressAutocomplete";
+import { Button, TextField } from "@/components/ui";
+import { fonts } from "@/constants/fonts";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useUser } from "@/context/UserContext";
@@ -43,56 +44,12 @@ interface FormData {
   customerName: string;
 }
 
-function SectionHeader({ title, colors }: { title: string; colors: ReturnType<typeof useColors> }) {
-  return (
-    <View style={[styles.sectionHeaderWrap, { borderLeftColor: colors.gold, borderLeftWidth: 4 }]}>
-      <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{title}</Text>
-    </View>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  keyboardType,
-  required = true,
-  colors,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  keyboardType?: "default" | "email-address" | "phone-pad" | "numeric";
-  required?: boolean;
-  colors: ReturnType<typeof useColors>;
-}) {
-  return (
-    <View style={styles.fieldWrap}>
-      <Text style={[styles.fieldLabel, { color: colors.foreground }]}>
-        {label}{required && " *"}
-      </Text>
-      <TextInput
-        style={[styles.fieldInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.foreground, fontFamily: "Inter_500Medium" }]}
-        value={value}
-        onChangeText={onChange}
-        placeholder={placeholder ?? label}
-        placeholderTextColor={colors.mutedForeground}
-        keyboardType={keyboardType ?? "default"}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-    </View>
-  );
-}
-
 export default function CheckoutScreen() {
   const colors = useColors();
   const { t } = useLanguage();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { items, subtotal, clearCart } = useCart();
+  const { items, itemCount, subtotal, clearCart } = useCart();
   const { user, getToken, isSignedIn, refreshProfile } = useUser();
   const guestId = useGuestId();
   const [submitting, setSubmitting] = useState(false);
@@ -276,9 +233,9 @@ export default function CheckoutScreen() {
 
   if (paymentStep === "awaiting") {
     return (
-      <View style={[styles.container, styles.awaitingContainer, { backgroundColor: colors.background }]}>
-        <View style={[styles.awaitingCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <View style={[styles.awaitingIconWrap, { backgroundColor: colors.primary + "15" }]}>
+      <View style={[styles.container, styles.awaitingContainer, { backgroundColor: colors.canvas }]}>
+        <View style={[styles.awaitingCard, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: colors.radii.lg }]}>
+          <View style={[styles.awaitingIconWrap, { backgroundColor: colors.v2.bg.brandSoft }]}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
           <Text style={[styles.awaitingTitle, { color: colors.foreground }]}>
@@ -290,36 +247,98 @@ export default function CheckoutScreen() {
           <Text style={[styles.awaitingSubtext, { color: colors.mutedForeground }]}>
             {pollMsg}
           </Text>
-          <Pressable
-            style={[styles.cancelBtn, { borderColor: colors.border }]}
+          <Button
+            title={t.cancelPayment ?? "Cancel"}
+            variant="outline"
             onPress={handleCancelPolling}
-          >
-            <Text style={[styles.cancelBtnText, { color: colors.mutedForeground }]}>
-              {t.cancelPayment ?? "Cancel"}
-            </Text>
-          </Pressable>
+            style={{ marginTop: 8, minWidth: 160 }}
+          />
         </View>
       </View>
     );
   }
 
+  const steps = [
+    (t as any).stepShipping ?? "Shipping",
+    (t as any).stepPayment ?? "Payment",
+    (t as any).stepDone ?? "Done",
+  ];
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.canvas }]}>
+      {/* Header: back · title · secure, then step indicator */}
+      <View
+        style={[
+          styles.header,
+          { paddingTop: insets.top + 6, backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        <View style={styles.headerRow}>
+          <Pressable
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel={t.goBack}
+            hitSlop={6}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <MaterialCommunityIcons name="chevron-left" size={28} color={colors.foreground} />
+          </Pressable>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]} accessibilityRole="header">
+            {(t as any).checkoutTitle ?? "Checkout"}
+          </Text>
+          <View style={styles.secure}>
+            <MaterialCommunityIcons name="lock-outline" size={14} color={colors.v2.state.success} />
+            <Text style={[styles.secureText, { color: colors.v2.state.success }]}>
+              {(t as any).secureLabel ?? "Secure"}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.steps} accessibilityRole="progressbar">
+          {steps.map((label, i) => {
+            const active = i === 0;
+            return (
+              <React.Fragment key={label}>
+                {i > 0 && <View style={[styles.stepLine, { backgroundColor: colors.border }]} />}
+                <View style={styles.step}>
+                  <View
+                    style={[
+                      styles.stepDot,
+                      active
+                        ? { backgroundColor: colors.primary }
+                        : { borderWidth: 1.5, borderColor: colors.v2.border.strong },
+                    ]}
+                  >
+                    <Text style={[styles.stepNum, { color: active ? "#FFFFFF" : colors.mutedForeground }]}>
+                      {i + 1}
+                    </Text>
+                  </View>
+                  <Text style={[styles.stepLabel, { color: active ? colors.primary : colors.mutedForeground }]}>
+                    {label}
+                  </Text>
+                </View>
+              </React.Fragment>
+            );
+          })}
+        </View>
+      </View>
+
       <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: bottomPad + 80 }}
+        contentContainerStyle={[styles.scroll, { paddingBottom: bottomPad + 96 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         {/* Signed-in banner */}
         {user && (
-          <View style={[styles.signedInBanner, { backgroundColor: colors.primary + "12", borderColor: colors.primary + "40" }]}>
-            <Icon name="user" size={18} color={colors.primary} />
+          <View style={[styles.banner, { backgroundColor: colors.v2.bg.brandSoft }]}>
+            <View style={[styles.bannerIcon, { backgroundColor: colors.surface }]}>
+              <MaterialCommunityIcons name="account-check-outline" size={22} color={colors.primary} />
+            </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.signedInText, { color: colors.primary }]}>
+              <Text style={[styles.bannerTitle, { color: colors.foreground }]}>
                 {typeof t.signedInAs === "function" ? t.signedInAs(user.name) : `Signed in as ${user.name}`}
               </Text>
               {user.defaultAddress && (
-                <Text style={[styles.signedInSub, { color: colors.mutedForeground }]}>
+                <Text style={[styles.bannerSub, { color: colors.v2.text.secondary }]}>
                   {typeof t.savedAddressUsed === "string" ? t.savedAddressUsed : "Saved address"} · {user.defaultAddress.city}, {user.defaultAddress.state}
                 </Text>
               )}
@@ -330,212 +349,243 @@ export default function CheckoutScreen() {
         {/* Sign-in prompt — only shown to guests */}
         {!user && (
           <Pressable
-            style={[styles.signInPromptBanner, { backgroundColor: colors.primary + "10", borderColor: colors.primary + "35" }]}
+            style={({ pressed }) => [styles.banner, { backgroundColor: colors.v2.bg.brandSoft, opacity: pressed ? 0.9 : 1 }]}
             onPress={() => router.push("/(auth)/sign-in")}
             testID="checkout-sign-in-banner"
+            accessibilityRole="button"
           >
-            <View style={[styles.signInPromptIcon, { backgroundColor: colors.primary + "18" }]}>
-              <Icon name="user" size={20} color={colors.primary} />
+            <View style={[styles.bannerIcon, { backgroundColor: colors.surface }]}>
+              <MaterialCommunityIcons name="account-outline" size={22} color={colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.signInPromptTitle, { color: colors.primary }]}>
+              <Text style={[styles.bannerTitle, { color: colors.foreground }]}>
                 {t.signInForFasterCheckout ?? "Sign in for faster checkout"}
               </Text>
-              <Text style={[styles.signInPromptSub, { color: colors.mutedForeground }]}>
+              <Text style={[styles.bannerSub, { color: colors.v2.text.secondary }]}>
                 {t.signInCheckoutDesc ?? "Pre-fill your address and track your order with one tap."}
               </Text>
             </View>
-            <Icon name="chevron-right" size={18} color={colors.primary} />
+            <MaterialCommunityIcons name="chevron-right" size={22} color={colors.primary} />
           </Pressable>
         )}
 
-        {/* Customer Info */}
-        <SectionHeader title={t.contactInfo} colors={colors} />
-        <Field label={t.yourName} value={form.customerName} onChange={(v) => update("customerName", v)} colors={colors} />
-        <Field label={t.email} value={form.customerEmail} onChange={(v) => update("customerEmail", v)} keyboardType="email-address" colors={colors} />
-
-        {/* Shipping Address */}
-        <View style={{ marginTop: 24 }}><SectionHeader title={t.shippingAddress} colors={colors} /></View>
-        <Field label={t.fullName} value={form.fullName} onChange={(v) => update("fullName", v)} colors={colors} />
-        <AddressAutocomplete
-          label={t.addressLine1}
-          value={form.line1}
-          onChange={(v) => update("line1", v)}
-          onAddressSelected={(parsed: ParsedAddress) => {
-            setForm((prev) => ({
-              ...prev,
-              line1: parsed.line1 || prev.line1,
-              city: parsed.city || prev.city,
-              state: parsed.state || prev.state,
-              zipCode: parsed.zipCode || prev.zipCode,
-            }));
-          }}
-          placeholder={t.addressLine1Placeholder}
-        />
-        <Field label={t.addressLine2} value={form.line2} onChange={(v) => update("line2", v)} placeholder={t.addressLine2Placeholder} required={false} colors={colors} />
-        <View style={styles.row}>
-          <View style={{ flex: 2 }}>
-            <Field label={t.city} value={form.city} onChange={(v) => update("city", v)} colors={colors} />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Field label={t.state} value={form.state} onChange={(v) => update("state", v)} placeholder="TX" colors={colors} />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <View style={{ flex: 1 }}>
-            <Field label={t.zip} value={form.zipCode} onChange={(v) => update("zipCode", v)} keyboardType="numeric" colors={colors} />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Field label={t.phone} value={form.phone} onChange={(v) => update("phone", v)} keyboardType="phone-pad" colors={colors} />
-          </View>
+        {/* Contact */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{t.contactInfo}</Text>
+          <TextField label={`${t.yourName} *`} value={form.customerName} onChangeText={(v) => update("customerName", v)} autoCorrect={false} />
+          <TextField label={`${t.email} *`} value={form.customerEmail} onChangeText={(v) => update("customerEmail", v)} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} containerStyle={{ marginBottom: 0 }} />
         </View>
 
-        {/* Shipping notice — single flat rate, no carrier selection */}
+        {/* Shipping address */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{t.shippingAddress}</Text>
+          <TextField label={`${t.fullName} *`} value={form.fullName} onChangeText={(v) => update("fullName", v)} autoCorrect={false} />
+          <AddressAutocomplete
+            label={t.addressLine1}
+            value={form.line1}
+            onChange={(v) => update("line1", v)}
+            onAddressSelected={(parsed: ParsedAddress) => {
+              setForm((prev) => ({
+                ...prev,
+                line1: parsed.line1 || prev.line1,
+                city: parsed.city || prev.city,
+                state: parsed.state || prev.state,
+                zipCode: parsed.zipCode || prev.zipCode,
+              }));
+            }}
+            placeholder={t.addressLine1Placeholder}
+          />
+          <TextField label={t.addressLine2} value={form.line2} onChangeText={(v) => update("line2", v)} placeholder={t.addressLine2Placeholder} autoCorrect={false} />
+          <View style={styles.row}>
+            <View style={{ flex: 2 }}>
+              <TextField label={`${t.city} *`} value={form.city} onChangeText={(v) => update("city", v)} autoCorrect={false} />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <TextField label={`${t.state} *`} value={form.state} onChangeText={(v) => update("state", v)} placeholder="TX" autoCorrect={false} autoCapitalize="characters" />
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <TextField label={`${t.zip} *`} value={form.zipCode} onChangeText={(v) => update("zipCode", v)} keyboardType="numeric" autoCorrect={false} containerStyle={{ marginBottom: 0 }} />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <TextField label={`${t.phone} *`} value={form.phone} onChangeText={(v) => update("phone", v)} keyboardType="phone-pad" autoCorrect={false} containerStyle={{ marginBottom: 0 }} />
+            </View>
+          </View>
+        </View>
+
+        {/* Free shipping notice */}
         {isFreeShipping && (
-          <View style={[styles.freeShipBanner, { backgroundColor: colors.goldLight, marginTop: 24 }]}>
-            <Icon name="truck" size={18} color={colors.gold} />
-            <Text style={[styles.freeShipText, { color: colors.primary }]}>{t.freeShippingOnOrder}</Text>
+          <View style={[styles.freeShip, { backgroundColor: colors.v2.state.successSoft }]}>
+            <MaterialCommunityIcons name="truck-check-outline" size={20} color={colors.v2.state.success} />
+            <Text style={[styles.freeShipText, { color: colors.v2.state.success }]}>{t.freeShippingOnOrder}</Text>
           </View>
         )}
 
-        {/* Order Summary */}
-        <View style={{ marginTop: 24 }}><SectionHeader title={t.orderSummary} colors={colors} /></View>
-        <View style={[styles.summary, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          {items.map((item) => (
-            <View key={item.id} style={styles.summaryItemRow}>
-              <Image source={{ uri: item.productImageUrl }} style={styles.summaryThumb} />
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.summaryItemName, { color: colors.foreground }]} numberOfLines={1}>
-                  {item.productName}
-                </Text>
-                <Text style={[styles.summaryItemQty, { color: colors.mutedForeground }]}>
-                  {t.quantity}: {item.quantity}
-                </Text>
-              </View>
-              <Text style={[styles.summaryItemPrice, { color: colors.foreground }]}>
-                ${item.subtotal.toFixed(2)}
+        {/* Order summary */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.cardTitleRow}>
+            <Text style={[styles.cardTitle, { color: colors.foreground, marginBottom: 0 }]}>{t.orderSummary}</Text>
+            <Pressable onPress={() => router.back()} hitSlop={8} accessibilityRole="button">
+              <Text style={[styles.editLink, { color: colors.primary }]}>
+                {(t as any).cartItemsCount?.(itemCount) ?? t.cartTitle(itemCount)}
               </Text>
+            </Pressable>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbStrip}>
+            {items.map((item) => (
+              <View key={item.id} style={styles.thumbWrap}>
+                <Image
+                  source={{ uri: item.productImageUrl }}
+                  style={[styles.thumb, { backgroundColor: colors.v2.bg.accentSoft }]}
+                />
+                {item.quantity > 1 && (
+                  <View style={[styles.thumbQty, { backgroundColor: colors.primary, borderColor: colors.surface }]}>
+                    <Text style={styles.thumbQtyText}>×{item.quantity}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </ScrollView>
+
+          {items.map((item) => (
+            <View key={item.id} style={styles.ledgerLine}>
+              <Text style={[styles.ledgerQty, { color: colors.mutedForeground }]}>{item.quantity}×</Text>
+              <Text style={[styles.ledgerName, { color: colors.foreground }]} numberOfLines={1}>
+                {item.productName}
+              </Text>
+              <Text style={[styles.ledgerAmt, { color: colors.foreground }]}>${item.subtotal.toFixed(2)}</Text>
             </View>
           ))}
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+          <View style={[styles.divider, { backgroundColor: colors.v2.bg.muted }]} />
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, { color: colors.mutedForeground }]}>{t.subtotal}</Text>
             <Text style={[styles.summaryValue, { color: colors.foreground }]}>${subtotal.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, { color: colors.mutedForeground }]}>{t.shippingLabel}</Text>
-            <Text style={[styles.summaryValue, { color: isFreeShipping ? colors.success : colors.foreground }]}>
+            <Text style={[styles.summaryValue, { color: isFreeShipping ? colors.v2.state.success : colors.foreground }]}>
               {isFreeShipping ? t.free : `$${shippingCost.toFixed(2)}`}
             </Text>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <View style={[styles.divider, { backgroundColor: colors.v2.bg.muted }]} />
           <View style={styles.summaryRow}>
             <Text style={[styles.totalLabel, { color: colors.foreground }]}>{t.total}</Text>
-            <Text style={[styles.totalAmount, { color: colors.primary }]}>${total.toFixed(2)}</Text>
+            <Text style={[styles.totalAmount, { color: colors.foreground }]}>${total.toFixed(2)}</Text>
           </View>
         </View>
 
-        {/* Payment info note */}
-        <View style={[styles.paymentNote, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Icon name="lock" size={16} color={colors.gold} />
-          <Text style={[styles.paymentNoteText, { color: colors.mutedForeground }]}>
-            {t.paymentSecureNote}
-          </Text>
+        {/* Payment note */}
+        <View style={styles.paymentNote}>
+          <MaterialCommunityIcons name="shield-check-outline" size={18} color={colors.mutedForeground} />
+          <Text style={[styles.paymentNoteText, { color: colors.mutedForeground }]}>{t.paymentSecureNote}</Text>
         </View>
       </ScrollView>
 
-      {/* Submit Bar */}
-      <View style={[styles.submitBar, { backgroundColor: colors.background, borderTopColor: colors.border, paddingBottom: bottomPad }]}>
+      {/* Submit bar */}
+      <View style={[styles.submitBar, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: bottomPad }]}>
         <Pressable
           testID="place-order-btn"
-          style={({ pressed }) => [
-            styles.submitBtn,
-            {
-              backgroundColor: colors.primary,
-              borderColor: colors.gold,
-              borderWidth: 2,
-              opacity: submitting ? 0.85 : pressed ? 0.82 : 1,
-              transform: [{ scale: pressed && !submitting ? 0.97 : 1 }],
-            },
-          ]}
           onPress={handleSubmit}
           disabled={submitting}
-          android_ripple={{ color: "rgba(201,168,76,0.25)", borderless: false }}
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            styles.submitBtn,
+            { backgroundColor: colors.primary, opacity: submitting ? 0.7 : pressed ? 0.9 : 1 },
+          ]}
         >
           {submitting ? (
-            <ActivityIndicator color="#fff" size="small" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
             <>
-              <Text style={styles.submitBtnText}>{t.confirmOrder(total.toFixed(2))}</Text>
-              <Icon name="check-circle" size={20} color={colors.gold} />
+              <MaterialCommunityIcons name="lock-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.submitText}>{t.confirmOrder(total.toFixed(2))}</Text>
             </>
           )}
         </Pressable>
       </View>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  sectionHeaderWrap: { paddingLeft: 12, marginBottom: 16 },
-  sectionTitle: { fontSize: 20, fontFamily: "Inter_700Bold" },
-  fieldWrap: { marginBottom: 16 },
-  fieldLabel: { fontSize: 14, fontFamily: "Inter_600SemiBold", marginBottom: 8, marginLeft: 4 },
-  fieldInput: { height: 52, borderRadius: 26, borderWidth: 1, paddingHorizontal: 20, fontSize: 15 },
   row: { flexDirection: "row" },
-  freeShipBanner: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, borderRadius: 12, marginBottom: 16 },
-  freeShipText: { fontSize: 14, fontFamily: "Inter_700Bold" },
-  shippingOption: { flexDirection: "row", alignItems: "center", gap: 16, padding: 16, borderRadius: 16, borderWidth: 2, marginBottom: 12 },
-  radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, alignItems: "center", justifyContent: "center" },
-  optionCarrier: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  optionDays: { fontSize: 13, fontFamily: "Inter_500Medium", marginTop: 4 },
-  optionPrice: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  summary: { borderRadius: 16, borderWidth: 1, padding: 20, gap: 12 },
-  summaryItemRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  summaryThumb: { width: 48, height: 48, borderRadius: 8, backgroundColor: "#eee" },
-  summaryItemName: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  summaryItemQty: { fontSize: 13, fontFamily: "Inter_400Regular", marginTop: 2 },
-  summaryItemPrice: { fontSize: 15, fontFamily: "Inter_700Bold" },
-  divider: { height: 1, marginVertical: 4 },
-  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  summaryLabel: { fontSize: 15, fontFamily: "Inter_500Medium" },
-  summaryValue: { fontSize: 15, fontFamily: "Inter_700Bold" },
-  totalLabel: { fontSize: 18, fontFamily: "Inter_700Bold" },
-  totalAmount: { fontSize: 24, fontFamily: "Inter_700Bold" },
-  paymentNote: { flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 14, borderRadius: 12, borderWidth: 1, marginTop: 16 },
-  paymentNoteText: { flex: 1, fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 20 },
-  submitBar: { position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, borderTopWidth: 1, shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 10 },
-  submitBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12, paddingVertical: 18, borderRadius: 50 },
-  submitBtnText: { color: "#fff", fontSize: 18, fontFamily: "Inter_700Bold" },
+
+  // Header
+  header: { paddingHorizontal: 12, paddingBottom: 14, gap: 12, borderBottomWidth: StyleSheet.hairlineWidth },
+  headerRow: { flexDirection: "row", alignItems: "center", gap: 2 },
+  backBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
+  headerTitle: { flex: 1, fontSize: 22, fontFamily: fonts.display, letterSpacing: -0.2 },
+  secure: { flexDirection: "row", alignItems: "center", gap: 5, paddingRight: 8 },
+  secureText: { fontSize: 12, fontFamily: fonts.semibold },
+  steps: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 8 },
+  step: { flexDirection: "row", alignItems: "center", gap: 6 },
+  stepDot: { width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center" },
+  stepNum: { fontSize: 11, fontFamily: fonts.bold },
+  stepLabel: { fontSize: 12, fontFamily: fonts.bold },
+  stepLine: { flex: 1, height: 2, borderRadius: 1 },
+
+  scroll: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
+
+  // Banners
+  banner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 16 },
+  bannerIcon: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  bannerTitle: { fontSize: 14, fontFamily: fonts.bold },
+  bannerSub: { fontSize: 12, fontFamily: fonts.regular, marginTop: 2, lineHeight: 17 },
+
+  // Cards
+  card: { borderWidth: 1, borderRadius: 18, paddingHorizontal: 16, paddingTop: 18, paddingBottom: 16 },
+  cardTitle: { fontSize: 16, fontFamily: fonts.bold, marginBottom: 14 },
+  cardTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 },
+  editLink: { fontSize: 13, fontFamily: fonts.semibold },
+
+  freeShip: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, borderRadius: 14 },
+  freeShipText: { flex: 1, fontSize: 14, fontFamily: fonts.semibold },
+
+  // Summary
+  thumbStrip: { gap: 10, paddingTop: 6, paddingRight: 6, paddingBottom: 12 },
+  thumbWrap: { position: "relative" },
+  thumb: { width: 56, height: 56, borderRadius: 12, resizeMode: "cover" },
+  thumbQty: {
+    position: "absolute",
+    right: -6,
+    top: -6,
+    minWidth: 24,
+    height: 22,
+    paddingHorizontal: 6,
+    borderRadius: 11,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  thumbQtyText: { color: "#FFFFFF", fontSize: 11, fontFamily: fonts.bold },
+  ledgerLine: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6 },
+  ledgerQty: { fontSize: 13, fontFamily: fonts.semibold, minWidth: 26 },
+  ledgerName: { flex: 1, fontSize: 14, fontFamily: fonts.regular },
+  ledgerAmt: { fontSize: 14, fontFamily: fonts.semibold },
+  divider: { height: 1, marginVertical: 10 },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", paddingVertical: 3 },
+  summaryLabel: { fontSize: 14, fontFamily: fonts.regular },
+  summaryValue: { fontSize: 15, fontFamily: fonts.semibold },
+  totalLabel: { fontSize: 16, fontFamily: fonts.bold },
+  totalAmount: { fontSize: 24, fontFamily: fonts.display },
+
+  paymentNote: { flexDirection: "row", alignItems: "flex-start", gap: 10, paddingHorizontal: 4 },
+  paymentNoteText: { flex: 1, fontSize: 12, fontFamily: fonts.regular, lineHeight: 18 },
+
+  // Submit
+  submitBar: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 20, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth },
+  submitBtn: { height: 54, borderRadius: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
+  submitText: { color: "#FFFFFF", fontSize: 16, fontFamily: fonts.bold },
+
+  // Awaiting payment
   awaitingContainer: { alignItems: "center", justifyContent: "center", padding: 24 },
-  awaitingCard: { width: "100%", borderRadius: 24, borderWidth: 1, padding: 32, alignItems: "center", gap: 16 },
+  awaitingCard: { width: "100%", borderWidth: 1, padding: 32, alignItems: "center", gap: 16 },
   awaitingIconWrap: { width: 80, height: 80, borderRadius: 40, alignItems: "center", justifyContent: "center", marginBottom: 8 },
-  awaitingTitle: { fontSize: 22, fontFamily: "Inter_700Bold", textAlign: "center" },
-  awaitingDesc: { fontSize: 14, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
-  awaitingSubtext: { fontSize: 13, fontFamily: "Inter_400Regular", textAlign: "center" },
-  cancelBtn: { marginTop: 8, paddingVertical: 12, paddingHorizontal: 32, borderRadius: 50, borderWidth: 1 },
-  cancelBtnText: { fontSize: 15, fontFamily: "Inter_500Medium" },
-  signedInBanner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, marginBottom: 16 },
-  signedInText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  signedInSub: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 2 },
-  // Sign-in prompt banner
-  signInPromptBanner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, marginBottom: 20 },
-  signInPromptIcon: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-  signInPromptTitle: { fontSize: 14, fontFamily: "Inter_700Bold" },
-  signInPromptSub: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 2, lineHeight: 17 },
-  // Quick sign-in modal
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "flex-end" },
-  modalSheet: { borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24, paddingTop: 12, alignItems: "center" },
-  modalHandle: { width: 40, height: 4, borderRadius: 2, marginBottom: 20 },
-  modalIconWrap: { width: 64, height: 64, borderRadius: 32, alignItems: "center", justifyContent: "center", marginBottom: 16 },
-  modalTitle: { fontSize: 20, fontFamily: "Inter_700Bold", marginBottom: 8, textAlign: "center" },
-  modalSub: { fontSize: 14, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20, marginBottom: 24 },
-  modalLabel: { alignSelf: "flex-start", fontSize: 14, fontFamily: "Inter_600SemiBold", marginBottom: 8, marginLeft: 4 },
-  modalInput: { width: "100%", height: 52, borderRadius: 26, borderWidth: 1, paddingHorizontal: 20, fontSize: 15, marginBottom: 16 },
-  modalBtn: { width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 16, borderRadius: 50, marginBottom: 12 },
-  modalBtnText: { color: "#fff", fontSize: 16, fontFamily: "Inter_700Bold" },
-  modalGuestBtn: { paddingVertical: 12, paddingHorizontal: 24 },
-  modalGuestText: { fontSize: 14, fontFamily: "Inter_500Medium" },
+  awaitingTitle: { fontSize: 22, fontFamily: fonts.display, textAlign: "center" },
+  awaitingDesc: { fontSize: 14, fontFamily: fonts.regular, textAlign: "center", lineHeight: 22 },
+  awaitingSubtext: { fontSize: 13, fontFamily: fonts.regular, textAlign: "center" },
 });

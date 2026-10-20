@@ -51,9 +51,18 @@ export function useGuestId(): string | null {
       setId(cachedId);
       return;
     }
-    getGuestId().then((value) => {
-      if (!cancelled) setId(value);
-    });
+    getGuestId()
+      .then((value) => {
+        if (!cancelled) setId(value);
+      })
+      .catch(() => {
+        // AsyncStorage failure — still generate an in-memory id so orders/query can proceed.
+        if (!cancelled) {
+          const fresh = generateGuestId();
+          cachedId = fresh;
+          setId(fresh);
+        }
+      });
     return () => {
       cancelled = true;
     };

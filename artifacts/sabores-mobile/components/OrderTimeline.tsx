@@ -1,16 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import { fonts } from "@/constants/fonts";
+import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
-
-/**
- * OrderTimeline — vertical 5-stop status timeline.
- * New in Phase 1.5; designed in mockup #09 (order-success).
- *
- * Status states: confirmed → packing → shipped → on_the_way → delivered
- * Pass `current` as one of those keys; the timeline marks all earlier
- * stops `done` and the matching one `active`.
- */
 
 export type OrderStatus =
   | "confirmed"
@@ -36,34 +30,70 @@ interface Stop {
 
 interface Props {
   current: OrderStatus;
-  stops?: Stop[];                 // optional override (e.g. localized labels)
-  estimateRange?: string;         // "12 – 14 de mayo"
-  header?: string;                // section header label
+  stops?: Stop[];
+  estimateRange?: string;
+  header?: string;
 }
-
-const DEFAULT_STOPS: Stop[] = [
-  { key: "confirmed", title: "Confirmado", hint: "Acabamos de recibir tu pedido" },
-  { key: "packing", title: "En empaque", hint: "Llegamos en 1–2 días" },
-  { key: "shipped", title: "Enviado", hint: "Te enviamos el rastreo por correo" },
-  { key: "on_the_way", title: "En camino", hint: "5–7 días hábiles" },
-  { key: "delivered", title: "Entregado", hint: "Sabores, hasta tu puerta" },
-];
 
 export function OrderTimeline({
   current,
-  stops = DEFAULT_STOPS,
+  stops,
   estimateRange,
-  header = "Estado del pedido",
+  header,
 }: Props) {
   const colors = useColors();
+  const { t } = useLanguage();
+
+  const localizedStops: Stop[] = useMemo(
+    () =>
+      stops ?? [
+        {
+          key: "confirmed",
+          title: (t as any).statusConfirmedV2 ?? t.statusConfirmed,
+          hint: (t as any).timelineConfirmedNote ?? "",
+        },
+        {
+          key: "packing",
+          title: (t as any).statusPackingV2 ?? t.statusProcessing,
+          hint: (t as any).timelinePackingNote ?? "",
+        },
+        {
+          key: "shipped",
+          title: (t as any).statusShippedV2 ?? t.statusShipped,
+          hint: (t as any).timelineShippedNote ?? "",
+        },
+        {
+          key: "on_the_way",
+          title: (t as any).statusOnTheWay ?? t.statusShipped,
+          hint: (t as any).timelineOnTheWayNote ?? "",
+        },
+        {
+          key: "delivered",
+          title: (t as any).statusDeliveredV2 ?? t.statusDelivered,
+          hint: (t as any).timelineDeliveredNote ?? "",
+        },
+      ],
+    [stops, t],
+  );
+
+  const headerLabel = header ?? (t as any).timelineHeader ?? "Order status";
+  const cancelledTitle = (t as any).orderCancelledTitle ?? t.statusCancelled;
+  const cancelledHint =
+    (t as any).orderCancelledHint ?? "If this was a mistake, contact us by chat or email.";
 
   if (current === "cancelled") {
     return (
-      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Text style={[styles.header, { color: colors.foreground }]}>Pedido cancelado</Text>
-        <Text style={[styles.estimate, { color: colors.mutedForeground }]}>
-          Si fue un error, escribinos por chat o correo.
-        </Text>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        <Text style={[styles.header, { color: colors.foreground }]}>{cancelledTitle}</Text>
+        <Text style={[styles.estimate, { color: colors.mutedForeground }]}>{cancelledHint}</Text>
       </View>
     );
   }
@@ -71,77 +101,65 @@ export function OrderTimeline({
   const currentIdx = ORDER.indexOf(current);
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <Text style={[styles.header, { color: colors.foreground }]}>{header}</Text>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
+      <Text style={[styles.header, { color: colors.foreground }]}>{headerLabel}</Text>
       {estimateRange && (
         <Text style={[styles.estimate, { color: colors.mutedForeground }]}>
-          Estimado: {estimateRange}
+          {typeof (t as any).timelineEstimate === "function"
+            ? (t as any).timelineEstimate(estimateRange)
+            : `Estimated: ${estimateRange}`}
         </Text>
       )}
 
       <View style={styles.list}>
-        {stops.map((stop, idx) => {
+        {localizedStops.map((stop, idx) => {
           const stopIdx = ORDER.indexOf(stop.key);
           const isDone = stopIdx < currentIdx;
           const isActive = stopIdx === currentIdx;
-          const isLast = idx === stops.length - 1;
+          const isLast = idx === localizedStops.length - 1;
 
-          const dotColor = isDone
-            ? colors.success
-            : isActive
-            ? colors.primary
-            : "transparent";
-          const ringColor = isDone
-            ? colors.success
-            : isActive
-            ? colors.primary
-            : colors.border;
-          const lineColor = isDone ? colors.success : colors.border;
+          const green = colors.v2.state.success;
+          const lineColor = isDone ? green : colors.border;
 
           return (
             <View key={stop.key} style={styles.row}>
-              {/* dot column */}
               <View style={styles.dotCol}>
-                <View
-                  style={[
-                    styles.dot,
-                    {
-                      backgroundColor: dotColor,
-                      borderColor: ringColor,
-                    },
-                    isActive && {
-                      shadowColor: colors.primary,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 6,
-                      elevation: 4,
-                    },
-                  ]}
-                />
-                {!isLast && (
-                  <View style={[styles.line, { backgroundColor: lineColor }]} />
+                {isDone ? (
+                  <View style={[styles.dot, { backgroundColor: green }]}>
+                    <MaterialCommunityIcons name="check" size={14} color="#FFFFFF" />
+                  </View>
+                ) : isActive ? (
+                  <View style={[styles.dot, styles.dotActive, { borderColor: colors.primary }]}>
+                    <View style={[styles.dotCore, { backgroundColor: colors.primary }]} />
+                  </View>
+                ) : (
+                  <View style={[styles.dot, { borderWidth: 2, borderColor: colors.v2.border.strong }]} />
                 )}
+                {!isLast && <View style={[styles.line, { backgroundColor: lineColor }]} />}
               </View>
 
-              {/* info column */}
               <View style={[styles.info, isLast && { paddingBottom: 0 }]}>
                 <Text
                   style={[
                     styles.title,
                     {
-                      color: isActive
-                        ? colors.primary
-                        : isDone
-                        ? colors.success
-                        : colors.foreground,
+                      color: isActive ? colors.primary : isDone ? colors.foreground : colors.mutedForeground,
                     },
                   ]}
                 >
                   {stop.title}
                 </Text>
-                <Text style={[styles.hint, { color: colors.mutedForeground }]}>
-                  {stop.hint}
-                </Text>
+                {!!stop.hint && (
+                  <Text style={[styles.hint, { color: colors.mutedForeground }]}>{stop.hint}</Text>
+                )}
               </View>
             </View>
           );
@@ -153,20 +171,19 @@ export function OrderTimeline({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
     borderWidth: 1,
+    borderRadius: 18,
     padding: 18,
   },
   header: {
-    fontSize: 13,
-    fontFamily: "Inter_700Bold",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 4,
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    marginBottom: 12,
   },
   estimate: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    fontFamily: fonts.regular,
+    marginTop: -8,
     marginBottom: 14,
   },
   list: {
@@ -182,12 +199,14 @@ const styles = StyleSheet.create({
     width: 24,
   },
   dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 999,
-    borderWidth: 2,
-    marginTop: 4,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  dotActive: { borderWidth: 2 },
+  dotCore: { width: 10, height: 10, borderRadius: 5 },
   line: {
     flex: 1,
     width: 2,
@@ -197,15 +216,16 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     paddingTop: 2,
-    paddingBottom: 12,
+    paddingBottom: 14,
   },
   title: {
     fontSize: 14,
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
     marginBottom: 2,
   },
   hint: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    fontFamily: fonts.regular,
+    lineHeight: 18,
   },
 });

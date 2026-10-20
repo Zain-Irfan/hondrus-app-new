@@ -17,13 +17,24 @@ const OPTIONS: { code: Lang; flag: string; label: string }[] = [
   { code: "en", flag: "🇺🇸", label: "English" },
 ];
 
-export function LanguagePicker() {
+type Variant = "default" | "onBrand";
+
+interface Props {
+  /** `onBrand` = light/gold pill for navy headers (Home). Default = soft brand chip. */
+  variant?: Variant;
+}
+
+/**
+ * Single language control for the whole app — Home, Catalog header, Account.
+ */
+export function LanguagePicker({ variant = "default" }: Props) {
   const colors = useColors();
   const { lang, setLang, t } = useLanguage();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
 
   const current = OPTIONS.find((o) => o.code === lang)!;
+  const onBrand = variant === "onBrand";
 
   return (
     <>
@@ -31,12 +42,27 @@ export function LanguagePicker() {
         onPress={() => setOpen(true)}
         style={({ pressed }) => [
           styles.trigger,
-          { backgroundColor: colors.secondary, opacity: pressed ? 0.7 : 1 },
+          onBrand
+            ? {
+                backgroundColor: "rgba(201,168,76,0.22)",
+                borderColor: colors.gold,
+              }
+            : {
+                backgroundColor: colors.v2.bg.accentSoft,
+                borderColor: colors.gold,
+              },
+          { opacity: pressed ? 0.75 : 1 },
         ]}
-        accessibilityLabel={t.language}
+        accessibilityRole="button"
+        accessibilityLabel={t.language ?? t.selectLanguage}
       >
         <Text style={styles.flag}>{current.flag}</Text>
-        <Text style={[styles.triggerLabel, { color: colors.primary }]}>
+        <Text
+          style={[
+            styles.triggerLabel,
+            { color: onBrand ? "#FFFFFF" : colors.primary },
+          ]}
+        >
           {lang.toUpperCase()}
         </Text>
       </Pressable>
@@ -52,7 +78,7 @@ export function LanguagePicker() {
             style={[
               styles.sheet,
               {
-                backgroundColor: colors.background,
+                backgroundColor: colors.surface,
                 paddingBottom: insets.bottom + 24,
               },
             ]}
@@ -69,7 +95,7 @@ export function LanguagePicker() {
                   style={({ pressed }) => [
                     styles.option,
                     {
-                      backgroundColor: selected ? colors.secondary : colors.card,
+                      backgroundColor: selected ? colors.secondary : colors.canvas,
                       borderColor: selected ? colors.primary : colors.border,
                       opacity: pressed ? 0.8 : 1,
                     },
@@ -105,14 +131,19 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    marginLeft: 8,
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    minHeight: 32,
   },
-  flag: { fontSize: 16 },
-  triggerLabel: { fontSize: 12, fontFamily: "Inter_700Bold" },
+  flag: { fontSize: 14, lineHeight: 16 },
+  triggerLabel: {
+    fontSize: 12,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 0.5,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.45)",

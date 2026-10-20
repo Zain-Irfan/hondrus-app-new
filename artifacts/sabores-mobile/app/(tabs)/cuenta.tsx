@@ -1,174 +1,229 @@
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { setStatusBarStyle } from "expo-status-bar";
+import React, { useCallback, useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/Icon";
+import { BrandMark } from "@/components/BrandLogo";
+import { LanguagePicker } from "@/components/LanguagePicker";
+import { ReferralCard } from "@/components/ReferralCard";
+import { Button, TextField } from "@/components/ui";
+import { fonts } from "@/constants/fonts";
 import { useLanguage } from "@/context/LanguageContext";
 import { useUser } from "@/context/UserContext";
 import { useColors } from "@/hooks/useColors";
 import { useOrders } from "@/hooks/useOrders";
+
+const SUPPORT_EMAIL = "support@hngrocers.com";
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+
+/** Light status-bar icons while the navy header is on screen. */
+function useLightStatusBar() {
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle("light");
+      return () => setStatusBarStyle("dark");
+    }, []),
+  );
+}
+
+/** Small uppercase label above a grouped card, with an optional action on the right. */
+function SectionHead({
+  colors,
+  title,
+  action,
+}: {
+  colors: ReturnType<typeof useColors>;
+  title: string;
+  action?: { label: string; icon: IconName; onPress: () => void };
+}) {
+  return (
+    <View style={styles.sectionHead}>
+      <Text style={[styles.sectionEyebrow, { color: colors.mutedForeground }]}>{title.toUpperCase()}</Text>
+      {action && (
+        <Pressable onPress={action.onPress} hitSlop={10} style={styles.editLink} accessibilityRole="button">
+          <MaterialCommunityIcons name={action.icon} size={16} color={colors.primary} />
+          <Text style={[styles.editLinkText, { color: colors.primary }]}>{action.label}</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}
+
+/** Tappable row inside a grouped card: icon · label · trailing value/chevron. */
+function ListRow({
+  colors,
+  icon,
+  label,
+  value,
+  onPress,
+  last,
+  tone = "default",
+}: {
+  colors: ReturnType<typeof useColors>;
+  icon: IconName;
+  label: string;
+  value?: string;
+  onPress?: () => void;
+  last?: boolean;
+  tone?: "default" | "danger";
+}) {
+  const fg = tone === "danger" ? colors.destructive : colors.foreground;
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? "button" : undefined}
+      style={({ pressed }) => [
+        styles.listRow,
+        !last && { borderBottomWidth: 1, borderBottomColor: colors.v2.bg.muted },
+        { opacity: pressed ? 0.7 : 1 },
+      ]}
+    >
+      <MaterialCommunityIcons name={icon} size={20} color={tone === "danger" ? colors.destructive : colors.v2.text.secondary} />
+      <Text style={[styles.listLabel, { color: fg }]}>{label}</Text>
+      {!!value && (
+        <Text style={[styles.listValue, { color: colors.mutedForeground }]} numberOfLines={1}>
+          {value}
+        </Text>
+      )}
+      {onPress && tone !== "danger" && (
+        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.v2.text.tertiary} />
+      )}
+    </Pressable>
+  );
+}
 
 function LoginView({ colors }: { colors: ReturnType<typeof useColors> }) {
   const { t } = useLanguage();
   const { isSignedIn, logout } = useUser();
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = Platform.OS === "web" ? 84 : 65;
+  useLightStatusBar();
+
+  const benefits: { icon: IconName; text: string }[] = [
+    { icon: "package-variant", text: t.benefitOrders ?? "View your full order history" },
+    { icon: "map-marker-outline", text: t.benefitAddress ?? "Save your shipping address" },
+    { icon: "lightning-bolt-outline", text: t.benefitCheckout ?? "Faster checkout every time" },
+  ];
 
   return (
     <ScrollView
+      style={{ backgroundColor: colors.canvas }}
       contentContainerStyle={{ paddingBottom: insets.bottom + TAB_BAR_HEIGHT + 16 }}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      {/* Hero */}
-      <View style={[styles.loginHero, { backgroundColor: colors.primary }]}>
-        <Text style={styles.heroFlag}>🇭🇳</Text>
-        <Text style={styles.heroTitle}>{t.accountTitle ?? "My Account"}</Text>
-        <Text style={styles.heroSub}>
-          {t.accountSubGuest ?? "Sign in or create an account to track orders and save your address"}
+      {/* Navy header: title + language, brand mark, welcome copy */}
+      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 12 }]}>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle} accessibilityRole="header">
+            {t.accountTitle ?? "My Account"}
+          </Text>
+          <LanguagePicker variant="onBrand" />
+        </View>
+        <View style={styles.brandMark}>
+          <BrandMark size={52} />
+        </View>
+        <Text style={styles.welcomeTitle}>{t.welcomeCardTitle ?? "Welcome to HN Grocers"}</Text>
+        <Text style={styles.welcomeSub}>
+          {t.accountSubGuest ?? t.welcomeCardSub ?? "Sign in to save your address and track orders."}
         </Text>
       </View>
 
-      {/* CTA Card */}
-      <View
-        style={[
-          styles.loginCard,
-          { backgroundColor: colors.card, borderColor: colors.border, marginTop: -20 },
-        ]}
-      >
-        <Text style={[styles.loginCardTitle, { color: colors.foreground }]}>
-          {t.welcomeCardTitle ?? "Welcome to Sabores"}
-        </Text>
-        <Text style={[styles.loginCardSub, { color: colors.mutedForeground }]}>
-          {t.welcomeCardSub ?? "Sign in to your account or create a new one to save your address and track your orders."}
-        </Text>
+      <View style={styles.body}>
+        <View style={[styles.card, styles.actionsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Button
+            testID="cta-sign-in"
+            title={t.signInButton ?? "Sign In"}
+            icon={<MaterialCommunityIcons name="login" size={18} color={colors.gold} />}
+            onPress={async () => {
+              Haptics.selectionAsync();
+              if (isSignedIn) {
+                try { await logout(); } catch {}
+              }
+              router.push("/(auth)/sign-in");
+            }}
+          />
+          <Button
+            testID="cta-sign-up"
+            title={t.createAccount ?? "Create Account"}
+            variant="outline"
+            onPress={async () => {
+              Haptics.selectionAsync();
+              if (isSignedIn) {
+                try { await logout(); } catch {}
+              }
+              router.push("/(auth)/sign-up");
+            }}
+          />
+        </View>
 
+        {/* Guest order access — for shoppers who placed an order without signing in */}
         <Pressable
-          testID="cta-sign-in"
-          onPress={async () => {
+          testID="guest-view-orders"
+          onPress={() => {
             Haptics.selectionAsync();
-            // Defensive: if a stale Clerk session exists (e.g. token cached
-            // from a previous run / different environment), clear it first
-            // so the auth modal isn't immediately redirected back to cuenta.
-            if (isSignedIn) {
-              try { await logout(); } catch {}
-            }
-            router.push("/(auth)/sign-in");
+            router.push("/(tabs)/mis-pedidos");
           }}
           style={({ pressed }) => [
-            styles.loginBtn,
-            { backgroundColor: colors.primary, opacity: pressed ? 0.85 : 1 },
+            styles.card,
+            styles.guestOrders,
+            { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.85 : 1 },
           ]}
+          accessibilityRole="button"
         >
-          <Icon name="log-in" size={18} color={colors.gold} />
-          <Text style={styles.loginBtnText}>{t.signInButton ?? "Sign In"}</Text>
-        </Pressable>
-
-        <Pressable
-          testID="cta-sign-up"
-          onPress={async () => {
-            Haptics.selectionAsync();
-            if (isSignedIn) {
-              try { await logout(); } catch {}
-            }
-            router.push("/(auth)/sign-up");
-          }}
-          style={({ pressed }) => [
-            styles.loginBtn,
-            {
-              backgroundColor: colors.background,
-              borderWidth: 1,
-              borderColor: colors.primary,
-              marginTop: 10,
-              opacity: pressed ? 0.85 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.loginBtnText, { color: colors.primary }]}>
-            {t.createAccount ?? "Create Account"}
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Guest order access — for shoppers who placed an order without signing in */}
-      <Pressable
-        testID="guest-view-orders"
-        onPress={() => {
-          Haptics.selectionAsync();
-          router.push("/(tabs)/mis-pedidos");
-        }}
-        style={({ pressed }) => [
-          styles.guestOrdersRow,
-          {
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-            opacity: pressed ? 0.8 : 1,
-            marginTop: 24,
-            marginBottom: 16,
-          },
-        ]}
-      >
-        <View style={[styles.guestOrdersIcon, { backgroundColor: colors.primary + "18" }]}>
-          <Icon name="package" size={22} color={colors.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.guestOrdersTitle, { color: colors.foreground }]}>
-            {(t as any).guestOrdersTitle ?? "Ver mis pedidos"}
-          </Text>
-          <Text style={[styles.guestOrdersSub, { color: colors.mutedForeground }]}>
-            {(t as any).guestOrdersSub ?? "Revisa los pedidos que hiciste sin cuenta"}
-          </Text>
-        </View>
-        <Icon name="chevron-right" size={20} color={colors.mutedForeground} />
-      </Pressable>
-
-      {/* Benefits */}
-      <View style={styles.benefitsContainer}>
-        {[
-          { icon: "package", text: t.benefitOrders ?? "View your full order history" },
-          { icon: "map-pin", text: t.benefitAddress ?? "Save your shipping address" },
-          { icon: "zap", text: t.benefitCheckout ?? "Faster checkout every time" },
-        ].map((b) => (
-          <View
-            key={b.icon}
-            style={[
-              styles.benefitRow,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
-          >
-            <View
-              style={[
-                styles.benefitIcon,
-                { backgroundColor: colors.primary + "18" },
-              ]}
-            >
-              <Icon name={b.icon as any} size={22} color={colors.primary} />
-            </View>
-            <Text style={[styles.benefitText, { color: colors.foreground }]}>
-              {b.text}
+          <View style={[styles.iconTile, { backgroundColor: colors.v2.bg.brandSoft }]}>
+            <MaterialCommunityIcons name="package-variant" size={22} color={colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.tileTitle, { color: colors.foreground }]}>
+              {(t as any).guestOrdersTitle ?? "Ver mis pedidos"}
+            </Text>
+            <Text style={[styles.tileSub, { color: colors.mutedForeground }]}>
+              {(t as any).guestOrdersSub ?? "Revisa los pedidos que hiciste sin cuenta"}
             </Text>
           </View>
-        ))}
+          <MaterialCommunityIcons name="chevron-right" size={22} color={colors.v2.text.tertiary} />
+        </Pressable>
+
+        {/* Benefits */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          {benefits.map((b, i) => (
+            <View
+              key={b.icon}
+              style={[
+                styles.benefitRow,
+                i < benefits.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.v2.bg.muted },
+              ]}
+            >
+              <View style={[styles.benefitIcon, { backgroundColor: colors.v2.bg.accentSoft }]}>
+                <MaterialCommunityIcons name={b.icon} size={18} color={colors.v2.text.accent} />
+              </View>
+              <Text style={[styles.benefitText, { color: colors.foreground }]}>{b.text}</Text>
+            </View>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );
 }
 
 function ProfileView({ colors }: { colors: ReturnType<typeof useColors> }) {
-  const { t, lang, setLang } = useLanguage();
+  const { t, lang } = useLanguage();
   const { user, logout, updateProfile } = useUser();
   const insets = useSafeAreaInsets();
   const [editing, setEditing] = useState(false);
@@ -257,303 +312,246 @@ function ProfileView({ colors }: { colors: ReturnType<typeof useColors> }) {
   const TAB_BAR_HEIGHT = Platform.OS === "web" ? 84 : 65;
   const contentBottom = insets.bottom + TAB_BAR_HEIGHT + 16;
 
+  // Navy header only on the profile view; the edit form is on a light background.
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle(editing ? "dark" : "light");
+      return () => setStatusBarStyle("dark");
+    }, [editing]),
+  );
+
   if (editing) {
     return (
       <ScrollView
-        style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ padding: 20, paddingBottom: contentBottom + 20 }}
+        style={{ flex: 1, backgroundColor: colors.canvas }}
+        contentContainerStyle={{ padding: 20, paddingTop: insets.top + 12, paddingBottom: contentBottom + 20, gap: 16 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.sectionTitle, { color: colors.foreground, marginBottom: 20 }]}>
+        <Text style={[styles.editTitle, { color: colors.foreground }]} accessibilityRole="header">
           {t.editProfile ?? "Edit Profile"}
         </Text>
 
-        {[
-          { label: t.yourName, value: name, set: setName, keyboard: "default" as const },
-          { label: t.phone, value: phone, set: setPhone, keyboard: "phone-pad" as const },
-        ].map((f) => (
-          <View key={f.label} style={styles.editField}>
-            <Text style={[styles.editLabel, { color: colors.mutedForeground }]}>{f.label}</Text>
-            <TextInput
-              style={[styles.editInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.foreground }]}
-              value={f.value}
-              onChangeText={f.set}
-              keyboardType={f.keyboard}
-              autoCorrect={false}
-              autoCapitalize="words"
-            />
+        <View style={[styles.card, styles.formCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.formTitle, { color: colors.foreground }]}>{t.personalInfo ?? "Personal Info"}</Text>
+          <TextField label={t.yourName} value={name} onChangeText={setName} autoCorrect={false} autoCapitalize="words" />
+          <TextField label={t.phone} value={phone} onChangeText={setPhone} keyboardType="phone-pad" autoCorrect={false} containerStyle={{ marginBottom: 0 }} />
+        </View>
+
+        <View style={[styles.card, styles.formCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.formTitle, { color: colors.foreground }]}>{t.defaultAddress ?? "Default Shipping Address"}</Text>
+          <TextField label={t.addressLine1} value={line1} onChangeText={setLine1} placeholder={t.addressLine1Placeholder} autoCorrect={false} autoCapitalize="words" />
+          <TextField label={t.addressLine2} value={line2} onChangeText={setLine2} placeholder={t.addressLine2Placeholder} autoCorrect={false} autoCapitalize="words" />
+          <TextField label={t.city} value={city} onChangeText={setCity} autoCorrect={false} autoCapitalize="words" />
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <TextField label={t.state} value={stateName} onChangeText={setStateName} placeholder="TX" autoCorrect={false} autoCapitalize="characters" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <TextField label={t.zip} value={zipCode} onChangeText={setZipCode} keyboardType="numeric" autoCorrect={false} />
+            </View>
           </View>
-        ))}
+          <TextField label={t.phone} value={addrPhone} onChangeText={setAddrPhone} keyboardType="phone-pad" autoCorrect={false} containerStyle={{ marginBottom: 0 }} />
+        </View>
 
-        <Text style={[styles.sectionTitle, { color: colors.foreground, marginTop: 20, marginBottom: 16 }]}>
-          {t.defaultAddress ?? "Default Shipping Address"}
-        </Text>
-
-        {[
-          { label: t.addressLine1, value: line1, set: setLine1, keyboard: "default" as const, cap: "words" as const, placeholder: t.addressLine1Placeholder },
-          { label: t.addressLine2, value: line2, set: setLine2, keyboard: "default" as const, cap: "words" as const, placeholder: t.addressLine2Placeholder },
-          { label: t.city, value: city, set: setCity, keyboard: "default" as const, cap: "words" as const },
-          { label: t.state, value: stateName, set: setStateName, keyboard: "default" as const, cap: "characters" as const, placeholder: "TX" },
-          { label: t.zip, value: zipCode, set: setZipCode, keyboard: "numeric" as const, cap: "none" as const },
-          { label: t.phone, value: addrPhone, set: setAddrPhone, keyboard: "phone-pad" as const, cap: "none" as const },
-        ].map((f) => (
-          <View key={f.label} style={styles.editField}>
-            <Text style={[styles.editLabel, { color: colors.mutedForeground }]}>{f.label}</Text>
-            <TextInput
-              style={[styles.editInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.foreground }]}
-              value={f.value}
-              onChangeText={f.set}
-              keyboardType={f.keyboard}
-              autoCorrect={false}
-              autoCapitalize={f.cap ?? "none"}
-              placeholder={f.placeholder}
-              placeholderTextColor={colors.mutedForeground}
-            />
-          </View>
-        ))}
-
-        <View style={{ flexDirection: "row", gap: 12, marginTop: 24 }}>
-          <Pressable
-            style={[styles.cancelEditBtn, { borderColor: colors.border }]}
-            onPress={() => setEditing(false)}
-          >
-            <Text style={[styles.cancelEditText, { color: colors.mutedForeground }]}>
-              {t.cancel ?? "Cancel"}
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.saveBtn, { backgroundColor: saving ? colors.muted : colors.primary, flex: 1 }]}
-            onPress={handleSave}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <Text style={styles.saveBtnText}>{t.saveChanges ?? "Save Changes"}</Text>
-            )}
-          </Pressable>
+        <View style={{ flexDirection: "row", gap: 12 }}>
+          <Button title={t.cancel ?? "Cancel"} variant="outline" onPress={() => setEditing(false)} style={{ flex: 1 }} />
+          <Button title={t.saveChanges ?? "Save Changes"} onPress={handleSave} loading={saving} style={{ flex: 1 }} />
         </View>
       </ScrollView>
     );
   }
 
+  const addr = user?.defaultAddress;
+
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1, backgroundColor: colors.canvas }}
       contentContainerStyle={{ paddingBottom: contentBottom }}
       showsVerticalScrollIndicator={false}
     >
-      {/* Profile Header */}
-      <View style={[styles.profileHeader, { backgroundColor: colors.primary }]}>
-        <View style={[styles.avatar, { backgroundColor: colors.gold }]}>
-          <Text style={styles.avatarText}>{initial}</Text>
+      {/* Navy header: title + language, then identity */}
+      <View style={[styles.header, { backgroundColor: colors.primary, paddingTop: insets.top + 12 }]}>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle} accessibilityRole="header">
+            {t.accountTitle ?? "My Account"}
+          </Text>
+          <LanguagePicker variant="onBrand" />
         </View>
-        <Text style={[styles.profileName, { color: "#fff" }]}>{user?.name}</Text>
-        <Text style={[styles.profileEmail, { color: "rgba(255,255,255,0.75)" }]}>
-          {user?.email}
-        </Text>
-        <Text style={[styles.profileSince, { color: "rgba(255,255,255,0.6)" }]}>
-          {t.memberSince ?? "Member since"} {joinedDate}
-        </Text>
-      </View>
-
-      {/* Stats Card */}
-      <View
-        style={[
-          styles.statsRow,
-          { backgroundColor: colors.card, borderColor: colors.border, marginHorizontal: 16, marginTop: -20 },
-        ]}
-      >
-        <View style={styles.statItem}>
-          <Text style={[styles.statNum, { color: colors.primary }]}>
-            {ordersLoading ? "…" : (orders?.length ?? 0)}
-          </Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>
-            {t.ordersPlaced ?? "Orders"}
-          </Text>
-        </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statItem}>
-          <Text style={[styles.statNum, { color: user?.defaultAddress ? "#16a34a" : colors.mutedForeground, fontSize: 22 }]}>
-            {user?.defaultAddress ? "✓" : "—"}
-          </Text>
-          <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>
-            {user?.defaultAddress ? (t.addressSaved ?? "Address saved") : (t.noAddress ?? "No address")}
-          </Text>
-        </View>
-      </View>
-
-      {/* Personal Info Card */}
-      <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.infoCardHeader}>
-          <Text style={[styles.infoCardTitle, { color: colors.foreground }]}>
-            {t.personalInfo ?? "Personal Info"}
-          </Text>
-          <Pressable
-            onPress={startEdit}
-            style={[styles.editBtn, { borderColor: colors.primary }]}
-          >
-            <Icon name="edit-2" size={14} color={colors.primary} />
-            <Text style={[styles.editBtnText, { color: colors.primary }]}>
-              {t.edit ?? "Edit"}
-            </Text>
-          </Pressable>
-        </View>
-        {[
-          { icon: "user", label: t.yourName, value: user?.name },
-          { icon: "mail", label: t.email, value: user?.email },
-          { icon: "phone", label: t.phone, value: user?.phone || (t.notSet ?? "Not set") },
-        ].map((row) => (
-          <View key={row.label} style={[styles.infoRow, { borderTopColor: colors.border }]}>
-            <Icon name={row.icon as any} size={18} color={colors.mutedForeground} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.infoRowLabel, { color: colors.mutedForeground }]}>
-                {row.label}
-              </Text>
-              <Text style={[styles.infoRowValue, { color: colors.foreground }]}>
-                {row.value}
-              </Text>
-            </View>
+        <View style={styles.identity}>
+          <View style={[styles.avatar, { backgroundColor: colors.gold }]}>
+            <Text style={[styles.avatarText, { color: colors.primary }]}>{initial}</Text>
           </View>
-        ))}
-      </View>
-
-      {/* Default Address Card */}
-      <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.infoCardHeader}>
-          <Text style={[styles.infoCardTitle, { color: colors.foreground }]}>
-            {t.defaultAddress ?? "Default Shipping Address"}
-          </Text>
-          <Pressable
-            onPress={startEdit}
-            style={[styles.editBtn, { borderColor: colors.primary }]}
-          >
-            <Icon name={user?.defaultAddress ? "edit-2" : "plus"} size={14} color={colors.primary} />
-            <Text style={[styles.editBtnText, { color: colors.primary }]}>
-              {user?.defaultAddress ? (t.edit ?? "Edit") : (t.addAddress ?? "Add")}
+          <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+            <Text style={styles.profileName} numberOfLines={1}>
+              {user?.name}
             </Text>
-          </Pressable>
-        </View>
-        {user?.defaultAddress ? (
-          <View style={[styles.addressBlock, { borderTopColor: colors.border }]}>
-            <Icon name="map-pin" size={18} color={colors.primary} style={{ marginTop: 2 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.addressLine, { color: colors.foreground }]}>
-                {user.defaultAddress.fullName}
+            <Text style={styles.profileEmail} numberOfLines={1}>
+              {user?.email}
+            </Text>
+            {!!joinedDate && (
+              <Text style={styles.profileSince}>
+                {t.memberSince ?? "Member since"} {joinedDate}
               </Text>
-              <Text style={[styles.addressLine, { color: colors.mutedForeground }]}>
-                {user.defaultAddress.line1}
-              </Text>
-              {user.defaultAddress.line2 ? (
-                <Text style={[styles.addressLine, { color: colors.mutedForeground }]}>
-                  {user.defaultAddress.line2}
-                </Text>
-              ) : null}
-              <Text style={[styles.addressLine, { color: colors.mutedForeground }]}>
-                {user.defaultAddress.city}, {user.defaultAddress.state} {user.defaultAddress.zipCode}
-              </Text>
-            </View>
+            )}
           </View>
-        ) : (
           <Pressable
-            style={[styles.addAddressPrompt, { borderTopColor: colors.border, borderTopWidth: 1 }]}
             onPress={startEdit}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.editPill, { opacity: pressed ? 0.75 : 1 }]}
           >
-            <Icon name="plus-circle" size={20} color={colors.mutedForeground} />
-            <Text style={[styles.addAddressText, { color: colors.mutedForeground }]}>
-              {t.addAddressPrompt ?? "Tap to add your shipping address"}
+            <Text style={styles.editPillText}>{t.edit ?? "Edit"}</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.body}>
+        {/* Quick tiles */}
+        <View style={styles.tiles}>
+          <Pressable
+            onPress={() => {
+              Haptics.selectionAsync();
+              router.push("/(tabs)/mis-pedidos");
+            }}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.card,
+              styles.tile,
+              { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <View style={[styles.iconTile, { backgroundColor: colors.v2.bg.brandSoft }]}>
+              <MaterialCommunityIcons name="package-variant" size={22} color={colors.primary} />
+            </View>
+            <Text style={[styles.tileTitle, { color: colors.foreground }]}>
+              {(t as any).viewMyOrders ?? t.recentOrders ?? "Mis pedidos"}
+            </Text>
+            <Text style={[styles.tileSub, { color: colors.mutedForeground }]}>
+              {ordersLoading
+                ? ((t as any).loading ?? "…")
+                : `${orders?.length ?? 0} ${(t.ordersPlaced ?? "Orders").toLowerCase()}`}
             </Text>
           </Pressable>
-        )}
+          <Pressable
+            onPress={startEdit}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.card,
+              styles.tile,
+              { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <View style={[styles.iconTile, { backgroundColor: colors.v2.bg.accentSoft }]}>
+              <MaterialCommunityIcons name="map-marker-outline" size={22} color={colors.v2.text.accent} />
+            </View>
+            <Text style={[styles.tileTitle, { color: colors.foreground }]}>{t.defaultAddress ?? "Address"}</Text>
+            <Text style={[styles.tileSub, { color: addr ? colors.v2.state.success : colors.mutedForeground }]}>
+              {addr ? (t.addressSaved ?? "Address saved") : (t.addAddress ?? "Add address")}
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* Personal info */}
+        <View>
+          <SectionHead
+            colors={colors}
+            title={t.personalInfo ?? "Personal Info"}
+            action={{ label: t.edit ?? "Edit", icon: "pencil-outline", onPress: startEdit }}
+          />
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {[
+              { icon: "account-outline" as IconName, label: t.yourName, value: user?.name },
+              { icon: "email-outline" as IconName, label: t.email, value: user?.email },
+              { icon: "phone-outline" as IconName, label: t.phone, value: user?.phone || ((t as any).notSet ?? "Not set") },
+            ].map((row, i, arr) => (
+              <ListRow
+                key={row.label}
+                colors={colors}
+                icon={row.icon}
+                label={row.label}
+                value={row.value ?? ""}
+                last={i === arr.length - 1}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Default address */}
+        <View>
+          <SectionHead
+            colors={colors}
+            title={t.defaultAddress ?? "Default Shipping Address"}
+            action={{
+              label: addr ? (t.edit ?? "Edit") : (t.addAddress ?? "Add"),
+              icon: addr ? "pencil-outline" : "plus",
+              onPress: startEdit,
+            }}
+          />
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {addr ? (
+              <View style={styles.addressBlock}>
+                <MaterialCommunityIcons name="map-marker-outline" size={20} color={colors.v2.text.accent} style={{ marginTop: 1 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.addressName, { color: colors.foreground }]}>{addr.fullName}</Text>
+                  <Text style={[styles.addressLine, { color: colors.v2.text.secondary }]}>{addr.line1}</Text>
+                  {addr.line2 ? (
+                    <Text style={[styles.addressLine, { color: colors.v2.text.secondary }]}>{addr.line2}</Text>
+                  ) : null}
+                  <Text style={[styles.addressLine, { color: colors.v2.text.secondary }]}>
+                    {addr.city}, {addr.state} {addr.zipCode}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <ListRow
+                colors={colors}
+                icon="plus-circle-outline"
+                label={t.addAddressPrompt ?? "Tap to add your shipping address"}
+                onPress={startEdit}
+                last
+              />
+            )}
+          </View>
+        </View>
+
+        {/* Support */}
+        <View>
+          <SectionHead colors={colors} title={(t as any).needHelp ?? "Support"} />
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <ListRow
+              colors={colors}
+              icon="email-outline"
+              label={SUPPORT_EMAIL}
+              onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
+              last
+            />
+          </View>
+        </View>
+
+        <ReferralCard
+          onPress={async () => {
+            try {
+              await Share.share({
+                message:
+                  (t as any).shareReferralDesc ??
+                  "Comparte HN Grocers — tu amigo recibe $10 en su primer pedido.",
+              });
+            } catch {}
+          }}
+        />
+
+        {/* Sign out */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ListRow
+            colors={colors}
+            icon="logout"
+            label={t.logoutTitle ?? "Sign Out"}
+            onPress={handleLogout}
+            tone="danger"
+            last
+          />
+        </View>
       </View>
-
-      {/* My Orders entry — same destination as the guest flow for a single, consistent place to view orders */}
-      <Pressable
-        testID="profile-view-orders"
-        onPress={() => {
-          Haptics.selectionAsync();
-          router.push("/(tabs)/mis-pedidos");
-        }}
-        style={({ pressed }) => [
-          styles.guestOrdersRow,
-          {
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-            opacity: pressed ? 0.8 : 1,
-            marginTop: 16,
-            marginBottom: 16,
-          },
-        ]}
-      >
-        <View style={[styles.guestOrdersIcon, { backgroundColor: colors.primary + "18" }]}>
-          <Icon name="package" size={22} color={colors.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.guestOrdersTitle, { color: colors.foreground }]}>
-            {(t as any).viewMyOrders ?? t.recentOrders ?? "Mis pedidos"}
-          </Text>
-          <Text style={[styles.guestOrdersSub, { color: colors.mutedForeground }]}>
-            {ordersLoading
-              ? ((t as any).loading ?? "Cargando…")
-              : ((t as any).ordersCount
-                  ? (t as any).ordersCount(orders?.length ?? 0)
-                  : `${orders?.length ?? 0} pedidos`)}
-          </Text>
-        </View>
-        <Icon name="chevron-right" size={20} color={colors.mutedForeground} />
-      </Pressable>
-
-      {/* Language */}
-      <View style={[styles.langSection, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.langHeader}>
-          <Icon name="globe" size={20} color={colors.primary} />
-          <Text style={[styles.langTitle, { color: colors.foreground }]}>
-            {(t as any).languageSection ?? t.language ?? "Language"}
-          </Text>
-        </View>
-        <View style={styles.langOptionsRow}>
-          {[
-            { code: "es" as const, flag: "🇭🇳", label: t.langEs ?? "Español" },
-            { code: "en" as const, flag: "🇺🇸", label: t.langEn ?? "English" },
-          ].map((opt) => {
-            const selected = lang === opt.code;
-            return (
-              <Pressable
-                key={opt.code}
-                accessibilityRole="button"
-                accessibilityLabel={opt.label}
-                onPress={() => setLang(opt.code)}
-                style={({ pressed }) => [
-                  styles.langOption,
-                  {
-                    backgroundColor: selected ? colors.secondary : colors.background,
-                    borderColor: selected ? colors.primary : colors.border,
-                    opacity: pressed ? 0.85 : 1,
-                  },
-                ]}
-              >
-                <Text style={styles.langFlag}>{opt.flag}</Text>
-                <Text style={[styles.langLabel, { color: selected ? colors.primary : colors.foreground }]}>
-                  {opt.label}
-                </Text>
-                {selected && <Text style={[styles.langCheck, { color: colors.primary }]}>✓</Text>}
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* Sign Out */}
-      <Pressable
-        style={[styles.logoutBtn, { borderColor: "#ef4444" }]}
-        onPress={handleLogout}
-      >
-        <Icon name="log-out" size={18} color="#ef4444" />
-        <Text style={[styles.logoutText, { color: "#ef4444" }]}>
-          {t.logoutTitle ?? "Sign Out"}
-        </Text>
-      </Pressable>
     </ScrollView>
   );
 }
@@ -564,14 +562,14 @@ export default function CuentaScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.canvas }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+    <View style={[styles.screen, { backgroundColor: colors.canvas }]}>
       {isSignedIn ? <ProfileView colors={colors} /> : <LoginView colors={colors} />}
     </View>
   );
@@ -581,259 +579,71 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   loadingContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
 
-  // Login
-  loginHero: {
-    alignItems: "center",
-    paddingVertical: 40,
-    paddingHorizontal: 24,
-    gap: 10,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  heroFlag: { fontSize: 44 },
-  heroTitle: { fontSize: 26, fontFamily: "Inter_700Bold", color: "#fff", textAlign: "center" },
-  heroSub: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    color: "rgba(255,255,255,0.8)",
-    textAlign: "center",
-    lineHeight: 21,
-  },
-  loginCard: {
-    margin: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 20,
-    gap: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  loginCardTitle: { fontSize: 20, fontFamily: "Inter_700Bold" },
-  loginCardSub: { fontSize: 14, fontFamily: "Inter_400Regular", lineHeight: 21 },
-  inputGroup: { gap: 8 },
-  inputLabel: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  inputField: {
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    fontSize: 16,
-    fontFamily: "Inter_500Medium",
-  },
-  loginBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 15,
-    borderRadius: 50,
-  },
-  loginBtnText: { color: "#fff", fontSize: 16, fontFamily: "Inter_700Bold" },
-  benefitsContainer: { paddingHorizontal: 16, gap: 10 },
-  benefitRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  benefitIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  benefitText: { fontSize: 14, fontFamily: "Inter_500Medium", flex: 1, lineHeight: 20 },
-  guestOrdersRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    marginHorizontal: 16,
-    marginTop: 12,
-  },
-  guestOrdersIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  guestOrdersTitle: { fontSize: 15, fontFamily: "Inter_700Bold" },
-  guestOrdersSub: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 2 },
+  // Navy header
+  header: { paddingHorizontal: 20, paddingBottom: 28, gap: 18 },
+  headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+  headerTitle: { flex: 1, color: "#FFFFFF", fontSize: 28, fontFamily: fonts.display, letterSpacing: -0.4 },
 
-  // Profile
-  profileHeader: {
-    alignItems: "center",
-    paddingTop: 24,
-    paddingBottom: 44,
-    paddingHorizontal: 24,
-    gap: 8,
-  },
-  avatar: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 6,
-  },
-  avatarText: { fontSize: 30, fontFamily: "Inter_700Bold", color: "#002B7F" },
-  profileName: { fontSize: 22, fontFamily: "Inter_700Bold", textAlign: "center" },
-  profileEmail: { fontSize: 13, fontFamily: "Inter_500Medium", textAlign: "center" },
-  profileSince: { fontSize: 12, fontFamily: "Inter_400Regular" },
-  statsRow: {
-    flexDirection: "row",
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  statItem: { flex: 1, alignItems: "center", gap: 6 },
-  statDivider: { width: 1, marginVertical: 4 },
-  statNum: { fontSize: 26, fontFamily: "Inter_700Bold" },
-  statLabel: { fontSize: 12, fontFamily: "Inter_500Medium", textAlign: "center" },
-  infoCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  infoCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-  },
-  infoCardTitle: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  editBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  editBtnText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 14,
-    padding: 14,
-    borderTopWidth: 1,
-  },
-  infoRowLabel: { fontSize: 12, fontFamily: "Inter_400Regular", marginBottom: 2 },
-  infoRowValue: { fontSize: 15, fontFamily: "Inter_500Medium" },
-  addressBlock: { flexDirection: "row", gap: 14, padding: 16, borderTopWidth: 1 },
-  addressLine: { fontSize: 14, fontFamily: "Inter_500Medium", marginBottom: 2 },
-  addAddressPrompt: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 16,
-  },
-  addAddressText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  emptyOrders: { alignItems: "center", gap: 10, padding: 24 },
-  emptyOrdersText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  orderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    borderTopWidth: 1,
-  },
-  orderRowNum: { fontSize: 15, fontFamily: "Inter_700Bold" },
-  orderRowDate: { fontSize: 12, fontFamily: "Inter_500Medium", marginTop: 2 },
-  orderRowTotal: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  orderRowStatus: {
-    marginTop: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
-  orderRowStatusText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
-  logoutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    margin: 16,
-    marginTop: 12,
-    paddingVertical: 14,
-    borderRadius: 14,
-    borderWidth: 1.5,
-  },
-  logoutText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  // Guest header content
+  brandMark: { marginTop: 4 },
+  welcomeTitle: { color: "#FFFFFF", fontSize: 24, lineHeight: 28, fontFamily: fonts.display, marginTop: -6 },
+  welcomeSub: { color: "#C3CEE6", fontSize: 15, lineHeight: 22, fontFamily: fonts.regular, marginTop: -10 },
 
-  // Language section
-  langSection: {
-    marginHorizontal: 16,
-    marginTop: 4,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  langHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-  langTitle: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  langOptionsRow: { flexDirection: "row", gap: 10 },
-  langOption: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingVertical: 12,
+  // Profile identity
+  identity: { flexDirection: "row", alignItems: "center", gap: 14 },
+  avatar: { width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center" },
+  avatarText: { fontSize: 22, fontFamily: fonts.display },
+  profileName: { color: "#FFFFFF", fontSize: 18, fontFamily: fonts.bold },
+  profileEmail: { color: "#C3CEE6", fontSize: 13, fontFamily: fonts.regular },
+  profileSince: { color: "#9FB0D6", fontSize: 12, fontFamily: fonts.regular, marginTop: 2 },
+  editPill: {
+    height: 36,
     paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    minHeight: 48,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  langFlag: { fontSize: 20 },
-  langLabel: { fontSize: 14, fontFamily: "Inter_600SemiBold", flex: 1 },
-  langCheck: { fontSize: 16, fontFamily: "Inter_700Bold" },
+  editPillText: { color: "#FFFFFF", fontSize: 13, fontFamily: fonts.bold },
+
+  // Body + cards
+  body: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
+  card: { borderWidth: 1, borderRadius: 16 },
+  actionsCard: { padding: 16, gap: 10 },
+  guestOrders: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14 },
+  iconTile: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  tiles: { flexDirection: "row", gap: 12 },
+  tile: { flex: 1, padding: 14, gap: 10 },
+  tileTitle: { fontSize: 15, fontFamily: fonts.bold },
+  tileSub: { fontSize: 13, fontFamily: fonts.regular, marginTop: -6 },
+
+  benefitRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
+  benefitIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  benefitText: { flex: 1, fontSize: 15, fontFamily: fonts.medium, lineHeight: 21 },
+
+  // Sections
+  sectionHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+    marginBottom: 8,
+  },
+  sectionEyebrow: { fontSize: 12, fontFamily: fonts.bold, letterSpacing: 0.8 },
+  editLink: { flexDirection: "row", alignItems: "center", gap: 4 },
+  editLinkText: { fontSize: 13, fontFamily: fonts.semibold },
+
+  listRow: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 56, paddingHorizontal: 16 },
+  listLabel: { flex: 1, fontSize: 15, fontFamily: fonts.medium },
+  listValue: { maxWidth: "55%", fontSize: 14, fontFamily: fonts.regular, textAlign: "right" },
+
+  addressBlock: { flexDirection: "row", gap: 12, padding: 16 },
+  addressName: { fontSize: 15, fontFamily: fonts.semibold, lineHeight: 21 },
+  addressLine: { fontSize: 14, fontFamily: fonts.regular, lineHeight: 20 },
 
   // Edit profile
-  sectionTitle: { fontSize: 18, fontFamily: "Inter_700Bold" },
-  editField: { marginBottom: 14 },
-  editLabel: { fontSize: 13, fontFamily: "Inter_600SemiBold", marginBottom: 6 },
-  editInput: {
-    height: 50,
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    fontFamily: "Inter_500Medium",
-  },
-  cancelEditBtn: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cancelEditText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
-  saveBtn: {
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  saveBtnText: { color: "#fff", fontSize: 15, fontFamily: "Inter_700Bold" },
+  editTitle: { fontSize: 28, fontFamily: fonts.display, letterSpacing: -0.4 },
+  formCard: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 16 },
+  formTitle: { fontSize: 16, fontFamily: fonts.bold, marginBottom: 14 },
 });

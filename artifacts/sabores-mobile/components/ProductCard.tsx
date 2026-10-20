@@ -10,10 +10,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import { BestsellerMark } from "@/components/ui";
+import { fonts } from "@/constants/fonts";
 import { useCart } from "@/context/CartContext";
-import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/context/LanguageContext";
+import { useColors } from "@/hooks/useColors";
 
 interface Product {
   id: number;
@@ -31,11 +34,22 @@ interface Product {
 
 interface Props {
   product: Product;
+  /** Larger type for feature placements */
+  featured?: boolean;
+  /** Horizontal list row (thumbnail + text + add) */
   horizontal?: boolean;
+  /** Optional rank number rendered in the horizontal row (1-based) */
+  rank?: number;
   cardWidth?: number;
 }
 
-export function ProductCard({ product, horizontal = false, cardWidth }: Props) {
+export function ProductCard({
+  product,
+  featured = false,
+  horizontal = false,
+  rank,
+  cardWidth,
+}: Props) {
   const colors = useColors();
   const router = useRouter();
   const { addItem } = useCart();
@@ -46,10 +60,13 @@ export function ProductCard({ product, horizontal = false, cardWidth }: Props) {
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const numColumns = windowWidth >= 768 ? 3 : 2;
-  const HORIZONTAL_PADDING = 16 * 2;
+  const HORIZONTAL_PADDING = 20 * 2;
   const GAP = 12 * (numColumns - 1);
-  const computedCardWidth = cardWidth ?? Math.floor((windowWidth - HORIZONTAL_PADDING - GAP) / numColumns);
-  const IMAGE_HEIGHT = 160;
+  const computedCardWidth =
+    cardWidth ?? Math.floor((windowWidth - HORIZONTAL_PADDING - GAP) / numColumns);
+  // Square image inset in a padded white card
+  const CARD_PAD = 8;
+  const IMAGE_HEIGHT = computedCardWidth - CARD_PAD * 2;
 
   useEffect(() => {
     return () => {
@@ -57,7 +74,9 @@ export function ProductCard({ product, horizontal = false, cardWidth }: Props) {
     };
   }, []);
 
-  const handleAdd = () => {
+  const handleAdd = (e?: any) => {
+    e?.stopPropagation?.();
+    if (!product.inStock) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addItem({
       id: product.id,
@@ -76,119 +95,104 @@ export function ProductCard({ product, horizontal = false, cardWidth }: Props) {
   };
 
   const addedLabel = (t as any).addedToCart ?? "Added!";
+  const goToProduct = () => router.push(`/product/${product.id}`);
 
-  const renderStars = () => {
-    if (!product.rating || product.rating <= 0) return null;
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Text
-          key={i}
-          style={[styles.star, { color: i <= product.rating ? colors.gold : colors.border }]}
-        >
-          ★
-        </Text>
-      );
-    }
-    return <View style={styles.starsRow}>{stars}</View>;
-  };
+  const AddControl = ({ size = 36, radius }: { size?: number; radius?: number }) => (
+    <Pressable
+      testID="add-to-cart-btn"
+      onPress={handleAdd}
+      disabled={!product.inStock}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={`${(t as any).addToCartShort ?? "Add"} ${product.name}`}
+      style={[
+        styles.addBtn,
+        {
+          width: size,
+          height: size,
+          borderRadius: radius ?? size / 2,
+          backgroundColor: justAdded
+            ? colors.success
+            : product.inStock
+              ? colors.primary
+              : colors.muted,
+        },
+      ]}
+    >
+      <MaterialCommunityIcons
+        name={justAdded ? "check" : "plus"}
+        size={size > 32 ? 20 : 16}
+        color={product.inStock ? "#FFFFFF" : colors.mutedForeground}
+      />
+    </Pressable>
+  );
 
+  // ---------- Horizontal list row (ranked list / compact list) ----------
   if (horizontal) {
     return (
       <Pressable
         testID="product-card"
+        onPress={goToProduct}
         style={({ pressed }) => [
-          styles.horizontal,
-          {
-            backgroundColor: colors.card,
-            borderColor: colors.border,
-            opacity: pressed ? 0.85 : 1,
-            shadowColor: colors.foreground,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 6,
-            elevation: 2,
-          },
+          styles.row,
+          { borderBottomColor: colors.border, opacity: pressed ? 0.92 : 1 },
         ]}
-        onPress={() => router.push(`/product/${product.id}`)}
       >
-        <View>
-          <Image source={{ uri: product.imageUrl }} style={styles.horizImage} resizeMode="cover" />
-          {justAdded && (
-            <Animated.View
-              pointerEvents="none"
-              style={[styles.addedToast, { backgroundColor: colors.primary, opacity: toastOpacity }]}
-            >
-              <Text style={styles.addedToastText}>✓ {addedLabel}</Text>
-            </Animated.View>
-          )}
-        </View>
-        <View style={styles.horizContent}>
-          {product.isBestseller && (
-            <View style={[styles.badge, { backgroundColor: colors.goldLight }]}>
-              <Text style={[styles.badgeText, { color: colors.primary }]}>Más Vendido</Text>
-            </View>
-          )}
-          <Text style={[styles.category, { color: colors.mutedForeground }]} numberOfLines={1}>
-            {product.categoryName}
+        {typeof rank === "number" && (
+          <Text style={[styles.rank, { color: colors.gold }]}>
+            {String(rank).padStart(2, "0")}
           </Text>
-          <Text style={[styles.productName, { color: colors.foreground }]} numberOfLines={2}>
+        )}
+        <View style={[styles.rowThumb, { backgroundColor: colors.v2.bg.brandSoft, borderRadius: colors.radii.md }]}>
+          <Image source={{ uri: product.imageUrl }} style={styles.fill} resizeMode="cover" />
+        </View>
+        <View style={styles.rowInfo}>
+          <Text style={[styles.rowName, { color: colors.foreground }]} numberOfLines={2}>
             {product.name}
           </Text>
-          {renderStars()}
-          <View style={styles.horizBottom}>
-            <Text style={[styles.price, { color: colors.primary }]}>
+          <View style={styles.rowMeta}>
+            <Text style={[styles.rowPrice, { color: colors.primary }]}>
               ${product.price.toFixed(2)}
             </Text>
-            <Pressable
-              testID="add-to-cart-btn"
-              accessibilityRole="button"
-              accessibilityLabel={`${(t as any).addToCart ?? "Add to cart"}: ${product.name}`}
-              hitSlop={8}
-              style={[styles.addBtn, { backgroundColor: colors.primary }]}
-              onPress={handleAdd}
-            >
-              <Text style={styles.addBtnText}>+</Text>
-            </Pressable>
+            {!!product.origin && (
+              <Text style={[styles.rowOrigin, { color: colors.v2.text.tertiary }]} numberOfLines={1}>
+                · {product.origin}
+              </Text>
+            )}
           </View>
         </View>
+        <AddControl size={34} />
       </Pressable>
     );
   }
 
+  // ---------- Portrait grid / carousel card ----------
   return (
     <Pressable
       testID="product-card"
+      onPress={goToProduct}
       style={({ pressed }) => [
         styles.card,
         {
           width: computedCardWidth,
-          backgroundColor: colors.card,
+          padding: CARD_PAD,
+          backgroundColor: colors.surface,
           borderColor: colors.border,
-          opacity: pressed ? 0.85 : 1,
-          shadowColor: colors.foreground,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 3,
+          opacity: pressed ? 0.94 : 1,
         },
       ]}
-      onPress={() => router.push(`/product/${product.id}`)}
     >
-      <View style={styles.imageWrap}>
-        <Image
-          source={{ uri: product.imageUrl }}
-          style={[styles.image, { height: IMAGE_HEIGHT }]}
-          resizeMode="cover"
-        />
-        {product.isBestseller && (
-          <View style={[styles.badge, styles.badgeAbsolute, { backgroundColor: colors.goldLight }]}>
-            <Text style={[styles.badgeText, { color: colors.primary }]}>Más Vendido</Text>
-          </View>
-        )}
+      <View
+        style={[
+          styles.imageWrap,
+          { height: IMAGE_HEIGHT, backgroundColor: colors.v2.bg.accentSoft },
+        ]}
+      >
+        <Image source={{ uri: product.imageUrl }} style={styles.fill} resizeMode="cover" />
+        {product.isBestseller && <BestsellerMark overlay />}
         {!product.inStock && (
-          <View style={[styles.outOfStock, { backgroundColor: "rgba(0,0,0,0.6)" }]}>
-            <Text style={styles.outOfStockText}>Agotado</Text>
+          <View style={styles.outOfStock}>
+            <Text style={styles.outOfStockText}>{t.outOfStock}</Text>
           </View>
         )}
         {justAdded && (
@@ -200,175 +204,105 @@ export function ProductCard({ product, horizontal = false, cardWidth }: Props) {
           </Animated.View>
         )}
       </View>
+
       <View style={styles.info}>
-        <Text style={[styles.category, { color: colors.mutedForeground }]} numberOfLines={1}>
-          {product.categoryName}
-        </Text>
-        <Text style={[styles.productName, { color: colors.foreground }]} numberOfLines={2}>
+        {!!product.origin && (
+          <Text style={styles.origin} numberOfLines={1}>
+            {product.origin}
+          </Text>
+        )}
+        <Text
+          style={[styles.name, featured && styles.nameFeatured, { color: colors.foreground }]}
+          numberOfLines={2}
+        >
           {product.name}
         </Text>
-        {renderStars()}
-        <View style={styles.footer}>
-          <Text style={[styles.price, { color: colors.primary }]}>
-            ${product.price.toFixed(2)}
-          </Text>
-          <Pressable
-            testID="add-to-cart-btn"
-            accessibilityRole="button"
-            accessibilityLabel={`${(t as any).addToCart ?? "Add to cart"}: ${product.name}`}
-            accessibilityState={{ disabled: !product.inStock }}
-            hitSlop={8}
-            style={[
-              styles.addBtn,
-              { backgroundColor: !product.inStock ? colors.muted : colors.primary },
-            ]}
-            onPress={handleAdd}
-            disabled={!product.inStock}
-          >
-            <Text style={[styles.addBtnText, { color: product.inStock ? "#fff" : colors.mutedForeground }]}>+</Text>
-          </Pressable>
-        </View>
+      </View>
+      <View style={styles.footer}>
+        <Text style={[styles.price, featured && styles.priceFeatured, { color: colors.foreground }]}>
+          ${product.price.toFixed(2)}
+        </Text>
+        <AddControl size={36} radius={12} />
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  imageWrap: {
-    position: "relative",
-  },
-  image: {
-    width: "100%",
-    resizeMode: "cover",
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  badgeAbsolute: {
-    position: "absolute",
-    top: 8,
-    left: 8,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontFamily: "Inter_700Bold",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
+  fill: { width: "100%", height: "100%" },
+
+  // Grid card
+  card: { overflow: "hidden", borderWidth: 1, borderRadius: 18, gap: 10 },
+  imageWrap: { position: "relative", width: "100%", overflow: "hidden", borderRadius: 12 },
   outOfStock: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgba(22,27,38,0.5)",
   },
   outOfStockText: {
     color: "#fff",
     fontFamily: "Inter_700Bold",
-    fontSize: 15,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-  },
-  info: {
-    padding: 14,
-    gap: 6,
-  },
-  category: {
-    fontSize: 10,
-    fontFamily: "Inter_600SemiBold",
+    fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: 2,
-    opacity: 0.8,
   },
-  productName: {
+  info: { paddingHorizontal: 4, gap: 3 },
+  // Darker than the gold token so 11px text keeps 4.5:1 on white
+  origin: { fontSize: 11, fontFamily: fonts.semibold, color: "#6B5A2A" },
+  name: {
     fontSize: 14,
-    fontFamily: "Inter_700Bold",
-    lineHeight: 19,
-    minHeight: 38,
-    marginBottom: 4,
+    fontFamily: fonts.semibold,
+    lineHeight: 18,
+    minHeight: 36,
   },
-  starsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  star: {
-    fontSize: 13,
-    marginRight: 2,
-    includeFontPadding: false,
-  },
+  nameFeatured: { fontSize: 15, lineHeight: 20, minHeight: 40 },
   footer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 6,
+    paddingHorizontal: 4,
+    paddingBottom: 4,
   },
   price: {
-    fontSize: 20,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.3,
+    fontSize: 16,
+    fontFamily: fonts.bold,
   },
+  priceFeatured: { fontSize: 17 },
   addBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
   },
-  addBtnText: {
-    color: "#fff",
-    fontSize: 22,
-    lineHeight: 26,
-    fontFamily: "Inter_400Regular",
-    includeFontPadding: false,
-    textAlignVertical: "center",
-    marginTop: -1,
-  },
-  horizontal: {
-    flexDirection: "row",
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-    marginBottom: 12,
-  },
-  horizImage: {
-    width: 110,
-    height: 110,
-    resizeMode: "cover",
-  },
-  horizContent: {
-    flex: 1,
-    padding: 12,
-    gap: 4,
-    justifyContent: "space-between",
-  },
-  horizBottom: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   addedToast: {
     position: "absolute",
-    left: 8,
-    right: 8,
-    bottom: 8,
+    left: 10,
+    right: 10,
+    bottom: 10,
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 999,
     alignItems: "center",
-    justifyContent: "center",
   },
-  addedToastText: {
-    color: "#fff",
-    fontSize: 12,
+  addedToastText: { color: "#fff", fontSize: 11, fontFamily: fonts.bold },
+
+  // Horizontal row
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  rank: {
+    width: 26,
+    fontSize: 13,
     fontFamily: "Inter_700Bold",
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
+  rowThumb: { width: 64, height: 64, overflow: "hidden" },
+  rowInfo: { flex: 1, minWidth: 0, gap: 4 },
+  rowName: { fontSize: 15, fontFamily: "Inter_600SemiBold", lineHeight: 20, letterSpacing: -0.2 },
+  rowMeta: { flexDirection: "row", alignItems: "baseline", gap: 4 },
+  rowPrice: { fontSize: 15, fontFamily: "Inter_700Bold" },
+  rowOrigin: { fontSize: 12, fontFamily: "Inter_400Regular", flexShrink: 1 },
 });

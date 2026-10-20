@@ -3,10 +3,13 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 import { Lang, translations } from "@/utils/i18n";
 
+/** Canonical dictionary shape — ES is the source of truth for keys. */
+type TranslationDict = typeof translations.es;
+
 interface LanguageContextType {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: typeof translations.es;
+  t: TranslationDict;
 }
 
 const LanguageContext = createContext<LanguageContextType>({
@@ -34,7 +37,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t: translations[lang] }}>
+    <LanguageContext.Provider
+      value={{ lang, setLang, t: translations[lang] as TranslationDict }}
+    >
       {children}
     </LanguageContext.Provider>
   );

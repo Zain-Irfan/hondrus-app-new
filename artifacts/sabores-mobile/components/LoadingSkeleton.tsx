@@ -35,13 +35,16 @@ function SkeletonBox({ width, height, style }: { width: number | string; height:
 export function ProductCardSkeleton() {
   const colors = useColors();
   return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <SkeletonBox width={170} height={160} style={{ borderRadius: 0 }} />
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: colors.radii.lg },
+      ]}
+    >
+      <SkeletonBox width={"100%" as unknown as number} height={150} style={{ borderRadius: 0 }} />
       <View style={styles.info}>
-        <SkeletonBox width={60} height={10} />
-        <SkeletonBox width={140} height={14} />
-        <SkeletonBox width={100} height={14} />
-        <SkeletonBox width={70} height={20} />
+        <SkeletonBox width={"80%" as unknown as number} height={13} />
+        <SkeletonBox width={60} height={16} />
       </View>
     </View>
   );
@@ -49,14 +52,12 @@ export function ProductCardSkeleton() {
 
 const styles = StyleSheet.create({
   card: {
-    width: 170,
-    borderRadius: 16,
-    borderWidth: 1,
+    width: "100%",
     overflow: "hidden",
-    marginRight: 16,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   info: {
-    padding: 14,
+    padding: 10,
     gap: 8,
   },
 });

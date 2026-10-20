@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 
-import { Icon } from "@/components/Icon";
 import { useLanguage } from "@/context/LanguageContext";
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 /**
@@ -47,31 +47,60 @@ export const DEFAULT_FILTERS: FilterValue = {
   freeShipping: false,
 };
 
+const stripAccents = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/**
+ * Apply the sheet's filters and sort to a product list (client-side).
+ * Region matches the product's origin text ("Juticalpa, Olancho" → olancho).
+ * "Newest" uses the product id, since the API doesn't send a created date.
+ */
+export function applyFilters<
+  T extends { id: number; price: number; inStock: boolean; origin?: string | null; rating?: number | null },
+>(list: T[], f: FilterValue): T[] {
+  let out = list;
+  if (f.region) out = out.filter((p) => stripAccents(p.origin ?? "").includes(f.region));
+  if (f.inStockOnly) out = out.filter((p) => p.inStock);
+  if (f.priceMin != null) out = out.filter((p) => p.price >= f.priceMin!);
+  if (f.priceMax != null) out = out.filter((p) => p.price <= f.priceMax!);
+
+  switch (f.sort) {
+    case "price-asc":
+      return [...out].sort((a, b) => a.price - b.price);
+    case "price-desc":
+      return [...out].sort((a, b) => b.price - a.price);
+    case "rating":
+      return [...out].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    case "newest":
+      return [...out].sort((a, b) => b.id - a.id);
+    default:
+      return out;
+  }
+}
+
+/** Number of filters that differ from the defaults (for the badge on the filter button). */
+export function countActiveFilters(f: FilterValue): number {
+  return (f.region ? 1 : 0) + (f.inStockOnly ? 1 : 0) + (f.sort !== "recommended" ? 1 : 0);
+}
+
 interface Props {
   visible: boolean;
   onClose: () => void;
   value: FilterValue;
   onApply: (next: FilterValue) => void;
   resultCount: number;
+  /** Live count for the draft selection, so the Apply button shows what you'll get. */
+  countFor?: (draft: FilterValue) => number;
 }
 
+// Region ids are matched against the accent-stripped origin text.
 const REGIONS = [
-  { id: "", label: "Todas" },
   { id: "olancho", label: "Olancho" },
-  { id: "marcala", label: "Marcala" },
-  { id: "comayagua", label: "Comayagua" },
   { id: "copan", label: "Copán" },
+  { id: "marcala", label: "Marcala" },
 ];
 
-const DIETARY = [
-  { id: "sin-gluten", label: "Sin gluten" },
-  { id: "sin-lactosa", label: "Sin lactosa" },
-  { id: "vegetariano", label: "Vegetariano" },
-  { id: "organico", label: "Orgánico" },
-  { id: "artesanal", label: "Artesanal" },
-];
-
-export function FilterSheet({ visible, onClose, value, onApply, resultCount }: Props) {
+export function FilterSheet({ visible, onClose, value, onApply, resultCount, countFor }: Props) {
   const colors = useColors();
   const { t } = useLanguage();
   const [draft, setDraft] = React.useState<FilterValue>(value);
@@ -98,15 +127,8 @@ export function FilterSheet({ visible, onClose, value, onApply, resultCount }: P
     { id: "rating", label: (t as any).sortRating ?? "Mejor calificados" },
   ];
 
-  const toggleDietary = (id: string) => {
-    Haptics.selectionAsync();
-    setDraft((p) => ({
-      ...p,
-      dietary: p.dietary.includes(id)
-        ? p.dietary.filter((x) => x !== id)
-        : [...p.dietary, id],
-    }));
-  };
+  const draftCount = countFor ? countFor(draft) : resultCount;
+  const regionOptions = [{ id: "", label: t.catAll ?? "All" }, ...REGIONS];
 
   const handleClear = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -170,7 +192,7 @@ export function FilterSheet({ visible, onClose, value, onApply, resultCount }: P
             {/* Region */}
             <Section title={(t as any).filterRegion ?? "Región"} colors={colors}>
               <View style={styles.optionsWrap}>
-                {REGIONS.map((r) => (
+                {regionOptions.map((r) => (
                   <ChipOption
                     key={r.id}
                     label={r.label}
@@ -185,33 +207,12 @@ export function FilterSheet({ visible, onClose, value, onApply, resultCount }: P
               </View>
             </Section>
 
-            {/* Dietary */}
-            <Section title={(t as any).filterDietary ?? "Tipo"} colors={colors}>
-              <View style={styles.optionsWrap}>
-                {DIETARY.map((d) => (
-                  <ChipOption
-                    key={d.id}
-                    label={d.label}
-                    active={draft.dietary.includes(d.id)}
-                    onPress={() => toggleDietary(d.id)}
-                    colors={colors}
-                  />
-                ))}
-              </View>
-            </Section>
-
-            {/* Toggles */}
+            {/* Availability */}
             <Section title=" " colors={colors}>
               <ToggleRow
                 label={(t as any).filterInStock ?? "Solo disponibles"}
                 value={draft.inStockOnly}
                 onChange={(v) => setDraft((p) => ({ ...p, inStockOnly: v }))}
-                colors={colors}
-              />
-              <ToggleRow
-                label={(t as any).filterFreeShipping ?? "Envío gratis"}
-                value={draft.freeShipping}
-                onChange={(v) => setDraft((p) => ({ ...p, freeShipping: v }))}
                 colors={colors}
               />
             </Section>
@@ -232,8 +233,8 @@ export function FilterSheet({ visible, onClose, value, onApply, resultCount }: P
             >
               <Text style={styles.applyText}>
                 {typeof (t as any).filterApplyN === "function"
-                  ? (t as any).filterApplyN(resultCount)
-                  : `Mostrar ${resultCount} productos`}
+                  ? (t as any).filterApplyN(draftCount)
+                  : `Mostrar ${draftCount} productos`}
               </Text>
             </Pressable>
           </View>
@@ -288,7 +289,7 @@ function ChipOption({
           styles.chipText,
           {
             color: active ? colors.primary : colors.foreground,
-            fontFamily: active ? "Inter_700Bold" : "Inter_500Medium",
+            fontFamily: active ? fonts.bold : fonts.medium,
           },
         ]}
       >
@@ -365,11 +366,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
   },
   clearLink: {
     fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: fonts.semibold,
   },
   body: {
     paddingHorizontal: 20,
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 10,
@@ -407,7 +408,7 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: 14,
-    fontFamily: "Inter_500Medium",
+    fontFamily: fonts.medium,
   },
   track: {
     width: 40,
@@ -444,7 +445,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 14,
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
   },
   applyBtn: {
     flex: 2,
@@ -455,6 +456,6 @@ const styles = StyleSheet.create({
   applyText: {
     color: "#fff",
     fontSize: 14,
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
   },
 });

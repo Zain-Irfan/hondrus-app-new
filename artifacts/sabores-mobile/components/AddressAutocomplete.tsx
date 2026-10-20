@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 import { apiFetch } from "@/lib/api";
 
@@ -109,7 +110,7 @@ export function AddressAutocomplete({
 
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.label, { color: colors.foreground }]}>
+      <Text style={[styles.label, { color: colors.v2.text.secondary }]}>
         {label}
         {required && " *"}
       </Text>
@@ -118,14 +119,16 @@ export function AddressAutocomplete({
           value={value}
           onChangeText={onChange}
           placeholder={placeholder ?? label}
-          placeholderTextColor={colors.mutedForeground}
+          placeholderTextColor={colors.v2.text.tertiary}
           autoCorrect={false}
           autoCapitalize="words"
           style={[
             styles.input,
             {
-              backgroundColor: colors.card,
-              borderColor: colors.border,
+              backgroundColor: colors.surface,
+              borderColor: colors.v2.border.strong,
+              borderWidth: 1,
+              paddingHorizontal: 14,
               color: colors.foreground,
             },
           ]}
@@ -178,22 +181,19 @@ export function AddressAutocomplete({
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginBottom: 14 },
+  wrap: { marginBottom: 16 },
   label: {
-    fontSize: 12,
-    fontFamily: "Inter_600SemiBold",
+    fontSize: 13,
+    fontFamily: fonts.semibold,
     marginBottom: 6,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
+    marginLeft: 2,
   },
   input: {
-    borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    fontFamily: "Inter_500Medium",
-    height: 48,
+    fontFamily: fonts.regular,
+    height: 50,
   },
   spinner: {
     position: "absolute",
@@ -213,11 +213,11 @@ const styles = StyleSheet.create({
   },
   rowMain: {
     fontSize: 14,
-    fontFamily: "Inter_500Medium",
+    fontFamily: fonts.medium,
   },
   rowSecondary: {
     fontSize: 12,
     marginTop: 2,
-    fontFamily: "Inter_400Regular",
+    fontFamily: fonts.regular,
   },
 });

@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
@@ -10,10 +11,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedTabButton } from "@/components/AnimatedTabButton";
 import { CategoriesIcon } from "@/components/CategoriesIcon";
 import { HomeIcon } from "@/components/HomeIcon";
-import { Icon as AppIcon } from "@/components/Icon";
 import { CartIcon } from "@/components/SvgIcons";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 function NativeTabLayout() {
@@ -90,47 +91,6 @@ const cartIconStyles = StyleSheet.create({
   },
 });
 
-function LangHeaderButton() {
-  const { t, lang, setLang } = useLanguage();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={(t as any).chooseLanguage ?? "Change language"}
-      onPress={() => setLang(lang === "es" ? "en" : "es")}
-      hitSlop={10}
-      style={({ pressed }) => [langBtnStyles.pill, { opacity: pressed ? 0.7 : 1 }]}
-    >
-      <Text style={langBtnStyles.flag}>{lang === "es" ? "🇭🇳" : "🇺🇸"}</Text>
-      <Text style={langBtnStyles.code}>{lang === "es" ? "ES" : "EN"}</Text>
-      <Text style={langBtnStyles.arrow}>⇄</Text>
-    </Pressable>
-  );
-}
-
-const langBtnStyles = StyleSheet.create({
-  pill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "#F5F0E0",
-    borderWidth: 1,
-    borderColor: "#C9A84C",
-    marginRight: 12,
-    minHeight: 32,
-  },
-  flag: { fontSize: 14, lineHeight: 16 },
-  code: {
-    fontSize: 12,
-    fontFamily: "Inter_700Bold",
-    color: "#002B7F",
-    letterSpacing: 0.5,
-  },
-  arrow: { fontSize: 11, color: "#C9A84C", fontFamily: "Inter_700Bold" },
-});
-
 function ClassicTabLayout() {
   const colors = useColors();
   const { t } = useLanguage();
@@ -141,9 +101,12 @@ function ClassicTabLayout() {
   const insets = useSafeAreaInsets();
   const extraBottom = isWeb ? 0 : Math.max(insets.bottom, 12);
 
-  const renderTabButton = (props: any) => (
-    <AnimatedTabButton {...props} activeColor={colors.primary} />
+  // Active tab: soft navy pill behind the icon (redesign)
+  const withPill = (focused: boolean, icon: React.ReactNode) => (
+    <View style={[tabPillStyles.pill, focused && { backgroundColor: colors.v2.bg.brandSoft }]}>{icon}</View>
   );
+
+  const renderTabButton = (props: any) => <AnimatedTabButton {...props} activeColor={colors.primary} />;
 
   return (
     <Tabs
@@ -151,36 +114,30 @@ function ClassicTabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.mutedForeground,
         headerShown: true,
-        headerStyle: { backgroundColor: colors.background },
+        headerStyle: { backgroundColor: colors.canvas },
         headerTintColor: colors.primary,
-        headerTitleStyle: { fontFamily: "Inter_700Bold", color: colors.foreground, fontSize: 18 },
+        headerTitleStyle: { fontFamily: "Inter_700Bold", color: colors.foreground, fontSize: 18, letterSpacing: -0.3 },
         tabBarButton: renderTabButton,
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : colors.background,
-          borderTopWidth: 1,
+          backgroundColor: isIOS ? "transparent" : colors.surface,
+          borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: colors.border,
           elevation: 0,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.04,
-          shadowRadius: 8,
-          ...(isWeb
-            ? { height: 84 }
-            : { height: 64 + extraBottom, paddingBottom: extraBottom }),
+          shadowOpacity: 0.06,
+          shadowRadius: 10,
+          ...(isWeb ? { height: 84 } : { height: 64 + extraBottom, paddingBottom: extraBottom }),
         },
         tabBarBackground: () =>
           isIOS ? (
-            <BlurView
-              intensity={100}
-              tint={isDark ? "dark" : "light"}
-              style={StyleSheet.absoluteFill}
-            />
+            <BlurView intensity={100} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
           ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.surface }]} />
           ) : null,
         tabBarItemStyle: { paddingTop: 6, paddingBottom: 10 },
-        tabBarLabelStyle: { fontFamily: "Inter_700Bold", fontSize: 11, letterSpacing: 0.2 },
+        tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 11 },
         tabBarIconStyle: { marginBottom: 0 },
       }}
     >
@@ -189,12 +146,15 @@ function ClassicTabLayout() {
         options={{
           title: t.appName,
           tabBarLabel: t.tabHome,
-          headerRight: () => <LangHeaderButton />,
+          headerShown: false,
           tabBarIcon: ({ color, focused }) =>
-            isIOS ? (
-              <SymbolView name={focused ? "house.fill" : "house"} tintColor={color} size={24} />
-            ) : (
-              <HomeIcon size={24} color={color} filled={focused} />
+            withPill(
+              focused,
+              isIOS ? (
+                <SymbolView name={focused ? "house.fill" : "house"} tintColor={color} size={24} />
+              ) : (
+                <HomeIcon size={24} color={color} filled={focused} />
+              ),
             ),
         }}
       />
@@ -203,15 +163,17 @@ function ClassicTabLayout() {
         options={{
           title: t.tabBrowse ?? t.tabCatalog,
           tabBarLabel: t.tabBrowse ?? t.tabCatalog,
+          headerShown: false,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.canvas },
           tabBarIcon: ({ color, focused }) =>
-            isIOS ? (
-              <SymbolView
-                name={focused ? "square.grid.2x2.fill" : "square.grid.2x2"}
-                tintColor={color}
-                size={24}
-              />
-            ) : (
-              <CategoriesIcon size={24} color={color} filled={focused} />
+            withPill(
+              focused,
+              isIOS ? (
+                <SymbolView name={focused ? "square.grid.2x2.fill" : "square.grid.2x2"} tintColor={color} size={24} />
+              ) : (
+                <CategoriesIcon size={24} color={color} filled={focused} />
+              ),
             ),
         }}
       />
@@ -220,7 +182,10 @@ function ClassicTabLayout() {
         options={{
           title: t.tabCart ?? "Cart",
           tabBarLabel: t.tabCart ?? "Cart",
-          tabBarIcon: ({ color, focused }) => <CartTabIcon color={color} focused={focused} />,
+          headerShown: false,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.canvas },
+          tabBarIcon: ({ color, focused }) => withPill(focused, <CartTabIcon color={color} focused={focused} />),
         }}
       />
       <Tabs.Screen
@@ -228,15 +193,17 @@ function ClassicTabLayout() {
         options={{
           title: t.tabOrders,
           tabBarLabel: t.tabOrders,
+          headerShown: false,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.canvas },
           tabBarIcon: ({ color, focused }) =>
-            isIOS ? (
-              <SymbolView
-                name={focused ? "shippingbox.fill" : "shippingbox"}
-                tintColor={color}
-                size={24}
-              />
-            ) : (
-              <AppIcon name="package" size={24} color={color} />
+            withPill(
+              focused,
+              isIOS ? (
+                <SymbolView name={focused ? "shippingbox.fill" : "shippingbox"} tintColor={color} size={24} />
+              ) : (
+                <MaterialCommunityIcons name={focused ? "package-variant-closed" : "package-variant"} size={24} color={color} />
+              ),
             ),
         }}
       />
@@ -245,11 +212,17 @@ function ClassicTabLayout() {
         options={{
           title: t.tabAccount ?? "Account",
           tabBarLabel: t.tabAccount ?? "Account",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="person.circle" tintColor={color} size={24} />
-            ) : (
-              <AppIcon name="user" size={24} color={color} />
+          headerShown: false,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: colors.canvas },
+          tabBarIcon: ({ color, focused }) =>
+            withPill(
+              focused,
+              isIOS ? (
+                <SymbolView name={focused ? "person.circle.fill" : "person.circle"} tintColor={color} size={24} />
+              ) : (
+                <MaterialCommunityIcons name={focused ? "account-circle" : "account-circle-outline"} size={24} color={color} />
+              ),
             ),
         }}
       />
@@ -263,3 +236,13 @@ export default function TabLayout() {
   }
   return <ClassicTabLayout />;
 }
+
+const tabPillStyles = StyleSheet.create({
+  pill: {
+    width: 56,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

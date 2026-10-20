@@ -5,27 +5,33 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AuthUnavailable } from "@/components/AuthUnavailable";
 import { EyeIcon } from "@/components/EyeIcon";
+import { AuthShell, Button, ErrorBanner, TextField } from "@/components/ui";
 import { useLanguage } from "@/context/LanguageContext";
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 WebBrowser.maybeCompleteAuthSession();
 
+const hasClerk = !!(process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "");
+
 export default function SignInScreen() {
+  if (!hasClerk) return <AuthUnavailable />;
+  return <SignInContent />;
+}
+
+function SignInContent() {
   const colors = useColors();
   const { t } = useLanguage();
-  const insets = useSafeAreaInsets();
   const { signIn } = useSignIn();
   const { startOAuthFlow: googleOAuth } = useOAuth({ strategy: "oauth_google" });
   const { startOAuthFlow: appleOAuth } = useOAuth({ strategy: "oauth_apple" });
@@ -168,236 +174,162 @@ export default function SignInScreen() {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
-      style={{ flex: 1, backgroundColor: colors.background }}
+    <AuthShell
+      title={t.signInTitle ?? "Welcome back"}
+      subtitle={t.signInSub ?? "Sign in to continue with your orders"}
     >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: insets.top + 16,
-          paddingBottom: insets.bottom + 200,
-        }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <Pressable
+        testID="oauth-google"
+        onPress={() => handleOAuth("google")}
+        disabled={oauthLoading !== null}
+        style={({ pressed }) => [
+          styles.oauthBtn,
+          { borderColor: colors.border, backgroundColor: colors.surface, opacity: pressed ? 0.7 : 1 },
+        ]}
       >
-        <View style={styles.headerRow}>
-          <Pressable
-            onPress={() => router.back()}
-            style={styles.closeBtn}
-            hitSlop={12}
-            testID="sign-in-close"
-          >
-            <Text style={[styles.closeIcon, { color: colors.foreground }]}>✕</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.hero}>
-          <Text style={styles.flag}>🇭🇳</Text>
-          <Text style={[styles.title, { color: colors.foreground }]}>
-            {t.signInTitle ?? "Welcome back"}
-          </Text>
-          <Text style={[styles.sub, { color: colors.mutedForeground }]}>
-            {t.signInSub ?? "Sign in to continue with your orders"}
-          </Text>
-        </View>
-
-        <View style={styles.form}>
-          <Pressable
-            testID="oauth-google"
-            onPress={() => handleOAuth("google")}
-            disabled={oauthLoading !== null}
-            style={({ pressed }) => [
-              styles.oauthBtn,
-              { borderColor: colors.border, backgroundColor: colors.background, opacity: pressed ? 0.7 : 1 },
-            ]}
-          >
-            {oauthLoading === "google" ? (
-              <ActivityIndicator color={colors.foreground} />
-            ) : (
-              <>
-                <Text style={styles.googleG}>G</Text>
-                <Text style={[styles.oauthLabel, { color: colors.foreground }]}>
-                  {t.continueWithGoogle ?? "Continue with Google"}
-                </Text>
-              </>
-            )}
-          </Pressable>
-
-          {Platform.OS === "ios" && (
-            <Pressable
-              testID="oauth-apple"
-              onPress={() => handleOAuth("apple")}
-              disabled={oauthLoading !== null}
-              style={({ pressed }) => [
-                styles.oauthBtn,
-                { borderColor: "#000", backgroundColor: "#000", opacity: pressed ? 0.85 : 1 },
-              ]}
-            >
-              {oauthLoading === "apple" ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <Text style={[styles.appleLogo, { color: "#fff" }]}></Text>
-                  <Text style={[styles.oauthLabel, { color: "#fff" }]}>
-                    {t.continueWithApple ?? "Continue with Apple"}
-                  </Text>
-                </>
-              )}
-            </Pressable>
-          )}
-
-          <View style={styles.dividerRow}>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-            <Text style={[styles.dividerText, { color: colors.mutedForeground }]}>
-              {t.orContinueWith ?? "or"}
+        {oauthLoading === "google" ? (
+          <ActivityIndicator color={colors.foreground} />
+        ) : (
+          <>
+            <Text style={styles.googleG}>G</Text>
+            <Text style={[styles.oauthLabel, { color: colors.foreground }]}>
+              {t.continueWithGoogle ?? "Continue with Google"}
             </Text>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          </View>
+          </>
+        )}
+      </Pressable>
 
-          <Text style={[styles.label, { color: colors.foreground }]}>{t.email ?? "Email"}</Text>
-          <TextInput
-            testID="email-input"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@email.com"
-            placeholderTextColor={colors.mutedForeground}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            returnKeyType="next"
-            onSubmitEditing={() => passwordRef.current?.focus()}
-            blurOnSubmit={false}
-            style={[
-              styles.input,
-              { backgroundColor: colors.background, borderColor: colors.border, color: colors.foreground },
-            ]}
-          />
-
-          <View style={styles.labelRow}>
-            <Text style={[styles.label, { color: colors.foreground }]}>{t.password ?? "Password"}</Text>
-            <Link href="/(auth)/forgot-password" asChild>
-              <Pressable testID="link-forgot-password">
-                <Text style={[styles.linkText, { color: colors.primary }]}>
-                  {t.forgotPasswordLink ?? "Forgot?"}
-                </Text>
-              </Pressable>
-            </Link>
-          </View>
-          <View
-            style={[
-              styles.inputWrapper,
-              { backgroundColor: colors.background, borderColor: colors.border },
-            ]}
-          >
-            <TextInput
-              ref={passwordRef}
-              testID="password-input"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="••••••••"
-              placeholderTextColor={colors.mutedForeground}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={!showPassword}
-              textContentType="password"
-              returnKeyType="go"
-              onSubmitEditing={handleSubmit}
-              style={[styles.inputInner, { color: colors.foreground }]}
-            />
-            <Pressable
-              onPress={() => setShowPassword((v) => !v)}
-              style={styles.eyeBtn}
-              hitSlop={8}
-              testID="toggle-password-visibility"
-              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
-            >
-              <EyeIcon size={22} color={colors.mutedForeground} off={showPassword} />
-            </Pressable>
-          </View>
-
-          {error ? (
-            <Text style={[styles.errorText, { color: colors.destructive }]} testID="error-message">
-              {error}
-            </Text>
-          ) : null}
-
-          <Pressable
-            testID="submit-sign-in"
-            onPress={handleSubmit}
-            disabled={submitting}
-            style={({ pressed }) => [
-              styles.primaryBtn,
-              { backgroundColor: colors.primary, opacity: submitting || pressed ? 0.85 : 1 },
-            ]}
-          >
-            {submitting ? (
-              <ActivityIndicator color={colors.primaryForeground} />
-            ) : (
-              <Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}>
-                {t.signInButton ?? "Sign In"}
+      {Platform.OS === "ios" && (
+        <Pressable
+          testID="oauth-apple"
+          onPress={() => handleOAuth("apple")}
+          disabled={oauthLoading !== null}
+          style={({ pressed }) => [
+            styles.oauthBtn,
+            { borderColor: "#000", backgroundColor: "#000", opacity: pressed ? 0.85 : 1 },
+          ]}
+        >
+          {oauthLoading === "apple" ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Text style={[styles.appleLogo, { color: "#fff" }]}></Text>
+              <Text style={[styles.oauthLabel, { color: "#fff" }]}>
+                {t.continueWithApple ?? "Continue with Apple"}
               </Text>
-            )}
-          </Pressable>
+            </>
+          )}
+        </Pressable>
+      )}
 
-          <View style={styles.footerRow}>
-            <Text style={[styles.footerText, { color: colors.mutedForeground }]}>
-              {t.noAccountYet ?? "No account yet?"}{" "}
+      <View style={styles.dividerRow}>
+        <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+        <Text style={[styles.dividerText, { color: colors.mutedForeground }]}>
+          {t.orContinueWith ?? "or"}
+        </Text>
+        <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+      </View>
+
+      <TextField
+        testID="email-input"
+        label={t.email ?? "Email"}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="you@email.com"
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+        returnKeyType="next"
+        onSubmitEditing={() => passwordRef.current?.focus()}
+        blurOnSubmit={false}
+        containerStyle={{ marginBottom: 8 }}
+      />
+
+      <View style={styles.labelRow}>
+        <Text style={[styles.label, { color: colors.v2.text.secondary }]}>{t.password ?? "Password"}</Text>
+        <Link href="/(auth)/forgot-password" asChild>
+          <Pressable testID="link-forgot-password">
+            <Text style={[styles.linkText, { color: colors.primary }]}>
+              {t.forgotPasswordLink ?? "Forgot?"}
             </Text>
-            <Link href="/(auth)/sign-up" replace asChild>
-              <Pressable testID="link-sign-up">
-                <Text style={[styles.linkText, { color: colors.primary, fontFamily: "Inter_600SemiBold" }]}>
-                  {t.signUpLink ?? "Create one"}
-                </Text>
-              </Pressable>
-            </Link>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </Pressable>
+        </Link>
+      </View>
+      <TextField
+        testID="password-input"
+        value={password}
+        onChangeText={setPassword}
+        placeholder="••••••••"
+        autoCapitalize="none"
+        autoCorrect={false}
+        secureTextEntry={!showPassword}
+        textContentType="password"
+        returnKeyType="go"
+        onSubmitEditing={handleSubmit}
+        containerStyle={{ marginBottom: 8 }}
+        rightAccessory={
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            hitSlop={8}
+            testID="toggle-password-visibility"
+            accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+          >
+            <EyeIcon size={22} color={colors.mutedForeground} off={showPassword} />
+          </Pressable>
+        }
+      />
+
+      {error ? <ErrorBanner message={error} /> : null}
+
+      <Button
+        testID="submit-sign-in"
+        title={t.signInButton ?? "Sign In"}
+        onPress={handleSubmit}
+        loading={submitting}
+      />
+
+      <View style={styles.footerRow}>
+        <Text style={[styles.footerText, { color: colors.mutedForeground }]}>
+          {t.noAccountYet ?? "No account yet?"}{" "}
+        </Text>
+        <Link href="/(auth)/sign-up" replace asChild>
+          <Pressable testID="link-sign-up">
+            <Text style={[styles.linkText, { color: colors.primary, fontFamily: fonts.semibold }]}>
+              {t.signUpLink ?? "Create one"}
+            </Text>
+          </Pressable>
+        </Link>
+      </View>
+    </AuthShell>
   );
 }
 
 const styles = StyleSheet.create({
-  headerRow: { flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20 },
-  closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeIcon: { fontSize: 22, fontFamily: "Inter_500Medium" },
-  hero: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24, alignItems: "center" },
-  flag: { fontSize: 48, marginBottom: 12 },
-  title: { fontSize: 28, fontFamily: "Inter_700Bold", textAlign: "center", marginBottom: 6 },
-  sub: { fontSize: 15, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
-  form: { paddingHorizontal: 24, gap: 14 },
   oauthBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
     height: 52,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
   },
-  googleG: { fontSize: 20, fontFamily: "Inter_700Bold", color: "#4285F4" },
-  appleLogo: { fontSize: 20, fontFamily: "Inter_500Medium", marginTop: -2 },
-  oauthLabel: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  googleG: { fontSize: 20, fontFamily: fonts.bold, color: "#4285F4" },
+  appleLogo: { fontSize: 20, fontFamily: fonts.medium, marginTop: -2 },
+  oauthLabel: { fontSize: 15, fontFamily: fonts.semibold },
   dividerRow: { flexDirection: "row", alignItems: "center", gap: 12, marginVertical: 6 },
   dividerLine: { height: 1, flex: 1 },
-  dividerText: { fontSize: 12, fontFamily: "Inter_500Medium", textTransform: "uppercase", letterSpacing: 1 },
+  dividerText: { fontSize: 12, fontFamily: fonts.medium, textTransform: "uppercase", letterSpacing: 1 },
   labelRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 },
-  label: { fontSize: 13, fontFamily: "Inter_600SemiBold", marginBottom: 6, marginTop: 4 },
-  linkText: { fontSize: 13, fontFamily: "Inter_500Medium" },
+  label: { fontSize: 13, fontFamily: fonts.semibold, marginBottom: 6, marginTop: 4 },
+  linkText: { fontSize: 13, fontFamily: fonts.medium },
   input: {
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 14,
     fontSize: 16,
-    fontFamily: "Inter_400Regular",
+    fontFamily: fonts.regular,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -411,7 +343,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
     fontSize: 16,
-    fontFamily: "Inter_400Regular",
+    fontFamily: fonts.regular,
   },
   eyeBtn: {
     paddingHorizontal: 12,
@@ -420,8 +352,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minWidth: 56,
   },
-  eyeBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  errorText: { fontSize: 13, fontFamily: "Inter_500Medium", marginTop: 4 },
+  eyeBtnText: { fontSize: 14, fontFamily: fonts.semibold },
+  errorText: { fontSize: 13, fontFamily: fonts.medium, marginTop: 4 },
   primaryBtn: {
     height: 52,
     borderRadius: 12,
@@ -429,7 +361,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 8,
   },
-  primaryBtnText: { fontSize: 16, fontFamily: "Inter_700Bold" },
+  primaryBtnText: { fontSize: 16, fontFamily: fonts.bold },
   footerRow: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16 },
-  footerText: { fontSize: 14, fontFamily: "Inter_400Regular" },
+  footerText: { fontSize: 14, fontFamily: fonts.regular },
 });

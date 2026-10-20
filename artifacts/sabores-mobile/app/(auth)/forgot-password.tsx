@@ -2,29 +2,27 @@ import { useSignIn } from "@clerk/expo";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { AuthUnavailable } from "@/components/AuthUnavailable";
 import { EyeIcon } from "@/components/EyeIcon";
+import { AuthShell, Button, ErrorBanner, TextField } from "@/components/ui";
 import { useLanguage } from "@/context/LanguageContext";
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 type Step = "email" | "reset";
 
+const hasClerk = !!(process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "");
+
 export default function ForgotPasswordScreen() {
+  if (!hasClerk) return <AuthUnavailable />;
+  return <ForgotPasswordContent />;
+}
+
+function ForgotPasswordContent() {
   const colors = useColors();
   const { t } = useLanguage();
-  const insets = useSafeAreaInsets();
   const { signIn } = useSignIn();
 
   const [step, setStep] = useState<Step>("email");
@@ -137,286 +135,144 @@ export default function ForgotPasswordScreen() {
     } finally {
       setSubmitting(false);
     }
-  }, [signIn, code, newPassword, t]);
+  }, [signIn, code, newPassword, confirmPassword, t]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={{ flex: 1, backgroundColor: colors.background }}
+    <AuthShell
+      title={t.resetTitle ?? "Reset your password"}
+      subtitle={
+        step === "email"
+          ? (t.resetSubEmail ?? "Enter your email and we'll send you a code.")
+          : (t.resetSubCode ?? "Enter the code we sent to ") + email
+      }
     >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: insets.top + 16,
-          paddingBottom: insets.bottom + 32,
-        }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.headerRow}>
+      {step === "email" ? (
+        <>
+          <TextField
+            testID="email-input"
+            label={t.email ?? "Email"}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@email.com"
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+            returnKeyType="go"
+            onSubmitEditing={sendCode}
+            containerStyle={{ marginBottom: 8 }}
+          />
+
+          {error ? <ErrorBanner message={error} /> : null}
+
+          <Button
+            testID="submit-send-code"
+            title={t.sendResetCode ?? "Send Reset Code"}
+            onPress={sendCode}
+            loading={submitting}
+          />
+        </>
+      ) : (
+        <>
+          {info ? (
+            <Text style={[styles.infoText, { color: colors.success }]}>{info}</Text>
+          ) : null}
+
+          <TextField
+            testID="code-input"
+            label={t.verifyCodeLabel ?? "Verification code"}
+            value={code}
+            onChangeText={setCode}
+            placeholder="123456"
+            keyboardType="number-pad"
+            style={styles.codeInput}
+            containerStyle={{ marginBottom: 4 }}
+          />
+
+          <TextField
+            testID="new-password-input"
+            label={t.newPassword ?? "New password"}
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="••••••••"
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry={!showNewPassword}
+            textContentType="newPassword"
+            containerStyle={{ marginBottom: 4 }}
+            rightAccessory={
+              <Pressable
+                onPress={() => setShowNewPassword((v) => !v)}
+                hitSlop={8}
+                testID="toggle-new-password-visibility"
+                accessibilityLabel={showNewPassword ? "Hide password" : "Show password"}
+              >
+                <EyeIcon size={22} color={colors.mutedForeground} off={showNewPassword} />
+              </Pressable>
+            }
+          />
+
+          <TextField
+            testID="confirm-password-input"
+            label={t.confirmPassword ?? "Confirm password"}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="••••••••"
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry={!showConfirmPassword}
+            textContentType="newPassword"
+            returnKeyType="go"
+            onSubmitEditing={submitReset}
+            containerStyle={{ marginBottom: 4 }}
+            rightAccessory={
+              <Pressable
+                onPress={() => setShowConfirmPassword((v) => !v)}
+                hitSlop={8}
+                testID="toggle-confirm-password-visibility"
+                accessibilityLabel={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                <EyeIcon size={22} color={colors.mutedForeground} off={showConfirmPassword} />
+              </Pressable>
+            }
+          />
+
+          {error ? <ErrorBanner message={error} /> : null}
+
+          <Button
+            testID="submit-reset"
+            title={t.resetAndSignIn ?? "Reset & Sign In"}
+            onPress={submitReset}
+            loading={submitting}
+          />
+
           <Pressable
-            onPress={() => router.back()}
-            style={styles.closeBtn}
-            hitSlop={12}
-            testID="forgot-close"
+            onPress={() => {
+              setStep("email");
+              setCode("");
+              setNewPassword("");
+              setError(null);
+              setInfo(null);
+            }}
+            style={styles.backLinkRow}
           >
-            <Text style={[styles.closeIcon, { color: colors.foreground }]}>✕</Text>
+            <Text style={[styles.linkText, { color: colors.mutedForeground }]}>
+              ← {t.useDifferentEmail ?? "Use a different email"}
+            </Text>
           </Pressable>
-        </View>
-
-        <View style={styles.hero}>
-          <Text style={styles.flag}>🔐</Text>
-          <Text style={[styles.title, { color: colors.foreground }]}>
-            {t.resetTitle ?? "Reset your password"}
-          </Text>
-          <Text style={[styles.sub, { color: colors.mutedForeground }]}>
-            {step === "email"
-              ? t.resetSubEmail ?? "Enter your email and we'll send you a code."
-              : (t.resetSubCode ?? "Enter the code we sent to ") + email}
-          </Text>
-        </View>
-
-        <View style={styles.form}>
-          {step === "email" ? (
-            <>
-              <Text style={[styles.label, { color: colors.foreground }]}>{t.email ?? "Email"}</Text>
-              <TextInput
-                testID="email-input"
-                value={email}
-                onChangeText={setEmail}
-                placeholder="you@email.com"
-                placeholderTextColor={colors.mutedForeground}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
-                returnKeyType="go"
-                onSubmitEditing={sendCode}
-                style={[
-                  styles.input,
-                  { backgroundColor: colors.background, borderColor: colors.border, color: colors.foreground },
-                ]}
-              />
-
-              {error ? (
-                <Text style={[styles.errorText, { color: colors.destructive }]} testID="error-message">
-                  {error}
-                </Text>
-              ) : null}
-
-              <Pressable
-                testID="submit-send-code"
-                onPress={sendCode}
-                disabled={submitting}
-                style={({ pressed }) => [
-                  styles.primaryBtn,
-                  { backgroundColor: colors.primary, opacity: submitting || pressed ? 0.85 : 1 },
-                ]}
-              >
-                {submitting ? (
-                  <ActivityIndicator color={colors.primaryForeground} />
-                ) : (
-                  <Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}>
-                    {t.sendResetCode ?? "Send Reset Code"}
-                  </Text>
-                )}
-              </Pressable>
-            </>
-          ) : (
-            <>
-              {info ? (
-                <Text style={[styles.infoText, { color: colors.success }]}>{info}</Text>
-              ) : null}
-
-              <Text style={[styles.label, { color: colors.foreground }]}>
-                {t.verifyCodeLabel ?? "Verification code"}
-              </Text>
-              <TextInput
-                testID="code-input"
-                value={code}
-                onChangeText={setCode}
-                placeholder="123456"
-                placeholderTextColor={colors.mutedForeground}
-                keyboardType="number-pad"
-                style={[
-                  styles.input,
-                  styles.codeInput,
-                  { backgroundColor: colors.background, borderColor: colors.border, color: colors.foreground },
-                ]}
-              />
-
-              <Text style={[styles.label, { color: colors.foreground }]}>
-                {t.newPassword ?? "New password"}
-              </Text>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  { backgroundColor: colors.background, borderColor: colors.border },
-                ]}
-              >
-                <TextInput
-                  testID="new-password-input"
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.mutedForeground}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={!showNewPassword}
-                  textContentType="newPassword"
-                  returnKeyType="next"
-                  style={[styles.inputInner, { color: colors.foreground }]}
-                />
-                <Pressable
-                  onPress={() => setShowNewPassword((v) => !v)}
-                  style={styles.eyeBtn}
-                  hitSlop={8}
-                  testID="toggle-new-password-visibility"
-                  accessibilityLabel={showNewPassword ? "Hide password" : "Show password"}
-                >
-                  <EyeIcon size={22} color={colors.mutedForeground} off={showNewPassword} />
-                </Pressable>
-              </View>
-
-              <Text style={[styles.label, { color: colors.foreground }]}>
-                {t.confirmPassword ?? "Confirm password"}
-              </Text>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  { backgroundColor: colors.background, borderColor: colors.border },
-                ]}
-              >
-                <TextInput
-                  testID="confirm-password-input"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.mutedForeground}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={!showConfirmPassword}
-                  textContentType="newPassword"
-                  returnKeyType="go"
-                  onSubmitEditing={submitReset}
-                  style={[styles.inputInner, { color: colors.foreground }]}
-                />
-                <Pressable
-                  onPress={() => setShowConfirmPassword((v) => !v)}
-                  style={styles.eyeBtn}
-                  hitSlop={8}
-                  testID="toggle-confirm-password-visibility"
-                  accessibilityLabel={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                  <EyeIcon size={22} color={colors.mutedForeground} off={showConfirmPassword} />
-                </Pressable>
-              </View>
-
-              {error ? (
-                <Text style={[styles.errorText, { color: colors.destructive }]} testID="error-message">
-                  {error}
-                </Text>
-              ) : null}
-
-              <Pressable
-                testID="submit-reset"
-                onPress={submitReset}
-                disabled={submitting}
-                style={({ pressed }) => [
-                  styles.primaryBtn,
-                  { backgroundColor: colors.primary, opacity: submitting || pressed ? 0.85 : 1 },
-                ]}
-              >
-                {submitting ? (
-                  <ActivityIndicator color={colors.primaryForeground} />
-                ) : (
-                  <Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}>
-                    {t.resetAndSignIn ?? "Reset & Sign In"}
-                  </Text>
-                )}
-              </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  setStep("email");
-                  setCode("");
-                  setNewPassword("");
-                  setError(null);
-                  setInfo(null);
-                }}
-                style={styles.backLinkRow}
-              >
-                <Text style={[styles.linkText, { color: colors.mutedForeground }]}>
-                  ← {t.useDifferentEmail ?? "Use a different email"}
-                </Text>
-              </Pressable>
-            </>
-          )}
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </>
+      )}
+    </AuthShell>
   );
 }
 
 const styles = StyleSheet.create({
-  headerRow: { flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20 },
-  closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeIcon: { fontSize: 22, fontFamily: "Inter_500Medium" },
-  hero: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24, alignItems: "center" },
-  flag: { fontSize: 48, marginBottom: 12 },
-  title: { fontSize: 28, fontFamily: "Inter_700Bold", textAlign: "center", marginBottom: 6 },
-  sub: { fontSize: 15, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
-  form: { paddingHorizontal: 24, gap: 14 },
-  label: { fontSize: 13, fontFamily: "Inter_600SemiBold", marginBottom: 6, marginTop: 4 },
-  linkText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  input: {
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    fontSize: 16,
-    fontFamily: "Inter_400Regular",
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingRight: 8,
-  },
-  inputInner: {
-    flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    fontSize: 16,
-    fontFamily: "Inter_400Regular",
-  },
-  eyeBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 56,
-  },
+  linkText: { fontSize: 14, fontFamily: fonts.medium },
   codeInput: {
     fontSize: 22,
     letterSpacing: 8,
     textAlign: "center",
-    fontFamily: "Inter_700Bold",
+    fontFamily: fonts.bold,
   },
-  errorText: { fontSize: 13, fontFamily: "Inter_500Medium", marginTop: 4 },
-  infoText: { fontSize: 13, fontFamily: "Inter_500Medium" },
-  primaryBtn: {
-    height: 52,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
-  },
-  primaryBtnText: { fontSize: 16, fontFamily: "Inter_700Bold" },
+  infoText: { fontSize: 13, fontFamily: fonts.medium, marginBottom: 4 },
   backLinkRow: { alignItems: "center", marginTop: 12 },
 });

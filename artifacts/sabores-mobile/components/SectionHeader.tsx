@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { fonts } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 interface Props {
@@ -13,11 +14,16 @@ export function SectionHeader({ title, actionLabel, onAction }: Props) {
   const colors = useColors();
   return (
     <View style={styles.row}>
-      <View style={[styles.titleWrap, { borderLeftColor: colors.gold }]}>
-        <Text style={[styles.title, { color: colors.foreground }]}>{title}</Text>
-      </View>
+      <Text style={[styles.title, { color: colors.foreground }]} accessibilityRole="header">
+        {title}
+      </Text>
       {actionLabel && onAction && (
-        <Pressable onPress={onAction} hitSlop={10} style={styles.action}>
+        <Pressable
+          onPress={onAction}
+          hitSlop={12}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.action, { opacity: pressed ? 0.6 : 1 }]}
+        >
           <Text style={[styles.actionText, { color: colors.primary }]}>{actionLabel}</Text>
         </Pressable>
       )}
@@ -30,20 +36,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     marginBottom: 14,
   },
-  titleWrap: {
-    borderLeftWidth: 4,
-    paddingLeft: 12,
-  },
   title: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
+    flex: 1,
+    paddingRight: 12,
+    fontSize: 20,
+    fontFamily: fonts.display,
+    letterSpacing: -0.2,
   },
-  action: { paddingVertical: 4, paddingHorizontal: 4 },
+  action: { paddingVertical: 4, paddingHorizontal: 2 },
   actionText: {
     fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: fonts.semibold,
   },
 });

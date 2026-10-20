@@ -46,11 +46,41 @@ const UserContext = createContext<UserContextType>({
   getToken: async () => null,
 });
 
+/** Guest-only provider used when Clerk is not configured (local design testing). */
+export function GuestUserProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <UserContext.Provider
+      value={{
+        user: null,
+        email: null,
+        loading: false,
+        isSignedIn: false,
+        logout: async () => {},
+        refreshProfile: async () => {},
+        updateProfile: async () => {
+          throw new Error("Sign in is unavailable without Clerk configuration.");
+        },
+        getToken: async () => null,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+}
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const { isLoaded: authLoaded, isSignedIn, signOut, getToken } = useAuth();
   const { user: clerkUser, isLoaded: userLoaded } = useClerkUser();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  // If Clerk never finishes loading (bad proxy / offline), don't block Account forever.
+  const [clerkTimedOut, setClerkTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (authLoaded && userLoaded) return;
+    const t = setTimeout(() => setClerkTimedOut(true), 6_000);
+    return () => clearTimeout(t);
+  }, [authLoaded, userLoaded]);
 
   // Keep latest getToken in a ref so callbacks remain stable across renders.
   // Clerk returns a new getToken function reference on every render — using
@@ -162,7 +192,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [signOut]);
 
-  const loading = !authLoaded || !userLoaded || profileLoading;
+  const clerkReady = (authLoaded && userLoaded) || clerkTimedOut;
+  // Only wait on profile while Clerk actually reports signed-in.
+  const loading = !clerkReady || (!!isSignedIn && profileLoading);
 
   return (
     <UserContext.Provider
@@ -170,7 +202,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         user: profile,
         email,
         loading,
-        isSignedIn: !!isSignedIn,
+        isSignedIn: clerkReady ? !!isSignedIn : false,
         logout,
         refreshProfile,
         updateProfile,

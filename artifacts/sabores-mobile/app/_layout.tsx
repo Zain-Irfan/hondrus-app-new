@@ -16,9 +16,10 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { fontFiles } from "@/constants/fonts";
 import { CartProvider } from "@/context/CartContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { UserProvider } from "@/context/UserContext";
+import { GuestUserProvider, UserProvider } from "@/context/UserContext";
 import { tokenCache } from "@/lib/clerkTokenCache";
 
 SplashScreen.preventAutoHideAsync();
@@ -33,10 +34,38 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerBackTitle: "Atrás" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="product/[id]" options={{ title: "Detalle del Producto", headerBackTitle: "Atrás" }} />
-      <Stack.Screen name="checkout" options={{ title: "Pagar", headerBackTitle: "Carrito" }} />
+      {/* Product screen draws its own floating back/cart buttons over the photo */}
+      <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+      {/* Checkout draws its own header with back button and step indicator */}
+      <Stack.Screen name="checkout" options={{ headerShown: false }} />
       <Stack.Screen name="order-success" options={{ headerShown: false }} />
     </Stack>
+  );
+}
+
+function AppProviders({ children }: { children: React.ReactNode }) {
+  // Without a Clerk key we must not mount UserProvider (it calls useAuth).
+  // GuestUserProvider keeps browsing/cart usable for local design testing.
+  const AuthUserProvider = clerkPublishableKey ? UserProvider : GuestUserProvider;
+
+  return (
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <LanguageProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthUserProvider>
+              <CartProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <KeyboardProvider>
+                    {children}
+                  </KeyboardProvider>
+                </GestureHandlerRootView>
+              </CartProvider>
+            </AuthUserProvider>
+          </QueryClientProvider>
+        </LanguageProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 }
 
@@ -46,6 +75,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    ...fontFiles,
     ...Ionicons.font,
   });
 
@@ -57,28 +87,14 @@ export default function RootLayout() {
 
   if (!fontsLoaded && !fontError) return null;
 
-  const inner = (
-    <SafeAreaProvider>
-      <ErrorBoundary>
-        <LanguageProvider>
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <CartProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <KeyboardProvider>
-                    <RootLayoutNav />
-                  </KeyboardProvider>
-                </GestureHandlerRootView>
-              </CartProvider>
-            </UserProvider>
-          </QueryClientProvider>
-        </LanguageProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+  const app = (
+    <AppProviders>
+      <RootLayoutNav />
+    </AppProviders>
   );
 
   if (!clerkPublishableKey) {
-    return inner;
+    return app;
   }
 
   return (
@@ -87,7 +103,7 @@ export default function RootLayout() {
       {...(clerkProxyUrl ? { proxyUrl: clerkProxyUrl } : {})}
       tokenCache={tokenCache}
     >
-      {inner}
+      {app}
     </ClerkProvider>
   );
 }

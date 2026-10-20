@@ -4,15 +4,25 @@ export const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
 
 type GetToken = () => Promise<string | null>;
 
+const DEFAULT_TIMEOUT_MS = 12_000;
+
+/**
+ * Fetch against the Sabores API with optional auth token and a hard timeout
+ * so screens never spin forever on a hung network/Clerk token call.
+ */
 export async function apiFetch(
   path: string,
   init: RequestInit = {},
   getToken?: GetToken,
+  timeoutMs: number = DEFAULT_TIMEOUT_MS,
 ): Promise<Response> {
   const headers = new Headers(init.headers ?? {});
   if (getToken) {
     try {
-      const token = await getToken();
+      const token = await Promise.race([
+        getToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 4_000)),
+      ]);
       if (token) headers.set("Authorization", `Bearer ${token}`);
     } catch {
       // Token unavailable — proceed unauthenticated; server will return 401 if required.
@@ -21,5 +31,23 @@ export async function apiFetch(
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  return fetch(`${API_BASE}${path}`, { ...init, headers });
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  // Honor an existing signal if the caller passed one.
+  const outer = init.signal;
+  if (outer) {
+    if (outer.aborted) controller.abort();
+    else outer.addEventListener("abort", () => controller.abort(), { once: true });
+  }
+
+  try {
+    return await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }

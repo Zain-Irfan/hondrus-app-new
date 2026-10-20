@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { Icon } from "@/components/Icon";
+import { fonts } from "@/constants/fonts";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
@@ -11,8 +12,6 @@ export function FreeShippingProgress() {
   const colors = useColors();
   const { t } = useLanguage();
   const { subtotal } = useCart();
-  // Live admin-configurable threshold from the server; falls back to the
-  // language pack value (then 75) if the call hasn't completed.
   const { freeShippingThreshold } = useShippingConfig();
   const threshold = freeShippingThreshold || (t as any).freeShippingThreshold || 75;
   const progress = Math.min(subtotal / threshold, 1);
@@ -44,61 +43,55 @@ export function FreeShippingProgress() {
     message = typeof fn === "function" ? fn(fmt) : `$${fmt} away from free shipping`;
   }
 
+  const green = colors.v2.state.success;
+
   return (
     <View
       accessibilityRole="text"
       accessibilityLabel={message}
-      style={[
-        styles.container,
-        {
-          backgroundColor: unlocked ? colors.goldLight : colors.card,
-          borderColor: unlocked ? colors.gold : colors.border,
-        },
-      ]}
+      style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
     >
-      <View style={styles.row}>
-        <Icon
-          name={unlocked ? "check-circle" : "truck"}
+      <View style={[styles.iconTile, { backgroundColor: colors.v2.state.successSoft }]}>
+        <MaterialCommunityIcons
+          name={unlocked ? "check-circle-outline" : "truck-outline"}
           size={20}
-          color={unlocked ? colors.gold : colors.primary}
+          color={green}
         />
-        <Text
-          style={[styles.text, { color: unlocked ? colors.primary : colors.foreground }]}
-          numberOfLines={2}
-        >
+      </View>
+      <View style={styles.body}>
+        <Text style={[styles.text, { color: colors.foreground }]} numberOfLines={1}>
           {message}
         </Text>
-      </View>
-      <View style={[styles.track, { backgroundColor: colors.border }]}>
-        <Animated.View
-          style={[
-            styles.fill,
-            {
-              width: widthInterpolated,
-              backgroundColor: unlocked ? colors.gold : colors.primary,
-            },
-          ]}
-        />
+        <View style={[styles.track, { backgroundColor: colors.v2.bg.muted }]}>
+          <Animated.View style={[styles.fill, { width: widthInterpolated, backgroundColor: green }]} />
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Full-width white strip directly under the brand header
   container: {
-    marginHorizontal: 16,
-    marginBottom: 20,
-    padding: 14,
-    borderRadius: 16,
-    borderWidth: 1,
-    gap: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  row: { flexDirection: "row", alignItems: "center", gap: 10 },
+  iconTile: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  body: { flex: 1, gap: 7 },
   text: {
-    flex: 1,
-    fontSize: 13.5,
-    fontFamily: "Inter_600SemiBold",
-    lineHeight: 18,
+    fontSize: 13,
+    fontFamily: fonts.medium,
+    lineHeight: 17,
   },
   track: {
     height: 6,

@@ -1,4 +1,3 @@
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -13,249 +12,220 @@ import {
   Text,
   View,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/Icon";
-import { BagPlusIcon, MailFillIcon, PhoneFillIcon } from "@/components/SvgIcons";
+import { BagPlusIcon, MailFillIcon } from "@/components/SvgIcons";
+import { Card, EmptyState } from "@/components/ui";
+import { fonts } from "@/constants/fonts";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
+
+const SUPPORT_EMAIL = "support@hngrocers.com";
 
 export default function CartScreen() {
   const colors = useColors();
   const { t } = useLanguage();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarHeight = Platform.OS === "web" ? 84 : 65 + insets.bottom;
   const { items, itemCount, subtotal, removeItem, updateQuantity, clearCart } = useCart();
+  const { standardRate, freeShippingThreshold } = useShippingConfig();
 
-  const progressPercent = Math.min(100, (subtotal / 75) * 100);
+  const qualifiesFreeShipping = subtotal >= freeShippingThreshold;
+  const shippingCost = qualifiesFreeShipping ? 0 : standardRate;
+  const estimatedTotal = subtotal + shippingCost;
+  const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
+  const remaining = Math.max(freeShippingThreshold - subtotal, 0);
+  const green = colors.v2.state.success;
 
   if (items.length === 0) {
     return (
       <ScrollView
-        style={{ flex: 1, backgroundColor: colors.background }}
+        style={{ flex: 1, backgroundColor: colors.canvas }}
         contentContainerStyle={[
           styles.emptyContainer,
-          { paddingBottom: tabBarHeight + 24, minHeight: "100%" },
+          { paddingTop: insets.top + 24, paddingBottom: tabBarHeight + 24, minHeight: "100%" },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.emptyTop}>
-          <BagPlusIcon size={88} color={colors.mutedForeground} strokeWidth={1.6} />
-          <Text style={[styles.emptyTitle, { color: colors.mutedForeground }]}>{t.emptyCart}</Text>
-          <Pressable
-            style={[styles.backHomeBtn, { borderColor: colors.foreground }]}
-            onPress={() => router.push("/")}
-          >
-            <Text style={[styles.backHomeText, { color: colors.foreground }]}>
-              {(t as any).backToHome ?? "BACK TO HOME"}
-            </Text>
-          </Pressable>
-        </View>
+        <EmptyState
+          icon={<BagPlusIcon size={36} color={colors.primary} strokeWidth={1.6} />}
+          title={t.emptyCart}
+          subtitle={(t as any).emptyCartSub ?? "Browse the store and add authentic Honduran products."}
+          actionLabel={(t as any).shopNow ?? (t as any).backToHome ?? "Shop now"}
+          onAction={() => router.push("/catalogo")}
+        />
 
-        <View style={[styles.helpCard, { backgroundColor: colors.secondary }]}>
+        <Card style={styles.helpCard}>
           <Text style={[styles.helpTitle, { color: colors.foreground }]}>{(t as any).needHelp}</Text>
           <Text style={[styles.helpSub, { color: colors.mutedForeground }]}>
             {(t as any).needHelpSub}
           </Text>
-          <View style={styles.helpRow}>
-            <Pressable
-              style={[styles.helpBox, { backgroundColor: colors.background, borderColor: colors.border }]}
-              onPress={() => Linking.openURL("tel:+50400000000")}
-            >
-              <PhoneFillIcon size={22} color={colors.foreground} />
-              <Text style={[styles.helpBoxText, { color: colors.foreground }]}>
-                {(t as any).contactPhone}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.helpBox, { backgroundColor: colors.background, borderColor: colors.border }]}
-              onPress={() => Linking.openURL("mailto:hello@sabores.com")}
-            >
-              <MailFillIcon size={22} color={colors.foreground} />
-              <Text style={[styles.helpBoxText, { color: colors.foreground }]}>
-                {(t as any).contactEmail}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+          <Pressable
+            style={[styles.helpBox, { backgroundColor: colors.secondary, borderColor: colors.border }]}
+            onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
+          >
+            <MailFillIcon size={20} color={colors.primary} />
+            <Text style={[styles.helpBoxText, { color: colors.primary }]}>{SUPPORT_EMAIL}</Text>
+          </Pressable>
+        </Card>
       </ScrollView>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.canvas }]}>
+      {/* White title bar: "Cart · 4 items" + Clear all */}
+      <View
+        style={[
+          styles.header,
+          { paddingTop: insets.top + 12, backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        <View style={styles.headerTitleRow}>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]} accessibilityRole="header">
+            {t.tabCart ?? "Cart"}
+          </Text>
+          <Text style={[styles.headerCount, { color: colors.mutedForeground }]}>
+            {(t as any).cartItemsCount?.(itemCount) ?? `${itemCount}`}
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            clearCart();
+          }}
+          hitSlop={10}
+          accessibilityRole="button"
+          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+        >
+          <Text style={[styles.clearText, { color: colors.destructive }]}>{t.clearAll}</Text>
+        </Pressable>
+      </View>
+
       <FlatList
         data={items}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ padding: 16, paddingBottom: tabBarHeight + 120 }}
+        contentContainerStyle={[styles.list, { paddingBottom: tabBarHeight + 150 }]}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View style={styles.listHeader}>
-            <Text style={[styles.headerTitle, { color: colors.foreground }]}>
-              {t.cartTitle(itemCount)}
-            </Text>
-            <Pressable
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                clearCart();
-              }}
-            >
-              <Text style={[styles.clearText, { color: colors.destructive }]}>{t.clearAll}</Text>
-            </Pressable>
+          // Free-shipping progress card
+          <View style={[styles.shipCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.shipRow}>
+              <MaterialCommunityIcons
+                name={qualifiesFreeShipping ? "check-circle-outline" : "truck-outline"}
+                size={20}
+                color={green}
+              />
+              <Text style={[styles.shipText, { color: colors.v2.text.secondary }]}>
+                {qualifiesFreeShipping ? t.freeShippingCongrats : t.freeShippingProgress(remaining.toFixed(2))}
+              </Text>
+            </View>
+            <View style={[styles.progressBg, { backgroundColor: colors.v2.bg.muted }]}>
+              <View style={[styles.progressFill, { backgroundColor: green, width: `${progressPercent}%` }]} />
+            </View>
           </View>
         }
         renderItem={({ item }) => (
-          <View style={[styles.cartItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Image source={{ uri: item.productImageUrl }} style={styles.itemImage} />
+          <View style={[styles.itemCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Image
+              source={{ uri: item.productImageUrl }}
+              style={[styles.itemImage, { backgroundColor: colors.v2.bg.accentSoft }]}
+            />
             <View style={styles.itemInfo}>
-              <Text style={[styles.itemName, { color: colors.foreground }]} numberOfLines={2}>
-                {item.productName}
-              </Text>
-              <Text style={[styles.itemPrice, { color: colors.primary }]}>
-                ${item.price.toFixed(2)} {t.perUnit2}
-              </Text>
-              <View style={styles.qtyRow}>
+              <View style={styles.itemTop}>
+                <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                  <Text style={[styles.itemName, { color: colors.foreground }]} numberOfLines={2}>
+                    {item.productName}
+                  </Text>
+                  <Text style={[styles.itemUnit, { color: colors.mutedForeground }]}>
+                    ${item.price.toFixed(2)} {(t as any).eachShort ?? t.perUnit2}
+                  </Text>
+                </View>
                 <Pressable
-                  style={[styles.qtyBtn, { backgroundColor: colors.secondary }]}
+                  style={({ pressed }) => [styles.removeBtn, { opacity: pressed ? 0.6 : 1 }]}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t.clearAll} ${item.productName}`}
                   onPress={() => {
-                    Haptics.selectionAsync();
-                    updateQuantity(item.productId, item.quantity - 1);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    removeItem(item.productId);
                   }}
                 >
-                  <Icon name="minus" size={16} color={colors.primary} />
+                  <MaterialCommunityIcons name="trash-can-outline" size={20} color={colors.mutedForeground} />
                 </Pressable>
-                <Text style={[styles.qtyText, { color: colors.foreground }]}>{item.quantity}</Text>
-                <Pressable
-                  style={[styles.qtyBtn, { backgroundColor: colors.secondary }]}
-                  onPress={() => {
-                    Haptics.selectionAsync();
-                    updateQuantity(item.productId, item.quantity + 1);
-                  }}
-                >
-                  <Icon name="plus" size={16} color={colors.primary} />
-                </Pressable>
-                <Text style={[styles.subtotal, { color: colors.foreground }]}>
-                  {t.subtotalLine(item.subtotal.toFixed(2))}
-                </Text>
+              </View>
+              <View style={styles.itemBottom}>
+                <Text style={[styles.lineTotal, { color: colors.foreground }]}>${item.subtotal.toFixed(2)}</Text>
+                <View style={[styles.stepper, { borderColor: colors.border }]}>
+                  <Pressable
+                    style={styles.qtyBtn}
+                    accessibilityRole="button"
+                    accessibilityLabel="−"
+                    onPress={() => {
+                      Haptics.selectionAsync();
+                      updateQuantity(item.productId, item.quantity - 1);
+                    }}
+                  >
+                    <MaterialCommunityIcons name="minus" size={18} color={colors.foreground} />
+                  </Pressable>
+                  <Text style={[styles.qtyText, { color: colors.foreground }]}>{item.quantity}</Text>
+                  <Pressable
+                    style={styles.qtyBtn}
+                    accessibilityRole="button"
+                    accessibilityLabel="+"
+                    onPress={() => {
+                      Haptics.selectionAsync();
+                      updateQuantity(item.productId, item.quantity + 1);
+                    }}
+                  >
+                    <MaterialCommunityIcons name="plus" size={18} color={colors.foreground} />
+                  </Pressable>
+                </View>
               </View>
             </View>
-            <Pressable
-              style={styles.removeBtn}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                removeItem(item.productId);
-              }}
-            >
-              <Icon name="x" size={20} color={colors.mutedForeground} />
-            </Pressable>
           </View>
         )}
         ListFooterComponent={
-          <View style={[styles.summaryCard, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
+          <View style={[styles.ledger, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.summaryRow}>
               <Text style={[styles.summaryLabel, { color: colors.mutedForeground }]}>{t.subtotal}</Text>
               <Text style={[styles.summaryValue, { color: colors.foreground }]}>${subtotal.toFixed(2)}</Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={[styles.summaryLabel, { color: colors.mutedForeground }]}>{t.shippingLabel}</Text>
-              <Text style={[styles.summaryValue, { color: subtotal >= 75 ? colors.success : colors.foreground }]}>
-                {subtotal >= 75 ? t.free : "$9.99"}
+              <Text style={[styles.summaryValue, { color: qualifiesFreeShipping ? green : colors.foreground }]}>
+                {qualifiesFreeShipping ? t.free : `$${standardRate.toFixed(2)}`}
               </Text>
-            </View>
-
-            {/* v2: delivery estimate */}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 4 }}>
-              <Icon name="truck" size={13} color={colors.primary} />
-              <Text style={{ fontSize: 12, fontFamily: "Inter_500Medium", color: colors.mutedForeground }}>
-                Llega entre el 12 y 14 de mayo
-              </Text>
-            </View>
-
-            {/* v2: promo code input row */}
-            <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                  backgroundColor: colors.background,
-                  borderWidth: 1,
-                  borderStyle: "dashed",
-                  borderColor: colors.border,
-                  borderRadius: 12,
-                  paddingHorizontal: 14,
-                  paddingVertical: 12,
-                }}
-              >
-                <Icon name="tag" size={14} color={colors.mutedForeground} />
-                <Text style={{ fontSize: 13, color: colors.mutedForeground, fontFamily: "Inter_500Medium" }}>
-                  ¿Tenés un código?
-                </Text>
-              </View>
-              <Pressable
-                style={{
-                  backgroundColor: colors.background,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 12,
-                  paddingHorizontal: 18,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 13, fontFamily: "Inter_700Bold", color: colors.primary }}>Aplicar</Text>
-              </Pressable>
-            </View>
-
-            {/* Free shipping progress */}
-            <View style={styles.progressContainer}>
-              <View style={[styles.freeShipRow, { backgroundColor: colors.goldLight }]}>
-                <Icon name="truck" size={16} color={colors.gold} />
-                <Text style={[styles.freeShipText, { color: colors.primary }]}>
-                  {subtotal >= 75
-                    ? t.freeShippingCongrats
-                    : t.freeShippingProgress((75 - subtotal).toFixed(2))}
-                </Text>
-              </View>
-              <View style={[styles.progressBarBg, { backgroundColor: colors.border }]}>
-                <View style={[styles.progressBarFill, { backgroundColor: subtotal >= 75 ? colors.success : colors.gold, width: `${progressPercent}%` }]} />
-              </View>
             </View>
           </View>
         }
       />
 
-      {/* Checkout Bar — lifted above the tab bar */}
-      <View style={[
-        styles.checkoutBar,
-        {
-          bottom: tabBarHeight,
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.08,
-          shadowRadius: 10,
-          elevation: 12,
-        }
-      ]}>
-        <View style={styles.checkoutBarInner}>
-          <View>
-            <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>{t.estimatedTotal}</Text>
-            <Text style={[styles.totalAmount, { color: colors.primary }]}>${subtotal.toFixed(2)}</Text>
-          </View>
-          <Pressable
-            testID="checkout-btn"
-            style={[styles.checkoutBtn, { backgroundColor: colors.primary, borderColor: colors.gold, borderWidth: 2 }]}
-            onPress={() => router.push("/checkout")}
-          >
-            <Text style={styles.checkoutBtnText}>{t.payNow}</Text>
-            <Icon name="arrow-right" size={20} color={colors.gold} />
-          </Pressable>
+      {/* Checkout bar above the tab bar */}
+      <View
+        style={[
+          styles.checkoutBar,
+          { bottom: tabBarHeight, backgroundColor: colors.surface, borderTopColor: colors.border },
+        ]}
+      >
+        <View style={styles.totalRow}>
+          <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>{t.estimatedTotal}</Text>
+          <Text style={[styles.totalAmount, { color: colors.foreground }]}>${estimatedTotal.toFixed(2)}</Text>
         </View>
+        <Pressable
+          testID="checkout-btn"
+          onPress={() => router.push("/checkout")}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.checkoutBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }]}
+        >
+          <MaterialCommunityIcons name="lock-outline" size={18} color="#FFFFFF" />
+          <Text style={styles.checkoutBtnText}>{t.payNow}</Text>
+          <MaterialCommunityIcons name="arrow-right" size={18} color={colors.gold} />
+        </Pressable>
       </View>
     </View>
   );
@@ -263,59 +233,88 @@ export default function CartScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  emptyContainer: { flex: 1, paddingHorizontal: 20, paddingTop: 40, paddingBottom: 24 },
-  emptyTop: { alignItems: "center", justifyContent: "center", gap: 18, paddingTop: 60, paddingBottom: 40 },
-  emptyTitle: { fontSize: 17, fontFamily: "Inter_500Medium", textAlign: "center" },
-  backHomeBtn: {
-    marginTop: 6,
-    paddingHorizontal: 36,
-    paddingVertical: 14,
-    borderRadius: 999,
-    borderWidth: 1.2,
-    minWidth: 220,
-    alignItems: "center",
-  },
-  backHomeText: { fontSize: 13, fontFamily: "Inter_700Bold", letterSpacing: 1.2, textTransform: "uppercase" },
-  helpCard: { borderRadius: 12, padding: 22, gap: 12, marginTop: "auto", marginBottom: 12 },
-  helpTitle: { fontSize: 17, fontFamily: "Inter_700Bold", textAlign: "center" },
-  helpSub: { fontSize: 13, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 20 },
-  helpRow: { flexDirection: "row", gap: 12, marginTop: 6 },
+
+  // Empty state
+  emptyContainer: { flexGrow: 1, paddingHorizontal: 20 },
+  helpCard: { marginTop: "auto", marginBottom: 12, gap: 10 },
+  helpTitle: { fontSize: 16, fontFamily: fonts.bold, textAlign: "center" },
+  helpSub: { fontSize: 13, fontFamily: fonts.regular, textAlign: "center", lineHeight: 19 },
   helpBox: {
-    flex: 1,
-    paddingVertical: 22,
-    borderRadius: 8,
+    marginTop: 6,
+    flexDirection: "row",
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 14,
     borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  helpBoxText: { fontSize: 14, fontFamily: fonts.semibold },
+
+  // Header
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  headerTitleRow: { flexDirection: "row", alignItems: "baseline", gap: 10 },
+  headerTitle: { fontSize: 28, fontFamily: fonts.display, letterSpacing: -0.4 },
+  headerCount: { fontSize: 14, fontFamily: fonts.regular },
+  clearText: { fontSize: 14, fontFamily: fonts.semibold },
+
+  list: { paddingHorizontal: 20, paddingTop: 16, gap: 12 },
+
+  // Free-shipping card
+  shipCard: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, gap: 10 },
+  shipRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  shipText: { flex: 1, fontSize: 14, fontFamily: fonts.medium },
+  progressBg: { height: 6, borderRadius: 3, overflow: "hidden" },
+  progressFill: { height: "100%", borderRadius: 3 },
+
+  // Item card
+  itemCard: { flexDirection: "row", gap: 12, padding: 12, borderWidth: 1, borderRadius: 16 },
+  itemImage: { width: 84, height: 84, borderRadius: 12, resizeMode: "cover" },
+  itemInfo: { flex: 1, minWidth: 0, justifyContent: "space-between", gap: 8 },
+  itemTop: { flexDirection: "row", alignItems: "flex-start", gap: 4 },
+  itemName: { fontSize: 15, lineHeight: 20, fontFamily: fonts.semibold },
+  itemUnit: { fontSize: 12, fontFamily: fonts.regular },
+  removeBtn: { width: 32, height: 32, marginTop: -6, marginRight: -6, alignItems: "center", justifyContent: "center" },
+  itemBottom: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  lineTotal: { fontSize: 16, fontFamily: fonts.bold },
+  stepper: { flexDirection: "row", alignItems: "center", height: 36, borderWidth: 1, borderRadius: 10 },
+  qtyBtn: { width: 36, height: 34, alignItems: "center", justifyContent: "center" },
+  qtyText: { minWidth: 22, textAlign: "center", fontSize: 15, fontFamily: fonts.bold },
+
+  // Summary
+  ledger: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, gap: 10 },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
+  summaryLabel: { fontSize: 14, fontFamily: fonts.regular },
+  summaryValue: { fontSize: 15, fontFamily: fonts.semibold },
+
+  // Checkout bar
+  checkoutBar: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    gap: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  totalRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
+  totalLabel: { fontSize: 13, fontFamily: fonts.regular },
+  totalAmount: { fontSize: 24, fontFamily: fonts.display },
+  checkoutBtn: {
+    height: 52,
+    borderRadius: 14,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
   },
-  helpBoxText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  listHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
-  headerTitle: { fontSize: 22, fontFamily: "Inter_700Bold" },
-  clearText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  cartItem: { flexDirection: "row", borderRadius: 16, borderWidth: 1, overflow: "hidden", marginBottom: 14, padding: 10, alignItems: "center" },
-  itemImage: { width: 80, height: 80, borderRadius: 12, resizeMode: "cover" },
-  itemInfo: { flex: 1, paddingLeft: 14, gap: 6 },
-  itemName: { fontSize: 15, fontFamily: "Inter_600SemiBold", lineHeight: 20 },
-  itemPrice: { fontSize: 14, fontFamily: "Inter_700Bold" },
-  qtyRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 4 },
-  qtyBtn: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  qtyText: { fontSize: 16, fontFamily: "Inter_700Bold", minWidth: 24, textAlign: "center" },
-  subtotal: { fontSize: 14, fontFamily: "Inter_600SemiBold", marginLeft: 4 },
-  removeBtn: { padding: 10, alignSelf: "flex-start", marginTop: -6, marginRight: -6 },
-  summaryCard: { borderRadius: 16, borderWidth: 1, padding: 20, gap: 12, marginTop: 12 },
-  summaryRow: { flexDirection: "row", justifyContent: "space-between" },
-  summaryLabel: { fontSize: 15, fontFamily: "Inter_500Medium" },
-  summaryValue: { fontSize: 16, fontFamily: "Inter_700Bold" },
-  progressContainer: { marginTop: 8 },
-  freeShipRow: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderTopLeftRadius: 12, borderTopRightRadius: 12 },
-  freeShipText: { fontSize: 13, fontFamily: "Inter_600SemiBold", flex: 1 },
-  progressBarBg: { height: 6, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: "hidden" },
-  progressBarFill: { height: "100%" },
-  checkoutBar: { position: "absolute", bottom: 0, left: 0, right: 0, borderTopWidth: 1 },
-  checkoutBarInner: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16 },
-  totalLabel: { fontSize: 13, fontFamily: "Inter_500Medium" },
-  totalAmount: { fontSize: 26, fontFamily: "Inter_700Bold" },
-  checkoutBtn: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 28, paddingVertical: 16, borderRadius: 50 },
-  checkoutBtnText: { color: "#fff", fontSize: 17, fontFamily: "Inter_700Bold" },
+  checkoutBtnText: { color: "#FFFFFF", fontSize: 16, fontFamily: fonts.bold },
 });

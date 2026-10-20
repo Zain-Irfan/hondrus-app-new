@@ -31,21 +31,33 @@ export interface OrderSummary {
  * use this hook so they always show the same count from the same cache.
  */
 export function useOrders() {
-  const { isSignedIn, email, getToken } = useUser();
+  const { isSignedIn, email, getToken, loading: userLoading } = useUser();
   const guestId = useGuestId();
-  const enabled = isSignedIn || !!guestId;
+  // Wait for guest id OR signed-in session; don't fetch while auth is still resolving.
+  const enabled = !userLoading && (isSignedIn || !!guestId);
 
   return useQuery<OrderSummary[]>({
     queryKey: ["orders", isSignedIn ? `user:${email ?? ""}` : `guest:${guestId ?? ""}`],
     queryFn: async () => {
       const qs = !isSignedIn && guestId ? `?guestToken=${encodeURIComponent(guestId)}` : "";
-      const res = await apiFetch(`/orders${qs}`, { method: "GET" }, getToken);
-      if (!res.ok) return [];
-      const json = await res.json();
-      return Array.isArray(json) ? json : [];
+      try {
+        const res = await apiFetch(`/orders${qs}`, { method: "GET" }, getToken);
+        if (!res.ok) {
+          // Guests with no orders often get an empty/unauthorized response — treat as empty list.
+          if (res.status === 401 || res.status === 403 || res.status === 404) return [];
+          throw new Error("Failed to load orders");
+        }
+        const json = await res.json();
+        return Array.isArray(json) ? json : [];
+      } catch (err: any) {
+        // Aborted / network hang → surface as empty for guests so UI can leave the spinner.
+        if (!isSignedIn) return [];
+        throw err;
+      }
     },
     enabled,
     staleTime: 30_000,
     refetchOnMount: "always",
+    retry: 1,
   });
 }

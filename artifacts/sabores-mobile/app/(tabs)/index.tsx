@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Icon } from "@/components/Icon";
-import { useLanguage } from "@/context/LanguageContext";
 import {
-  Dimensions,
-  FlatList,
   Image,
   Platform,
   Pressable,
@@ -14,18 +10,24 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { ProductCard } from "@/components/ProductCard";
-import { ProductCardSkeleton } from "@/components/LoadingSkeleton";
+import { AppHeader } from "@/components/AppHeader";
+import { BrandLockup } from "@/components/BrandLogo";
 import { FreeShippingProgress } from "@/components/FreeShippingProgress";
-import { SectionHeader } from "@/components/SectionHeader";
-import { CategoryCard, CategoryCardSkeleton } from "@/components/CategoryCard";
+import { LanguagePicker } from "@/components/LanguagePicker";
+import { ProductCardSkeleton } from "@/components/LoadingSkeleton";
+import { ProductCard } from "@/components/ProductCard";
 import { ReorderStrip } from "@/components/ReorderStrip";
+import { SectionHeader } from "@/components/SectionHeader";
+import { fonts } from "@/constants/fonts";
+import { useLanguage } from "@/context/LanguageContext";
 import { useColors } from "@/hooks/useColors";
 import { useOrders } from "@/hooks/useOrders";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 
 const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
   ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
@@ -43,19 +45,29 @@ async function fetchCategories() {
   return res.json();
 }
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const CAT_GRID_HPAD = 16;
-const CAT_GRID_GAP = 12;
-const CAT_CARD_SIZE = Math.floor(
-  (SCREEN_WIDTH - CAT_GRID_HPAD * 2 - CAT_GRID_GAP) / 2,
-);
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl: string;
+  isBestseller: boolean;
+  inStock: boolean;
+  origin?: string;
+};
+
+type Category = { id: number; slug: string; name: string; imageUrl: string };
+
+const PAD = 20;
+const GAP = 12;
+const CAROUSEL_CARD_W = 160;
 
 export default function HomeScreen() {
   const colors = useColors();
   const { t } = useLanguage();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { width: W } = useWindowDimensions();
   const [search, setSearch] = useState("");
+  const searchRef = useRef<TextInput>(null);
 
   const CATEGORY_LABELS: Record<string, string> = {
     coffee: t.catCoffee,
@@ -67,7 +79,6 @@ export default function HomeScreen() {
     beverages: t.catBeverages,
     sauces: t.catSauces,
   };
-  const searchRef = useRef<TextInput>(null);
 
   const { data: featured, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["featured"],
@@ -79,9 +90,8 @@ export default function HomeScreen() {
     queryFn: fetchCategories,
   });
 
-  // Reorder strip — show last order summary if available
   const { data: ordersData } = useOrders();
-  const lastOrder = ordersData?.orders?.[0];
+  const lastOrder = ordersData?.[0];
   const reorderSummary = lastOrder
     ? `${lastOrder.items?.[0]?.productName ?? "Tu último pedido"}${
         lastOrder.items && lastOrder.items.length > 1
@@ -96,333 +106,310 @@ export default function HomeScreen() {
     }
   };
 
-  const topPad = Platform.OS === "web" ? 67 + 16 : 16;
   const bottomPad = Platform.OS === "web" ? 84 + 34 : 120;
 
+  const bestsellers: Product[] = (featured?.bestsellers ?? []).slice(0, 8);
+  const bestsellerIds = new Set(bestsellers.map((p) => p.id));
+  const arrivalsSource: Product[] = featured?.newArrivals ?? featured?.featured ?? [];
+  const arrivals = arrivalsSource.filter((p) => !bestsellerIds.has(p.id)).slice(0, 6);
+  const cats: Category[] = categories ?? [];
+  const bannerProduct = bestsellers[0];
+
+  const contentW = W - PAD * 2;
+  const gridCardW = Math.floor((contentW - GAP) / 2);
+
+  const heroTitle = (t as any).heroTitleV2 ?? t.heroTitle;
+  const heroSub = (t as any).heroSubV2 ?? t.heroSub;
+
+  const { freeShippingThreshold } = useShippingConfig();
+  const shipThreshold = String(freeShippingThreshold || (t as any).freeShippingThreshold || 75);
+  const trustRows = [
+    {
+      icon: "truck-outline" as const,
+      title: (t as any).trustFreeShipping ?? "Free shipping",
+      sub: (t as any).trustFreeShippingSub?.(shipThreshold) ?? `on orders of $${shipThreshold}+`,
+    },
+    {
+      icon: "package-variant-closed" as const,
+      title: (t as any).trustTracking ?? "UPS & FedEx tracking",
+      sub: (t as any).trustTrackingSub ?? "on every order",
+    },
+    {
+      icon: "shield-check-outline" as const,
+      title: (t as any).trustSecure ?? "Secure checkout",
+      sub: (t as any).trustSecureSub ?? "powered by Stripe",
+    },
+  ];
+
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={{ paddingTop: topPad, paddingBottom: bottomPad }}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.primary} />
-      }
-    >
-      {/* Hero Banner — redesigned: real coffee photo, no overlay-on-stock-photo, lighter bottom gradient */}
-      <View style={styles.heroContainer}>
-        <Image
-          source={{ uri: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=900" }}
-          style={StyleSheet.absoluteFillObject}
-          resizeMode="cover"
+    <View style={[styles.root, { backgroundColor: colors.canvas }]}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: bottomPad }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.primary} />
+        }
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ── Brand header: navy bar with white search ── */}
+        <AppHeader
+          leading={
+            <BrandLockup size={40} tagline={(t as any).brandTagline ?? "Honduran grocery · US delivery"} />
+          }
+          right={<LanguagePicker variant="onBrand" />}
+          search={{
+            value: search,
+            onChangeText: setSearch,
+            onSubmit: handleSearch,
+            onClear: () => setSearch(""),
+            placeholder: t.searchPlaceholderHome,
+            inputRef: searchRef,
+          }}
         />
-        <View
-          style={[
-            StyleSheet.absoluteFillObject,
-            { backgroundColor: "transparent" },
-          ]}
-        />
-        <View
-          style={[
-            StyleSheet.absoluteFillObject,
-            {
-              backgroundColor: "rgba(0,21,63,0.45)",
-            },
-          ]}
-        />
-        <View style={styles.heroContent}>
-          <Text style={[styles.heroSmall, { color: colors.gold }]}>
-            {(t as any).heroTaglineV2 ?? "DIRECTO DE MARCALA"}
-          </Text>
-          <Text style={styles.heroTitle}>
-            {(t as any).heroTitleV2 ?? "Lo de casa,\nhasta tu puerta."}
-          </Text>
-          <Text style={styles.heroSub}>
-            {(t as any).heroSubV2 ?? t.heroSub}
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={(t as any).shopNow ?? "Comprar ahora"}
-            onPress={() => router.push("/catalogo")}
-            style={({ pressed }) => [
-              styles.heroCta,
-              { backgroundColor: colors.gold, opacity: pressed ? 0.85 : 1 },
-            ]}
+
+        {/* White info strip under the header (free-shipping status) */}
+        <FreeShippingProgress />
+
+        {/* ── Categories: rounded image tiles, horizontal scroll ── */}
+        <View style={styles.catSection}>
+          <SectionHeader
+            title={(t as any).shopByCategory ?? t.categories}
+            actionLabel={t.seeAll}
+            onAction={() => router.push("/catalogo")}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.catRow}
           >
-            <Text style={[styles.heroCtaText, { color: colors.primary }]}>
-              {(t as any).shopNow ?? "Comprar ahora"}
+            {(cats.length ? cats : Array.from({ length: 6 }).map((_, i) => ({ id: -i - 1 }) as Category)).map(
+              (cat) => (
+                <Pressable
+                  key={cat.id}
+                  disabled={cat.id < 0}
+                  onPress={() => router.push(`/catalogo?category=${cat.slug}`)}
+                  accessibilityRole="button"
+                  accessibilityLabel={cat.slug ? CATEGORY_LABELS[cat.slug] ?? cat.name : undefined}
+                  style={({ pressed }) => [styles.catItem, { opacity: pressed ? 0.7 : 1 }]}
+                >
+                  <View style={[styles.catTile, { backgroundColor: colors.v2.bg.accentSoft }]}>
+                    {cat.imageUrl ? (
+                      <Image source={{ uri: cat.imageUrl }} style={styles.fill} resizeMode="cover" />
+                    ) : null}
+                  </View>
+                  <Text style={[styles.catLabel, { color: colors.foreground }]} numberOfLines={2}>
+                    {cat.slug ? CATEGORY_LABELS[cat.slug] ?? cat.name : " "}
+                  </Text>
+                </Pressable>
+              ),
+            )}
+          </ScrollView>
+        </View>
+
+        {/* ── Promo banner: navy card, headline + CTA, product on the right ── */}
+        <Pressable
+          onPress={() => router.push("/catalogo")}
+          accessibilityRole="button"
+          accessibilityLabel={`${heroTitle.replace("\n", " ")} ${t.shopNow}`}
+          style={({ pressed }) => [
+            styles.banner,
+            { backgroundColor: colors.primary, opacity: pressed ? 0.95 : 1 },
+          ]}
+        >
+          <View pointerEvents="none" style={styles.bannerRing} />
+          <View style={styles.bannerCopy}>
+            <Text style={[styles.bannerKicker, { color: colors.gold }]}>HN GROCERS</Text>
+            <Text style={styles.bannerTitle} numberOfLines={3}>
+              {heroTitle.replace("\n", " ")}
             </Text>
-            <Icon name="chevron-right" size={18} color={colors.primary} />
-          </Pressable>
-        </View>
-      </View>
+            <Text style={styles.bannerSub} numberOfLines={2}>
+              {heroSub}
+            </Text>
+            <View style={[styles.bannerBtn, { backgroundColor: colors.gold }]}>
+              <Text style={[styles.bannerBtnText, { color: colors.primary }]}>{t.shopNow}</Text>
+              <MaterialCommunityIcons name="arrow-right" size={16} color={colors.primary} />
+            </View>
+          </View>
+          <View style={styles.bannerArt}>
+            {bannerProduct?.imageUrl ? (
+              <Image source={{ uri: bannerProduct.imageUrl }} style={styles.bannerImg} resizeMode="cover" />
+            ) : (
+              <View style={[styles.bannerImg, { backgroundColor: "rgba(255,255,255,0.08)" }]} />
+            )}
+          </View>
+        </Pressable>
 
-      {/* Free Shipping Progress (dynamic, based on cart subtotal) */}
-      <FreeShippingProgress />
-
-      {/* Reorder strip — biggest LTV win for grocery */}
-      {lastOrder && (
-        <ReorderStrip
-          summary={reorderSummary}
-          onPress={() => router.push("/(tabs)/mis-pedidos")}
-        />
-      )}
-
-      {/* Search Bar */}
-      <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Icon name="search" size={18} color={colors.mutedForeground} />
-        <TextInput
-          ref={searchRef}
-          style={[styles.searchInput, { color: colors.foreground, fontFamily: "Inter_400Regular" }]}
-          placeholder={t.searchPlaceholderHome}
-          placeholderTextColor={colors.mutedForeground}
-          value={search}
-          onChangeText={setSearch}
-          onSubmitEditing={handleSearch}
-          returnKeyType="search"
-        />
-        {search.length > 0 && (
-          <Pressable
-            onPress={() => setSearch("")}
-            accessibilityRole="button"
-            accessibilityLabel={(t as any).clearSearch ?? "Clear search"}
-            hitSlop={12}
-            style={{ minWidth: 32, minHeight: 32, alignItems: "center", justifyContent: "center" }}
-          >
-            <Icon name="x" size={18} color={colors.mutedForeground} />
-          </Pressable>
+        {lastOrder && (
+          <ReorderStrip
+            summary={reorderSummary}
+            onPress={() => router.push("/(tabs)/mis-pedidos")}
+          />
         )}
-      </View>
 
-      {/* Categories */}
-      <View style={styles.section}>
-        <SectionHeader title={t.categories} />
-        <View style={styles.catsGrid}>
-          {categories && categories.length > 0
-            ? categories.map((cat: { id: number; slug: string; name: string; imageUrl: string }) => (
-                <View key={cat.id} style={[styles.catGridItem, { width: CAT_CARD_SIZE }]}>
-                  <CategoryCard
-                    label={(CATEGORY_LABELS[cat.slug] ?? cat.name).toUpperCase()}
-                    imageUrl={cat.imageUrl}
-                    size={CAT_CARD_SIZE}
-                    onPress={() => router.push(`/catalogo?category=${cat.slug}`)}
-                  />
-                </View>
-              ))
-            : Array.from({ length: 4 }).map((_, i) => (
-                <View key={i} style={[styles.catGridItem, { width: CAT_CARD_SIZE }]}>
-                  <CategoryCardSkeleton size={CAT_CARD_SIZE} />
-                </View>
-              ))}
+        {/* ── Bestsellers: horizontal carousel of product cards ── */}
+        <View style={styles.section}>
+          <SectionHeader
+            title={t.bestsellers}
+            actionLabel={t.seeAll}
+            onAction={() => router.push("/catalogo?bestseller=true")}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.carousel}
+          >
+            {isLoading
+              ? [1, 2, 3].map((k) => (
+                  <View key={k} style={{ width: CAROUSEL_CARD_W }}>
+                    <ProductCardSkeleton />
+                  </View>
+                ))
+              : bestsellers.map((p) => (
+                  <ProductCard key={p.id} product={p as any} cardWidth={CAROUSEL_CARD_W} />
+                ))}
+          </ScrollView>
         </View>
-      </View>
 
-      {/* Bestsellers */}
-      <View style={styles.section}>
-        <SectionHeader
-          title={t.bestsellers}
-          actionLabel={t.seeAll}
-          onAction={() => router.push("/catalogo?bestseller=true")}
-        />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productsRow}>
-          {isLoading
-            ? [1, 2, 3].map((k) => <ProductCardSkeleton key={k} />)
-            : featured?.bestsellers?.map((p: any) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-        </ScrollView>
-      </View>
+        {/* ── New arrivals: 2-column grid ── */}
+        {(arrivals.length > 0 || isLoading) && (
+          <View style={styles.section}>
+            <SectionHeader
+              title={(t as any).newArrivals ?? t.featured}
+              actionLabel={t.seeAll}
+              onAction={() => router.push("/catalogo?featured=true")}
+            />
+            <View style={styles.grid}>
+              {isLoading
+                ? [1, 2].map((k) => (
+                    <View key={k} style={{ width: gridCardW }}>
+                      <ProductCardSkeleton />
+                    </View>
+                  ))
+                : arrivals.map((p) => (
+                    <ProductCard key={p.id} product={p as any} cardWidth={gridCardW} />
+                  ))}
+            </View>
+          </View>
+        )}
 
-      {/* New Arrivals (featured) */}
-      <View style={styles.section}>
-        <SectionHeader
-          title={(t as any).newArrivals ?? t.featured}
-          actionLabel={t.seeAll}
-          onAction={() => router.push("/catalogo?featured=true")}
-        />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productsRow}>
-          {isLoading
-            ? [1, 2, 3].map((k) => <ProductCardSkeleton key={k} />)
-            : featured?.featured?.map((p: any) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-        </ScrollView>
-      </View>
-
-      {/* Footer Banner */}
-      <View style={[styles.footerBanner, { backgroundColor: colors.primary }]}>
-        <Icon name="package" size={28} color={colors.gold} />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.footerBannerTitle}>{t.fastShipping}</Text>
-          <Text style={styles.footerBannerSub}>{t.fastShippingSub}</Text>
+        {/* ── Trust: shipping, tracking, payment ── */}
+        <View style={[styles.trust, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          {trustRows.map((row, i) => (
+            <View
+              key={row.icon}
+              style={[
+                styles.trustRow,
+                i < trustRows.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.v2.bg.muted },
+              ]}
+            >
+              <MaterialCommunityIcons name={row.icon} size={22} color={colors.primary} />
+              <Text style={[styles.trustText, { color: colors.mutedForeground }]}>
+                <Text style={[styles.trustTitle, { color: colors.foreground }]}>{row.title}</Text> {row.sub}
+              </Text>
+            </View>
+          ))}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  root: { flex: 1 },
+  fill: { width: "100%", height: "100%" },
+
+  catSection: { paddingTop: 22 },
+  catRow: {
+    paddingHorizontal: PAD,
+    paddingBottom: 4,
+    gap: 14,
   },
-  heroContainer: {
-    marginHorizontal: 16,
-    borderRadius: 24,
-    marginBottom: 16,
+  catItem: { width: 72, alignItems: "center", gap: 8 },
+  catTile: {
+    width: 68,
+    height: 68,
+    borderRadius: 22,
     overflow: "hidden",
-    minHeight: 200,
-    justifyContent: "flex-end",
   },
-  heroContent: {
-    padding: 24,
-    paddingTop: 40,
+  catLabel: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: fonts.semibold,
+    textAlign: "center",
   },
-  heroSmall: {
+
+  banner: {
+    flexDirection: "row",
+    marginHorizontal: PAD,
+    marginTop: 22,
+    borderRadius: 22,
+    overflow: "hidden",
+    minHeight: 196,
+  },
+  bannerRing: {
+    position: "absolute",
+    right: -40,
+    top: -40,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    borderWidth: 28,
+    borderColor: "rgba(201,168,76,0.18)",
+  },
+  bannerCopy: { flex: 1, justifyContent: "center", gap: 8, paddingVertical: 22, paddingLeft: 22, paddingRight: 14 },
+  bannerKicker: { fontSize: 11, fontFamily: fonts.bold, letterSpacing: 1.5 },
+  bannerTitle: {
+    color: "#FFFFFF",
+    fontSize: 25,
+    lineHeight: 28,
+    fontFamily: fonts.display,
+    letterSpacing: -0.4,
+  },
+  bannerSub: {
+    color: "#C3CEE6",
     fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
-    marginBottom: 8,
+    lineHeight: 19,
+    fontFamily: fonts.regular,
   },
-  heroTitle: {
-    color: "#fff",
-    fontSize: 32,
-    fontFamily: "Inter_700Bold",
-    lineHeight: 38,
-    marginBottom: 10,
-  },
-  heroSub: {
-    color: "rgba(255,255,255,0.92)",
-    fontSize: 15,
-    fontFamily: "Inter_400Regular",
-    marginBottom: 18,
-  },
-  heroCta: {
+  bannerBtn: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    gap: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 999,
-    minHeight: 44,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  heroCtaText: {
-    fontSize: 15,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: 0.3,
-  },
-  langPill: {
-    position: "absolute",
-    right: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.95)",
-    minHeight: 36,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    zIndex: 10,
-  },
-  langPillFlag: { fontSize: 16, lineHeight: 18 },
-  langPillText: {
-    fontSize: 13,
-    fontFamily: "Inter_700Bold",
-    color: "#002B7F",
-    letterSpacing: 0.5,
-  },
-  langPillArrow: {
-    fontSize: 12,
-    color: "#C9A84C",
-    fontFamily: "Inter_700Bold",
-  },
-  searchWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginHorizontal: 16,
-    marginBottom: 24,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    borderRadius: 50,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    padding: 0,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    gap: 8,
+    marginTop: 6,
     paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-  },
-  seeAll: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-  },
-  productsRow: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  catsRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    gap: 14,
-  },
-  catsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    paddingHorizontal: CAT_GRID_HPAD,
-    columnGap: CAT_GRID_GAP,
-    rowGap: 18,
-  },
-  catGridItem: {
-    alignItems: "center",
-  },
-  footerBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    padding: 20,
+    height: 40,
     borderRadius: 20,
   },
-  footerBannerTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
+  bannerBtnText: { fontSize: 14, fontFamily: fonts.bold },
+  bannerArt: { width: 128, paddingVertical: 18, paddingRight: 18, justifyContent: "flex-end" },
+  bannerImg: {
+    width: 110,
+    height: 150,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.12)",
   },
-  footerBannerSub: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    marginTop: 4,
-    lineHeight: 18,
+
+  section: { marginTop: 26 },
+  carousel: { paddingHorizontal: PAD, gap: GAP },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: PAD,
+    gap: GAP,
   },
+
+  trust: {
+    marginHorizontal: PAD,
+    marginTop: 26,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  trustRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 12 },
+  trustText: { flex: 1, fontSize: 14, fontFamily: fonts.regular },
+  trustTitle: { fontFamily: fonts.bold },
 });

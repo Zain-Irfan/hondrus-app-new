@@ -5,20 +5,28 @@ import colors from "@/constants/colors";
 /**
  * Returns the design tokens for the current color scheme.
  *
- * The returned object contains all color tokens for the active palette
- * plus scheme-independent values like `radius`.
+ * Prefer `v2` / `canvas` / `radii` / `space` in new UI. Flat v1 aliases
+ * (primary, background, …) remain for backwards compatibility.
  *
- * Falls back to the light palette when no dark key is defined in
- * constants/colors.ts (the scaffold ships light-only by default).
- * When a sibling web artifact's dark tokens are synced into a `dark`
- * key, this hook will automatically switch palettes based on the
- * device's appearance setting.
+ * Light-only polish for this redesign: we always return the light palette
+ * so hardcoded-light screens stay consistent. Dark tokens remain available
+ * in colors.ts for a future full dark pass.
  */
 export function useColors() {
-  const scheme = useColorScheme();
-  const palette =
-    scheme === "dark" && "dark" in colors
-      ? (colors as Record<string, typeof colors.light>).dark
-      : colors.light;
-  return { ...palette, radius: colors.radius };
+  // Force light during redesign so screens using mixed hex/tokens stay coherent.
+  void useColorScheme();
+  const palette = colors.light;
+  const v2 = palette.v2;
+
+  return {
+    ...palette,
+    v2,
+    /** Page background (subtle gray) — prefer over white canvas for lists */
+    canvas: v2.bg.subtle,
+    /** Card / elevated surface */
+    surface: v2.bg.card,
+    radius: colors.radius,
+    radii: colors.radii,
+    space: colors.space,
+  };
 }
