@@ -10,8 +10,9 @@ import { useUser } from "@/context/UserContext";
 export default function AuthLayout() {
   const { isSignedIn, loading } = useUser();
 
-  if (loading) return null;
-  if (isSignedIn) return <Redirect href="/(tabs)/cuenta" />;
+  // Only redirect once a signed-in session is confirmed. While auth is still
+  // loading, keep rendering the auth screens instead of a blank screen.
+  if (!loading && isSignedIn) return <Redirect href="/(tabs)/cuenta" />;
 
   return (
     <Stack

@@ -19,9 +19,12 @@ export async function apiFetch(
   const headers = new Headers(init.headers ?? {});
   if (getToken) {
     try {
+      // Race against a 3-second timeout: Clerk's getToken() can hang forever
+      // when the Clerk proxy is unreachable (e.g. in dev). Without this, every
+      // API call blocks indefinitely waiting for a token that never arrives.
       const token = await Promise.race([
         getToken(),
-        new Promise<null>((resolve) => setTimeout(() => resolve(null), 4_000)),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000)),
       ]);
       if (token) headers.set("Authorization", `Bearer ${token}`);
     } catch {

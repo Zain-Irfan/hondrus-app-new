@@ -48,9 +48,18 @@ async function getKeysFromIntegration(): Promise<{ publishableKey: string; secre
   return { publishableKey: conn.settings.publishable, secretKey: conn.settings.secret };
 }
 
+async function getKeysFromEnv(): Promise<{ publishableKey: string; secretKey: string } | null> {
+  const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY ?? '';
+  const secretKey = process.env.STRIPE_SECRET_KEY ?? '';
+  if (publishableKey && secretKey) return { publishableKey, secretKey };
+  return null;
+}
+
 async function getCredentials() {
   const fromDb = await getKeysFromDb();
   if (fromDb) return fromDb;
+  const fromEnv = await getKeysFromEnv();
+  if (fromEnv) return fromEnv;
   return getKeysFromIntegration();
 }
 

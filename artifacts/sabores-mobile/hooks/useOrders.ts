@@ -59,5 +59,6 @@ export function useOrders() {
     staleTime: 30_000,
     refetchOnMount: "always",
     retry: 1,
+    retryDelay: 500,
   });
 }
